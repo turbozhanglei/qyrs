@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sku">
+
+    <sql id="sql_where">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_name  and ''!= _name">
+            and a.name = #{_name}
+        </if>
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=storage_temp  and ''!= storage_temp">
+            and a.storage_temp LIKE concat('%',#{storage_temp},'%')
+        </if>
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="null!=typename  and ''!= typename">
+            and a.type_id =#{typename}
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            and a.unit_volume =#{unit_volume}
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            and a.unit_weight =#{unit_weight}
+        </if>
+        <if test="null!=_number  and ''!= _number">
+            and a.number = #{_number}
+        </if>
+        <if test="null!=_price  and ''!= _price">
+            and a.price = #{_price}
+        </if>
+        <if test="null!=_stock  and ''!= _stock">
+            and a.stock = #{_stock}
+        </if>
+        <if test="null!=_introduction  and ''!= _introduction">
+            and a.introduction = #{_introduction}
+        </if>
+        <if test="null!=_typed  and ''!= _typed">
+            and a.typed = #{_typed}
+        </if>
+        <if test="null!=_level  and ''!= _level">
+            and a.level = #{_level}
+        </if>
+        <if test="null!=level  and ''!= level">
+            and a.level = #{level}
+        </if>
+        <if test="null!=_sort  and ''!= _sort">
+            and a.sort = #{_sort}
+        </if>
+        <if test="null!=_type_id  and ''!= _type_id">
+            and a.type_id = #{_type_id}
+        </if>
+        <if test="null!=_describes  and ''!= _describes">
+            and a.describes = #{_describes}
+        </if>
+
+        <if test="null!=_status  and ''!= _status">
+            and a.status = #{_status}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO
+        w_sku (
+
+        <if test="null!=name  and ''!= name">
+            name ,
+        </if>
+        <if test="null!=number  and ''!= number">
+            number ,
+        </if>
+        <if test="null!=price  and ''!= price">
+            price ,
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            stock ,
+        </if>
+        <if test="null!=introduction  and ''!= introduction">
+            introduction ,
+        </if>
+        <if test="null!=typed  and ''!= typed">
+            typed ,
+        </if>
+        <if test="null!=level  and ''!= level">
+            level ,
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            sort ,
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            type_id ,
+        </if>
+        <if test="null!=describes  and ''!= describes">
+            describes ,
+        </if>
+        <if test="null!=status">
+            status ,
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            unit_volume ,
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            unit_weight ,
+        </if>
+        <if test="null!=storage_temp  and ''!= storage_temp">
+            storage_temp ,
+        </if>
+        create_time,
+        creator,
+        update_time,
+        updator
+
+        ) VALUES(
+
+        <if test="null!=name  and ''!= name">
+            #{name} ,
+        </if>
+        <if test="null!=number  and ''!= number">
+            #{number} ,
+        </if>
+        <if test="null!=price  and ''!= price">
+            #{price} ,
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            #{stock} ,
+        </if>
+        <if test="null!=introduction  and ''!= introduction">
+            #{introduction} ,
+        </if>
+        <if test="null!=typed  and ''!= typed">
+            #{typed} ,
+        </if>
+        <if test="null!=level  and ''!= level">
+            #{level} ,
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            #{sort} ,
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            #{type_id} ,
+        </if>
+        <if test="null!=describes  and ''!= describes">
+            #{describes} ,
+        </if>
+        <if test="null!=status">
+            #{status} ,
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            #{unit_volume} ,
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            #{unit_weight} ,
+        </if>
+        <if test="null!=storage_temp  and ''!= storage_temp">
+            #{storage_temp} ,
+        </if>
+        now(),
+        #{creator},
+        now(),
+        #{updator}
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 商品类别查询 -->
+    <select id="querySkuTypeList" parameterType="map" resultType="dto">
+        SELECT
+        id as sku_type_id,
+        text as sku_type_name
+        FROM
+        w_sku_type
+        WHERE
+        leaf = 1
+        and status = 1
+        and is_delete = 'N'
+    </select>
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_sku set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+    <!-- 商品类别>>商品列表 -->
+    <select id="querySkuList" parameterType="map" resultType="dto">
+        SELECT
+        id as sku_id,
+        name as sku_name,
+        typed,
+        level
+        FROM
+        w_sku
+        WHERE
+        type_id = #{type_id}
+        and status = 0
+        and is_delete = 'N'
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        *
+        FROM
+        w_sku
+        WHERE
+        id = #{id}
+        and status = 0
+        and is_delete = 'N'
+    </select>
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,wst.text as typename
+        FROM
+        w_sku a
+        left join w_sku_type wst on wst.id = a.type_id
+        <include refid="sql_where"/>
+        order by a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        w_sku a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 下拉商品列表查询 -->
+    <select id="queryBoxList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.name
+        FROM
+        w_sku a
+        WHERE a.is_delete = 'N'
+        order by a.create_time
+    </select>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE w_sku a
+        set
+
+        <if test="null!=name  and ''!= name">
+            a.name = #{name} ,
+        </if>
+        <if test="null!=sortno  and ''!= sortno">
+            a.sortno = #{sortno} ,
+        </if>
+        <if test="null!=number  and ''!= number">
+            a.number = #{number} ,
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            a.type_id = #{type_id} ,
+        </if>
+        <if test="null!=level  and ''!= level">
+            a.level = #{level} ,
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            a.unit_volume = #{unit_volume} ,
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            a.unit_weight = #{unit_weight} ,
+        </if>
+        <if test="null!=storage_temp  and ''!= storage_temp">
+            a.storage_temp = #{storage_temp} ,
+        </if>
+        update_time = now(),
+        a.updator = #{updator}
+
+        where
+        a.id = #{id}
+    </update>
+</mapper>

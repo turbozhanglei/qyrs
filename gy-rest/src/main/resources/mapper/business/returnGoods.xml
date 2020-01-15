@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="returnGoods">
+
+
+    <sql id="sql_where">
+        <if test="null!=product_name  and ''!= product_name">
+            and e.NAME like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            and a.product_specifications like Concat ('%',#{product_specifications},'%')
+        </if>
+        <if test="null!=isexpired  and ''!= isexpired">
+            and a.isexpired = #{isexpired}
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            and a.production_time like Concat ('%',#{production_time},'%')
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            and a.expiration_time like Concat ('%',#{expiration_time},'%')
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            and a.distance_day like Concat ('%',#{distance_day},'%')
+        </if>
+        <if test="null!=storage_time  and ''!= storage_time">
+            and a.storage_time like Concat ('%',#{storage_time},'%')
+        </if>
+        <if test="null!=out_order_client  and ''!= out_order_client">
+            and a.out_order_client like Concat ('%',#{out_order_client},'%')
+        </if>
+        <if test="null!=document_license  and ''!= document_license">
+            and a.document_license like Concat ('%',#{document_license},'%')
+        </if>
+        <if test="null!=receive_warehouse_name  and ''!= receive_warehouse_name">
+            and a.receive_warehouse_name like Concat ('%',#{receive_warehouse_name},'%')
+        </if>
+        <if test="null!=receive_receive_address  and ''!= receive_receive_address">
+            and a.receive_receive_address like Concat ('%',#{receive_receive_address},'%')
+        </if>
+        <if test="null!=receive_name  and ''!= receive_name">
+            and a.receive_name like Concat ('%',#{receive_name},'%')
+        </if>
+        <if test="null!=phone  and ''!= phone">
+            and a.phone like Concat ('%',#{phone},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and a.client_name like Concat ('%',#{client_name},'%')
+        </if>
+
+        <if test="null!=out_order_mycompany  and ''!= out_order_mycompany">
+            and a.out_order_mycompany like Concat ('%',#{out_order_mycompany},'%')
+        </if>
+        <if test="null!=isreceipt  and ''!= isreceipt">
+            and a.isreceipt = #{isreceipt}
+        </if>
+        <if test="null!=operator  and ''!= operator">
+            and s.username like Concat ('%',#{operator},'%')
+        </if>
+        <if test="null!=refuse_reason  and ''!= refuse_reason">
+            and a.refuse_reason like Concat ('%',#{refuse_reason},'%')
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            and a.remark like Concat ('%',#{remark},'%')
+        </if>
+        <if test="null!=status">
+            and a.status like Concat ('%',#{status},'%')
+        </if>
+        <if test="null!=is_adjustment  and ''!= is_adjustment">
+            and a.is_adjustment = #{is_adjustment}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=return_goods_id  and ''!= return_goods_id">
+            and a.return_goods_id = #{return_goods_id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, s.username AS operatorname,
+        c.client_name AS clientname,
+        GROUP_CONCAT(e.NAME) productname,
+        GROUP_CONCAT(e.num) renum,
+        if(to_days(a.expiration_time) - to_days(now()) >= 0,'否','是') as is_expired
+        FROM
+        w_return_goods a
+        LEFT JOIN sys_user s ON s.id = a.operator
+        LEFT JOIN w_customer c ON a.client_name = c.id
+        LEFT JOIN w_return_goods_sku d ON a.id = d.return_goods_id
+        LEFT JOIN w_order_buy_sku e ON d.order_buy_sku_id = e.id
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        GROUP BY
+        a.id
+        ORDER BY
+        a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        select
+        count(1) as total
+        FROM
+        w_return_goods a
+        LEFT JOIN sys_user s ON s.id = a.operator
+        LEFT JOIN w_customer c ON a.client_name = c.id
+        LEFT JOIN w_return_goods_sku d ON a.id = d.return_goods_id
+        LEFT JOIN w_order_buy_sku e ON d.order_buy_sku_id = e.id
+        WHERE
+        a.is_delete = 'N'
+        GROUP BY
+        a.id
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,s.username as operatorname
+        FROM
+        w_return_goods a
+        LEFT JOIN sys_user s on s.id=a.operator
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into w_return_goods
+        (
+        product_name,
+        product_specifications,
+        isexpired,
+        production_time,
+        expiration_time,
+        distance_day,
+        storage_time,
+        out_order_client,
+        document_license,
+        receive_warehouse_name,
+        receive_receive_address,
+        receive_name,
+        phone,
+        client_name,
+        operator,
+        out_order_mycompany,
+        isreceipt,
+        refuse_reason,
+        remark,
+        status,
+        create_time,
+        creator,
+        is_delete,
+        order_return
+        )
+        values (
+        #{product_name},
+        #{product_specifications},
+        #{isexpired},
+        #{production_time},
+        #{expiration_time},
+        #{distance_day},
+        #{storage_time},
+        #{out_order_client},
+        #{document_license},
+        #{receive_warehouse_name},
+        #{receive_receive_address},
+        #{receive_name},
+        #{phone},
+        #{client_name},
+        #{creator},
+        #{out_order_mycompany},
+        #{isreceipt},
+        #{refuse_reason},
+        #{remark},
+        #{status},
+        now(),
+        #{creator},
+        'N',
+        #{order_return}
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_return_goods
+        set
+        <if test="null!=product_name  and ''!= product_name">
+            product_name = #{product_name},
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            product_specifications = #{product_specifications},
+        </if>
+        <if test="null!=isexpired  and ''!= isexpired">
+            isexpired = #{isexpired},
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            production_time = #{production_time},
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            expiration_time = #{expiration_time},
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            distance_day = #{distance_day},
+        </if>
+        <if test="null!=storage_time  and ''!= storage_time">
+            storage_time = #{storage_time},
+        </if>
+        <if test="null!=out_order_client  and ''!= out_order_client">
+            out_order_client = #{out_order_client},
+        </if>
+        <if test="null!=document_license  and ''!= document_license">
+            document_license = #{document_license},
+        </if>
+        <if test="null!=receive_warehouse_name  and ''!= receive_warehouse_name">
+            receive_warehouse_name = #{receive_warehouse_name},
+        </if>
+        <if test="null!=receive_receive_address  and ''!= receive_receive_address">
+            receive_receive_address = #{receive_receive_address},
+        </if>
+        <if test="null!=receive_name  and ''!= receive_name">
+            receive_name = #{receive_name},
+        </if>
+        <if test="null!=phone  and ''!= phone">
+            phone = #{phone},
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            client_name = #{client_name},
+        </if>
+        <if test="null!=operator  and ''!= operator">
+            operator = #{operator},
+        </if>
+        <if test="null!=out_order_mycompany  and ''!= out_order_mycompany">
+            out_order_mycompany = #{out_order_mycompany},
+        </if>
+        <if test="null!=isreceipt  and ''!= isreceipt">
+            isreceipt = #{isreceipt},
+        </if>
+        <if test="null!=refuse_reason  and ''!= refuse_reason">
+            refuse_reason = #{refuse_reason},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        <if test="null!=order_return  and ''!= order_return">
+            order_return = #{order_return},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_return_goods set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 插入 -->
+    <insert id="saveGoodsSkuInfo" parameterType="dto">
+        insert into w_return_goods_sku
+        (
+        return_goods_id,
+        order_buy_sku_id,
+        remark,
+        create_time,
+        creator,
+        is_delete
+        )
+        values (
+        #{return_goods_id},
+        #{order_buy_sku_id},
+        #{remark},
+        now(),
+        #{creator},
+        'N'
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- c产品列表查询 -->
+    <select id="queryReturnOrderBuySku" parameterType="map" resultType="dto">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        a.order_buy_sku_id
+        FROM
+        w_return_goods_sku a
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY
+        a.id DESC
+        ) a
+        LEFT JOIN w_order_buy_sku b on a.order_buy_sku_id=b.id
+        GROUP BY b.id
+
+    </select>
+
+    <!-- c产品列表查询 -->
+    <select id="queryForSku" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_return_goods_sku a
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteForReturnSku" parameterType="map">
+        delete from w_return_goods_sku WHERE id = #{id}
+    </delete>
+
+
+</mapper>

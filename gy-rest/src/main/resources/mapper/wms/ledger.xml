@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 预期到货通知表 -->
+<mapper namespace="ledger">
+
+    <sql id="sql_where">
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+
+    </sql>
+    <sql id="sql_where1">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_sku_id  and ''!= _sku_id">
+            and a.sku_id = #{_sku_id}
+        </if>
+        <if test="null!=_order_id  and ''!= _order_id">
+            and a.order_id = #{_order_id}
+        </if>
+        <if test="null!=_batch_number  and ''!= _batch_number">
+            and a.batch_number = #{_batch_number}
+        </if>
+        <if test="null!=_stock  and ''!= _stock">
+            and a.stock = #{_stock}
+        </if>
+        <if test="null!=_measure_unit  and ''!= _measure_unit">
+            and a.measure_unit = #{_measure_unit}
+        </if>
+        <if test="null!=_price  and ''!= _price">
+            and a.price = #{_price}
+        </if>
+        <if test="null!=_amount  and ''!= _amount">
+            and a.amount = #{_amount}
+        </if>
+        <if test="null!=_status  and ''!= _status">
+            and a.status = #{_status}
+        </if>
+        <if test="null!=_remark  and ''!= _remark">
+            and a.remark = #{_remark}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+    </sql>
+    <sql id="sql_where2">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_sku_id  and ''!= _sku_id">
+            and a.sku_id = #{_sku_id}
+        </if>
+        <if test="null!=_order_id  and ''!= _order_id">
+            and a.order_id = #{_order_id}
+        </if>
+        <if test="null!=_batch_number  and ''!= _batch_number">
+            and a.batch_number = #{_batch_number}
+        </if>
+        <if test="null!=_stock  and ''!= _stock">
+            and a.stock = #{_stock}
+        </if>
+        <if test="null!=_measure_unit  and ''!= _measure_unit">
+            and a.measure_unit = #{_measure_unit}
+        </if>
+        <if test="null!=_price  and ''!= _price">
+            and a.price = #{_price}
+        </if>
+        <if test="null!=_amount  and ''!= _amount">
+            and a.amount = #{_amount}
+        </if>
+        <if test="null!=_status  and ''!= _status">
+            and a.status = #{_status}
+        </if>
+        <if test="null!=_remark  and ''!= _remark">
+            and a.remark = #{_remark}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+    </sql>
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT * from (
+        (
+        SELECT
+        wcp.name as coma,
+        wcp2.name as comb,
+        woa.order_no,
+        woa.create_order_user,
+        woa.start_time,
+        woa.enter_library_time,
+        a.id,
+        a.sku_id,
+        a.order_id,
+        a.batch_number,
+        a.measure_unit,
+        a.amount,
+        sc.val AS STATUS,
+        a.remark,
+        a.create_time,
+        ws. NAME,
+        ws.number,
+        ws.price,
+        ws.stock,
+        ws.introduction,
+        ws.typed,
+        ws. LEVEL,
+        ws.sort,
+        ws.type_id,
+        ws.describes
+        FROM
+        w_order_add_sku a
+        left join sys_config sc on sc.id = a.status
+        left join w_order_add woa on woa.id = a.order_id
+        left join w_sku ws ON ws.id = a.sku_id
+        left join w_cmn_provider wcp ON wcp.id = woa.coma
+        left join w_cmn_provider wcp2 ON wcp2.id = woa.comb
+        <include refid="sql_where1"/>
+        group by a.id
+        )
+        union all
+        (
+        SELECT
+        wcp.name as coma,
+        wcp2.name as comb,
+        woa.order_no,
+        woa.create_order_user,
+        woa.start_time,
+        woa.enter_library_time,
+        a.id,
+        a.sku_id,
+        a.order_id,
+        a.batch_number,
+        a.measure_unit,
+        a.amount,
+        sc.val AS STATUS,
+        a.remark,
+        a.create_time,
+        ws. NAME,
+        ws.number,
+        ws.price,
+        ws.stock,
+        ws.introduction,
+        ws.typed,
+        ws. LEVEL,
+        ws.sort,
+        ws.type_id,
+        ws.describes
+        FROM
+        w_order_asn_sku a
+        left join sys_config sc on sc.id = a.status
+        left join w_order_asn woa on woa.id = a.order_id
+        left join w_sku ws ON ws.id = a.sku_id
+        left join w_cmn_provider wcp ON wcp.id = woa.coma
+        left join w_cmn_provider wcp2 ON wcp2.id = woa.comb
+        <include refid="sql_where2"/>
+        group by a.id
+        )
+        ) a
+        <include refid="sql_where"/>
+        order by a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT sum(total) as total from (
+        (
+        SELECT
+        count(1) as total
+        FROM
+        w_order_add_sku a
+        left join sys_config sc on sc.id = a.status
+        left join w_order_add woa on woa.id = a.order_id
+        left join w_sku ws ON ws.id = a.sku_id
+        <include refid="sql_where1"/>
+        )
+        union all
+        (
+        SELECT
+        count(1) as total
+        FROM
+        w_order_asn_sku a
+        left join sys_config sc on sc.id = a.status
+        left join w_order_asn woa on woa.id = a.order_id
+        left join w_sku ws ON ws.id = a.sku_id
+        <include refid="sql_where2"/>
+        )
+        ) a
+        <include refid="sql_where"/>
+    </select>
+
+</mapper>

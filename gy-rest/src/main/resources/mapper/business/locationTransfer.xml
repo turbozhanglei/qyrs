@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="locationTransfer">
+
+
+    <sql id="sql_where">
+        <if test="null!=move_location  and ''!= move_location">
+            and f.number like Concat ('%',#{move_location},'%')
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            and a.unit_weight like Concat ('%',#{unit_weight},'%')
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            and a.unit_volume like Concat ('%',#{unit_volume},'%')
+        </if>
+
+        <if test="null!=product_name  and ''!= product_name">
+            and a.product_name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            and a.product_specifications like Concat ('%',#{product_specifications},'%')
+        </if>
+        <if test="null!=product_code  and ''!= product_code">
+            and a.product_code like Concat ('%',#{product_code},'%')
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            and a.production_time like Concat ('%',#{production_time},'%')
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            and a.expiration_time like Concat ('%',#{expiration_time},'%')
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            and a.distance_day like Concat ('%',#{distance_day},'%')
+        </if>
+        <if test="null!=type_num  and ''!= type_num">
+            and a.type_num like Concat ('%',#{type_num},'%')
+        </if>
+        <if test="null!=type_name  and ''!= type_name">
+            and a.type_name like Concat ('%',#{type_name},'%')
+        </if>
+        <if test="null!=storage_location  and ''!= storage_location">
+            and d.number like Concat ('%',#{storage_location},'%')
+        </if>
+        <if test="null!=isphysical_location  and ''!= isphysical_location">
+            and a.isphysical_location = #{isphysical_location}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=num  and ''!= num">
+            and a.num like Concat ('%',#{num},'%')
+        </if>
+        <if test="null!=isexpired  and ''!= isexpired">
+            and a.isexpired = #{isexpired}
+        </if>
+        <if test="null!=try_number  and ''!= try_number">
+            and a.try_number = #{try_number}
+        </if>
+        <if test="null!=order_num  and ''!= order_num">
+            and a.order_num like Concat ('%',#{order_num},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=situation_description  and ''!= situation_description">
+            and a.situation_description like Concat ('%',#{situation_description},'%')
+        </if>
+        <if test="null!=is_adjustment  and ''!= is_adjustment">
+            and a.is_adjustment = #{is_adjustment}
+        </if>
+        <if test="null!=unadjusted_reason  and ''!= unadjusted_reason">
+            and a.unadjusted_reason like Concat ('%',#{unadjusted_reason},'%')
+        </if>
+        <if test="null!=check_user  and ''!= check_user">
+            and s.username like Concat ('%',#{check_user},'%')
+        </if>
+        <if test="null!=storage_time  and ''!= storage_time">
+            and a.storage_time like Concat ('%',#{storage_time},'%')
+        </if>
+        <if test="null!=check_time  and ''!= check_time">
+            and a.create_time like Concat ('%',#{check_time},'%')
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            and a.remark like Concat ('%',#{remark},'%')
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, s.username AS check_name,
+        c.client_name AS customername,
+        d.number AS setting_num,
+        f.number as move_num
+        FROM
+        w_location_transfer a
+        LEFT JOIN sys_user s ON s.id = a.check_user
+        LEFT JOIN w_customer c ON a.client_name = c.id
+        LEFT JOIN w_warehouse_site_setting d ON a.storage_location = d.id
+        LEFT JOIN w_warehouse_site_setting f ON a.move_location = f.id
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        select
+        count(1) as total
+        FROM
+        w_location_transfer a
+        LEFT JOIN sys_user s ON s.id = a.check_user
+        LEFT JOIN w_customer c ON a.client_name = c.id
+        LEFT JOIN w_warehouse_site_setting d on a.storage_location = d.id
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_location_transfer a
+        LEFT JOIN sys_user s on s.id=a.check_user
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into w_location_transfer
+        (
+        product_name,
+        product_specifications,
+        product_code,
+        production_time,
+        expiration_time,
+        distance_day,
+        type_num,
+        type_name,
+        storage_time,
+        storage_location,
+        isphysical_location,
+        num,
+        isexpired,
+        order_num,
+        document_license,
+        client_name,
+        situation_description,
+        is_adjustment,
+        unadjusted_reason,
+        check_user,
+        check_time,
+        remark,
+        status,
+        create_time,
+        creator,
+        is_delete,
+        try_number,
+        unit_volume,
+        unit_weight,
+        move_location,
+        setting_nums,
+        move_tray
+        )
+        values (
+        #{product_name},
+        #{product_specifications},
+        #{product_code},
+        #{production_time},
+        #{expiration_time},
+        #{distance_day},
+        #{type_num},
+        #{type_name},
+        #{storage_time},
+        #{storage_location},
+        #{isphysical_location},
+        #{num},
+        #{isexpired},
+        #{order_num},
+        #{document_license},
+        #{client_name},
+        #{situation_description},
+        #{is_adjustment},
+        #{unadjusted_reason},
+        #{creator},
+        #{check_time},
+        #{remark},
+        #{status},
+        now(),
+        #{creator},
+        'N',
+        #{try_number},
+        #{unit_volume},
+        #{unit_weight},
+        #{move_location},
+        #{setting_nums},
+        #{move_tray}
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_location_transfer
+        set
+        <if test="null!=product_name  and ''!= product_name">
+            product_name = #{product_name},
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            product_specifications = #{product_specifications},
+        </if>
+        <if test="null!=product_code  and ''!= product_code">
+            product_code = #{product_code},
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            production_time = #{production_time},
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            expiration_time = #{expiration_time},
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            distance_day = #{distance_day},
+        </if>
+        <if test="null!=type_num  and ''!= type_num">
+            type_num = #{type_num},
+        </if>
+        <if test="null!=type_name  and ''!= type_name">
+            type_name = #{type_name},
+        </if>
+        <if test="null!=storage_time  and ''!= storage_time">
+            storage_time = #{storage_time},
+        </if>
+        <if test="null!=storage_location  and ''!= storage_location">
+            storage_location = #{storage_location},
+        </if>
+        <if test="null!=isphysical_location  and ''!= isphysical_location">
+            isphysical_location = #{isphysical_location},
+        </if>
+        <if test="null!=num  and ''!= num">
+            num = #{num},
+        </if>
+        <if test="null!=isexpired  and ''!= isexpired">
+            isexpired = #{isexpired},
+        </if>
+        <if test="null!=order_num  and ''!= order_num">
+            order_num = #{order_num},
+        </if>
+        <if test="null!=document_license  and ''!= document_license">
+            document_license = #{document_license},
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            client_name = #{client_name},
+        </if>
+        <if test="null!=situation_description  and ''!= situation_description">
+            situation_description = #{situation_description},
+        </if>
+        <if test="null!=is_adjustment  and ''!= is_adjustment">
+            is_adjustment = #{is_adjustment},
+        </if>
+        <if test="null!=unadjusted_reason  and ''!= unadjusted_reason">
+            unadjusted_reason = #{unadjusted_reason},
+        </if>
+        <if test="null!=check_user  and ''!= check_user">
+            check_user = #{check_user},
+        </if>
+        <if test="null!=check_time  and ''!= check_time">
+            check_time = #{check_time},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        <if test="null!=situation_statement  and ''!= situation_statement">
+            situation_statement = #{situation_statement},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_location_transfer set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <update id="updateStoreInfo" parameterType="map">
+        UPDATE w_order_store_sku a set
+        a.setting_id = #{storage_location} ,
+        update_time = now()
+        WHERE
+        a.`status` in (0,1)
+        <if test="null!=tray_id  and ''!= tray_id">
+            and a.tray_id = #{tray_id}
+        </if>
+        <if test="null!=setting_id  and ''!= setting_id">
+            and a.setting_id = #{setting_id}
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number = #{in_batch_number}
+        </if>
+    </update>
+
+    <update id="updateStoreTray" parameterType="map">
+        UPDATE w_order_store_sku a set
+        a.setting_id = #{storage_location} ,
+        a.tray_id = #{move_tray} ,
+        update_time = now()
+        WHERE
+        a.`status` in (0,1)
+        <if test="null!=tray_id  and ''!= tray_id">
+            and a.tray_id = #{tray_id}
+        </if>
+        <if test="null!=setting_id  and ''!= setting_id">
+            and a.setting_id = #{setting_id}
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number = #{in_batch_number}
+        </if>
+        <if test="null!=in_batch_numbers   ">
+            and a.in_batch_number in
+            <foreach collection="in_batch_numbers" item="list" open="(" separator="," close=")">
+                #{list}
+            </foreach>
+        </if>
+    </update>
+
+
+    <!-- 查询 -->
+    <select id="queryLocationList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.product_name as sku_name,
+        a.production_time as roduction_date,
+        a.num as total,
+        a.try_number as tray_number,
+        s.username AS check_name,
+        c.client_name AS customername,
+        t.*,t1.*,
+        d.number as move_tray_number
+        FROM
+        w_location_transfer a
+        LEFT JOIN sys_user s ON s.id = a.check_user
+        LEFT JOIN w_customer c ON a.client_name = c.id
+        LEFT JOIN (
+        SELECT
+        a.id,
+        a.`name` AS storage_set_name,
+        a.number AS storage_set_number,
+        a.warehouse_area_id,
+        a.warehouse_id,
+        b.`name` AS storage_area_name,
+        b.number AS storage_area_number,
+        c.`name` AS storage_house_name,
+        c.number AS storage_house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) t ON a.storage_location = t.id
+        LEFT JOIN (
+        SELECT
+        a.id,
+        a.`name` AS move_set_name,
+        a.number AS move_set_number,
+        a.warehouse_area_id,
+        a.warehouse_id,
+        b.`name` AS move_area_name,
+        b.number AS move_area_number,
+        c.`name` AS move_house_name,
+        c.number AS move_house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) t1 ON a.move_location = t1.id
+        left join w_tray d on a.move_tray = d.id
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <update id="updateLocationTransferStatus" parameterType="map">
+        UPDATE w_location_transfer a set
+        a.status = #{status} ,
+        update_time = now()
+        WHERE
+        a.`status` = 0
+        <if test="null!=ids  and ''!= ids">
+            and a.id in (${ids})
+        </if>
+
+    </update>
+
+</mapper>

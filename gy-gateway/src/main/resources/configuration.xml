@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<system>
+	<category name="system" description="系统相关配置">
+	 
+	
+	</category>
+	
+	<!-- 邮件发送相关配置文件 -->
+	<category name="email" description="邮件发送相关配置">
+	 <item name="body" value="亲爱的用户：欢迎使用天祥彩票系统。" desc="发送内容"/>
+	 <item name="sender" value="153141151@qq.com" desc="发件人"/>
+	 <item name="password" value="jack123" desc="用户密码"/>
+	</category>
+</system>

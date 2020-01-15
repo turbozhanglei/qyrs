@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="orderSaleExportSku">
+
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=sale_id  and ''!= sale_id">
+            and a.sale_id = #{sale_id}
+        </if>
+        <if test="null!=product_name  and ''!= product_name">
+            and obs.name LIKE concat('%', #{product_name}, '%')
+        </if>
+        <if test="null!=level  and ''!= level">
+            and obs.level = #{level}
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name LIKE concat('%', #{client_name}, '%')
+        </if>
+        <if test="null!=phone  and ''!= phone">
+            and os.recipient_people_mobile LIKE concat('%', #{phone}, '%')
+        </if>
+        <if test="null!=receive_receive_address  and ''!= receive_receive_address">
+            and os.receive_receive_address LIKE concat('%', #{receive_receive_address}, '%')
+        </if>
+    </sql>
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, c.client_name,
+        obs. NAME AS product_name,
+        obs.`level`,
+        obs.sku_id,
+        obs.expiration_date,
+        os.*, su.username AS username
+        FROM
+        w_order_sale_export_sku a
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_order_sale os ON os.id = a.sale_id
+        LEFT JOIN w_customer c ON c.id = os.customer_id
+        LEFT JOIN sys_user su ON su.id = a.creator
+        WHERE
+        1 = 1
+        AND a.export_stock_num > 0
+        <include refid="sql_where"/>
+        ORDER BY
+        a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 列表查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        (
+        SELECT
+        a.*
+        FROM
+        w_order_sale_export_sku a
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_order_sale os ON os.id = a.sale_id
+        LEFT JOIN w_customer c ON c.id = os.customer_id
+        LEFT JOIN sys_user su ON su.id = a.creator
+        WHERE
+        1 = 1
+        AND a.export_stock_num > 0
+        <include refid="sql_where"/>
+        ) as b
+
+    </select>
+
+    <!-- 列表查询 -->
+    <select id="queryProductBySkuIdAndCustomerId" parameterType="map" resultType="dto">
+        SELECT
+        a.*, s. NAME AS productname,
+        wss.number AS wnumber,
+        t. NAME AS tname,
+        obs.roduction_date,
+        obs.expiration_date,
+        SUM(a.stock) AS stocktotal
+
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_warehouse_site_setting wss ON wss.id = a.setting_id
+        LEFT JOIN w_tray t ON t.id = a.tray_id
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        WHERE
+        a.sku_id =#{sku_id}
+        AND a.provider_id = #{provider_id}
+        AND obs.roduction_date = #{roduction_date}
+
+        and a.status=0
+        GROUP BY
+        a.in_batch_number
+        ORDER BY
+        obs.expiration_date
+    </select>
+
+    <select id="getInfo" resultType="dto" parameterType="map">
+        select * from w_order_sale_export_sku where id=#{id}
+    </select>
+
+    <!-- 删除 -->
+    <update id="updateStatus" parameterType="map">
+        UPDATE w_order_sale_export_sku set status = 1 where id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="productinSpection">
+
+
+    <sql id="sql_where">
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number like Concat ('%',#{in_batch_number},'%')
+        </if>
+        <if test="null!=product_name  and ''!= product_name">
+            and a.product_name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            and a.product_specifications like Concat ('%',#{product_specifications},'%')
+        </if>
+        <if test="null!=product_code  and ''!= product_code">
+            and a.product_code like Concat ('%',#{product_code},'%')
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            and a.production_time like Concat ('%',#{production_time},'%')
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            and a.expiration_time like Concat ('%',#{expiration_time},'%')
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            and a.distance_day like Concat ('%',#{distance_day},'%')
+        </if>
+        <if test="null!=type_name  and ''!= type_name">
+            and a.type_name like Concat ('%',#{type_name},'%')
+        </if>
+        <if test="null!=num  and ''!= num">
+            and a.num like Concat ('%',#{num},'%')
+        </if>
+        <if test="null!=type_name  and ''!= type_name">
+            and a.type_name like Concat ('%',#{type_name},'%')
+        </if>
+
+        <if test="null!=storage_location  and ''!= storage_location">
+            and a.storage_location like Concat ('%',#{storage_location},'%')
+        </if>
+        <if test="null!=order_num  and ''!= order_num">
+            and a.order_num like Concat ('%',#{order_num},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=situation_description  and ''!= situation_description">
+            and a.situation_description like Concat ('%',#{situation_description},'%')
+        </if>
+        <if test="null!=situation_suggest  and ''!= situation_suggest">
+            and a.situation_suggest like Concat ('%',#{situation_suggest},'%')
+        </if>
+        <if test="null!=is_rectificationt  and ''!= is_rectificationt">
+            and a.is_rectificationt = #{is_rectificationt}
+        </if>
+        <if test="null!=unrectificationt_reason  and ''!= unrectificationt_reason">
+            and a.unrectificationt_reason like Concat ('%',#{unrectificationt_reason},'%')
+        </if>
+        <if test="null!=inspectionker  and ''!= inspectionker">
+            and b.username like Concat ('%',#{inspectionker},'%')
+        </if>
+        <if test="null!=inspectionk_time  and ''!= inspectionk_time">
+            and a.inspectionk_time like Concat ('%',#{inspectionk_time},'%')
+        </if>
+        <if test="null!=is_adjustment  and ''!= is_adjustment">
+            and a.is_adjustment = #{is_adjustment}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, b.username AS check_name,c.client_name as customername
+        FROM
+        w_productin_spection a
+        LEFT JOIN sys_user b ON a.inspectionker = b.id
+        LEFT JOIN w_customer c on a.client_name =c.id
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        select
+        count(1) as total
+        FROM
+        w_productin_spection a
+        LEFT JOIN sys_user b ON a.inspectionker = b.id
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_productin_spection a
+        LEFT JOIN sys_user b ON a.inspectionker = b.id
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into w_productin_spection
+        (
+        product_name,
+        product_specifications,
+        production_time,
+        expiration_time,
+        distance_day,
+        type_name,
+        storage_location,
+        num,
+        order_num,
+        document_license,
+        client_name,
+        situation_description,
+        situation_suggest,
+        is_rectificationt,
+        unrectificationt_reason,
+        inspectionker,
+        inspectionk_time,
+        status,
+        create_time,
+        creator,
+        is_delete,
+        in_batch_number
+        )
+        values (
+        #{product_name},
+        #{product_specifications},
+        #{production_time},
+        #{expiration_time},
+        #{distance_day},
+        #{type_name},
+        #{storage_location},
+        #{num},
+        #{order_num},
+        #{document_license},
+        #{client_name},
+        #{situation_description},
+        #{situation_suggest},
+        #{is_rectificationt},
+        #{unrectificationt_reason},
+        #{creator},
+        #{inspectionk_time},
+        #{status},
+        now(),
+        #{creator},
+        'N',
+        #{in_batch_number}
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_productin_spection
+        set
+        <if test="null!=product_name  and ''!= product_name">
+            product_name = #{product_name},
+        </if>
+        <if test="null!=product_specifications  and ''!= product_specifications">
+            product_specifications = #{product_specifications},
+        </if>
+        <if test="null!=production_time  and ''!= production_time">
+            production_time = #{production_time},
+        </if>
+        <if test="null!=expiration_time  and ''!= expiration_time">
+            expiration_time = #{expiration_time},
+        </if>
+        <if test="null!=distance_day  and ''!= distance_day">
+            distance_day = #{distance_day},
+        </if>
+        <if test="null!=type_name  and ''!= type_name">
+            type_name = #{type_name},
+        </if>
+        <if test="null!=storage_location  and ''!= storage_location">
+            storage_location = #{storage_location},
+        </if>
+        <if test="null!=num  and ''!= num">
+            num = #{num},
+        </if>
+        <if test="null!=order_num  and ''!= order_num">
+            order_num = #{order_num},
+        </if>
+        <if test="null!=document_license  and ''!= document_license">
+            document_license = #{document_license},
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            client_name = #{client_name},
+        </if>
+        <if test="null!=situation_description  and ''!= situation_description">
+            situation_description = #{situation_description},
+        </if>
+        <if test="null!=situation_suggest  and ''!= situation_suggest">
+            situation_suggest = #{situation_suggest},
+        </if>
+        <if test="null!=is_rectificationt  and ''!= is_rectificationt">
+            is_rectificationt = #{is_rectificationt},
+        </if>
+        <if test="null!=unrectificationt_reason  and ''!= unrectificationt_reason">
+            unrectificationt_reason = #{unrectificationt_reason},
+        </if>
+        <if test="null!=inspectionker  and ''!= inspectionker">
+            inspectionker = #{inspectionker},
+        </if>
+        <if test="null!=inspectionk_time  and ''!= inspectionk_time">
+            inspectionk_time = #{inspectionk_time},
+        </if>
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            in_batch_number = #{in_batch_number},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_productin_spection set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+</mapper>

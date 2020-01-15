@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysDept">
+
+
+    <sql id="sql_where">
+        <if test="null!=dept_name  and ''!= dept_name">
+            and a.dept_name like concat('%',#{dept_name},'%')
+        </if>
+        <if test="null!=pid  and ''!= pid">
+            and a.pid = #{pid}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=type">
+            and a.type = #{type}
+        </if>
+        <if test="null!=check_previlege  and ''!= check_previlege">
+            and a.check_previlege = #{check_previlege}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,s.username as createname,
+        (SELECT dept_name FROM sys_dept WHERE id = a.pid) as parent_name,
+        (SELECT count(id) FROM sys_dept) as  total
+        FROM
+        sys_dept a
+        LEFT JOIN sys_user s ON a.creator=s.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryPage" parameterType="map" resultType="dto">
+        SELECT a.id,a.dept_name as text,a.pid
+        FROM sys_dept a
+        WHERE 1=1 and a.is_delete = 'N'
+        and pid = 0
+        <if test="null!=dept_name  and ''!= dept_name">
+            and a.dept_name = #{dept_name}
+        </if>
+        ORDER BY id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryPageCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM sys_dept a
+        WHERE 1=1 and a.is_delete = 'N'
+        and pid = 0
+        <if test="null!=dept_name  and ''!= dept_name">
+            and a.dept_name = #{dept_name}
+        </if>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_dept (dept_name, pid, sort, remark,type,
+        status,create_time,creator,is_delete)
+        values (#{dept_name}, #{pid},
+        #{sort}, #{remark}, #{type},
+        #{status},now(),#{creator},'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE sys_dept set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_dept
+        set
+        <if test="null!=dept_name  and ''!= dept_name">
+            dept_name = #{dept_name},
+        </if>
+        <if test="null!=pid  and ''!= pid">
+            pid = #{pid},
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            sort = #{sort},
+        </if>
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_dept a
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+    <!-- 查询 -->
+    <select id="judgeDept" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_dept a
+        WHERE a.pid = #{id} and a.is_delete = 'N' or a.id in (select deptid from sys_user where `status`='1' and deptid
+        =
+        #{id})
+        limit 1
+    </select>
+
+    <!-- 查询 -->
+    <select id="sortCount" parameterType="map" resultType="dto">
+        SELECT COUNT(1) AS sortnumber
+        FROM `sys_dept` a
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryDeptList" parameterType="map" resultType="dto">
+        SELECT
+        getParentList(id) as parentList
+        FROM
+        sys_dept
+        WHERE dept_name like concat('%',#{dept_name},'%') AND is_delete = "N"
+
+    </select>
+
+
+
+
+</mapper>

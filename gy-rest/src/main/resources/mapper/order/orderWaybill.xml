@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<!-- ASN表商品关联表 -->
+<mapper namespace="orderWaybill">
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_order_waybill a
+        <include refid="sql_where"/>
+        ORDER by a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_waybill a
+        <include refid="sql_where"/>
+        ORDER by a.id
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_order_waybill a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        insert into w_order_waybill
+        (
+        waybill,
+        provider_carrier_id,
+        carrier,
+        driver,
+        driver_mobile,
+        license,
+        type,
+        remark,
+        create_time,
+        creator,
+        is_delete
+        )
+        values (#{waybill}, #{provider_carrier_id}, #{carrier},
+        #{driver},#{driver_mobile},#{license},#{type},#{remark}, now(),
+        #{creator}, 'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_order_waybill set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE w_order_waybill
+        set
+        <if test="null!=waybill  and ''!= waybill">
+            waybill = #{waybill},
+        </if>
+        <if test="null!=provider_carrier_id  and ''!= provider_carrier_id">
+            provider_carrier_id = #{provider_carrier_id},
+        </if>
+        <if test="null!=carrier  and ''!= carrier">
+            carrier = #{carrier},
+        </if>
+        <if test="null!=driver  and ''!= driver">
+            driver = #{driver},
+        </if>
+        <if test="null!=driver_mobile  and ''!= driver_mobile">
+            driver_mobile = #{driver_mobile},
+        </if>
+        <if test="null!=license  and ''!= license">
+            license = #{license},
+        </if>
+        <if test="null!=type">
+            type = #{type},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+</mapper>

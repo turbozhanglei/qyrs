@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="saleList">
+
+
+    <!-- 商品销售查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        e.text,
+        d.`name`,
+        d.`level`,
+        d.stock,
+        d.price
+        FROM
+        wms_order_outstore a
+        LEFT JOIN oms_order_sale b ON b.id = a.buy_sale_order_id
+        LEFT JOIN oms_order_sale_sku c ON c.order_id = b.id
+        LEFT JOIN oms_sku d ON d.id = c.sku_id
+        LEFT JOIN oms_sku_type e ON e.id = d.type_id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <if test="null!=name  and ''!= name">
+            and d.`name` LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            and d.stock = #{stock}
+        </if>
+        <if test="null!=amount  and ''!= amount">
+            and a.amount = #{amount}
+        </if>
+        ORDER BY a.id
+    </select>
+
+</mapper>

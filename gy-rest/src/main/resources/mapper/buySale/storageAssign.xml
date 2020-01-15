@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="storageAssign">
+
+
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*,s.val as ordertype,c.`name` as ownername,c1.`name` as providername,s1.val as priorityval
+        FROM w_order_asn a
+        LEFT JOIN w_cmn_provider c on a.provider_owner_id = c.id
+        LEFT JOIN w_cmn_provider c1 on a.provider_id = c1.id
+        LEFT JOIN sys_config s on a.order_type = s.id
+        LEFT JOIN sys_config s1 on a.priority = s1.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        and a. status=716
+        ORDER BY id
+    </select>
+
+
+    <!-- 对象查询 -->
+    <select id="queryUserList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_user a
+        WHERE a.is_delete='N'
+        order by a.create_time
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveStorageAssign" parameterType="map">
+        insert into order_buy_user
+        (
+        user_id,
+        order_id,
+        create_time,
+        creator,
+        is_delete
+        )
+        values (#{user_id}, #{order_id},
+        now(),
+        #{creator}, 'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+
+    <!-- 修改 -->
+    <update id="updateStatusInfo" parameterType="map">
+        UPDATE w_order_asn
+        set
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+</mapper>

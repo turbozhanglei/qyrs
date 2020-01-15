@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 发货商品关联表 -->
+<mapper namespace="nwOrderSaleSku">
+
+    <sql id="sql_where">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO
+        w_order_sale_sku (
+
+        <if test="null!=sale_id  and ''!= sale_id">
+            sale_id ,
+        </if>
+        <if test="null!=sku_id  and ''!= sku_id">
+            sku_id ,
+        </if>
+        <if test="null!=batch_num  and ''!= batch_num">
+            batch_num ,
+        </if>
+        <if test="null!=store_id  and ''!= store_id">
+            store_id ,
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            buy_sku_id ,
+        </if>
+        <if test="null!=out_stock_num  and ''!= out_stock_num">
+            out_stock_num ,
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            in_batch_number ,
+        </if>
+        create_time,
+        creator
+        ) VALUES(
+
+        <if test="null!=sale_id  and ''!= sale_id">
+            #{sale_id} ,
+        </if>
+        <if test="null!=sku_id  and ''!= sku_id">
+            #{sku_id} ,
+        </if>
+        <if test="null!=batch_num  and ''!= batch_num">
+            #{batch_num} ,
+        </if>
+        <if test="null!=store_id  and ''!= store_id">
+            #{store_id} ,
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            #{buy_sku_id} ,
+        </if>
+        <if test="null!=out_stock_num  and ''!= out_stock_num">
+            #{out_stock_num} ,
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            #{in_batch_number} ,
+        </if>
+        now(),
+        #{creator}
+        )
+
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_order_sale_sku set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.sku_id,
+        a.order_id,
+        a.batch_number,
+        a.measure_unit,
+        a.price,
+        a.amount,
+        a.status,
+        a.remark,
+        a.create_time
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveDriverInfo" parameterType="map">
+        INSERT INTO
+        w_order_sale_sku_driver (
+
+        is_delete,
+        creator,
+        <if test="null!=sale_sku_id  and ''!= sale_sku_id">
+            sale_sku_id ,
+        </if>
+        <if test="null!=driver_id  and ''!= driver_id">
+            driver_id ,
+        </if>
+        create_time
+        ) VALUES(
+
+        'N',
+        #{creator},
+        <if test="null!=sale_sku_id  and ''!= sale_sku_id">
+            #{sale_sku_id} ,
+        </if>
+        <if test="null!=driver_id  and ''!= driver_id">
+            #{driver_id} ,
+        </if>
+        now()
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 插入 -->
+    <insert id="saveOutOrderInfo" parameterType="map">
+        INSERT INTO
+        w_order_sale_export_sku (
+
+        <if test="null!=sale_id  and ''!= sale_id">
+            sale_id ,
+        </if>
+        <if test="null!=store_id  and ''!= store_id">
+            store_id ,
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            buy_sku_id ,
+        </if>
+        <if test="null!=roduction_date  and ''!= roduction_date">
+            roduction_date ,
+        </if>
+        <if test="null!=export_stock_num  and ''!= export_stock_num">
+            export_stock_num ,
+        </if>
+        create_time,
+        creator
+        ) VALUES(
+
+        <if test="null!=sale_id  and ''!= sale_id">
+            #{sale_id} ,
+        </if>
+        <if test="null!=store_id  and ''!= store_id">
+            #{store_id} ,
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            #{buy_sku_id} ,
+        </if>
+        <if test="null!=roduction_date  and ''!= roduction_date">
+            #{roduction_date} ,
+        </if>
+        <if test="null!=export_stock_num  and ''!= export_stock_num">
+            #{export_stock_num} ,
+        </if>
+        now(),
+        #{creator}
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+    <!-- 修改 -->
+    <update id="updateOutOrderInfo" parameterType="dto">
+        update w_order_sale_export_sku
+        set
+        <if test="null!=export_stock_num  and ''!= export_stock_num">
+            export_stock_num=#{export_stock_num},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+    <!-- 删除 -->
+    <update id="deleteOutOrderInfo" parameterType="map">
+        delete from w_order_sale_export_sku where sale_id=#{sale_id}
+    </update>
+
+    <!-- 查询已分配库存 -->
+    <select id="queryOutStockNum" parameterType="map" resultType="dto">
+        SELECT
+        IFNULL(SUM(a.out_stock_num), 0) AS out_stock_num
+        FROM
+        w_order_sale_sku a
+        LEFT JOIN (
+        SELECT
+        a.in_batch_number,
+        b.roduction_date
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku b ON a.buy_sku_id = b.id
+        GROUP BY
+        a.in_batch_number
+        ) b ON a.in_batch_number = b.in_batch_number
+        WHERE
+        a.sale_id=#{sale_id}
+        and a.sku_id=#{sku_id}
+        and b.roduction_date=#{roduction_date}
+
+    </select>
+
+
+    <select id="queryInventoryallocationDetail" parameterType="map" resultType="dto">
+        SELECT
+        a.*, s.*, sku.`name`, sku.`name` as sku_name,
+        c.val AS statusval,
+        b.driver_id,
+        d.drivername,
+        d.driver_number,
+        e.*,
+        tm.expiration_date,
+        tm.roduction_date,
+        tm.total,
+        tm.tray_id,
+        IFNULL( sku.unit_volume * a.out_stock_num,0) as unit_volume,
+        IFNULL(sku.unit_weight * a.out_stock_num ,0) as unit_weight,
+        (SELECT number FROM w_tray WHERE id = tm.tray_id ) as tray_number
+        FROM
+        w_order_sale_sku AS a
+        LEFT JOIN w_order_sale s ON a.sale_id = s.id
+        LEFT JOIN w_sku sku ON a.sku_id = sku.id
+        LEFT JOIN sys_config c ON a.`status` = c.id
+        LEFT JOIN w_order_sale_sku_driver b ON a.id = b.sale_sku_id
+        LEFT JOIN w_driverinfo d ON b.driver_id = d.id
+        LEFT JOIN (
+        SELECT
+        a.in_batch_number,
+        b.roduction_date,
+        b.expiration_date,
+        a.setting_id,
+        a.tray_id,
+        sum(if(a.`status` = 0,a.stock,0)) as total
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku b ON a.buy_sku_id = b.id
+        GROUP BY
+        a.in_batch_number
+        ) tm ON tm.in_batch_number = a.in_batch_number
+        LEFT JOIN
+        (
+        SELECT
+        a.id,
+        a.`name` AS set_name,
+        a.number AS set_number,
+        a.warehouse_area_id,
+        a.warehouse_id,
+        b.`name` AS area_name,
+        b.number AS area_number,
+        c.`name` AS house_name,
+        c.number AS house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) e on e.id = tm.setting_id
+        WHERE
+        a.is_delete = 'N'
+        <if test="null!=status">
+            and a. STATUS = #{status}
+        </if>
+        <if test="null!=sale_id  and ''!= sale_id">
+            and a.sale_id = #{sale_id}
+        </if>
+        <if test="null!=sku_id  and ''!= sku_id">
+            and a.sku_id = #{sku_id}
+        </if>
+        <if test="null!=roduction_date  and ''!= roduction_date">
+            and tm.roduction_date = #{roduction_date}
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number = #{in_batch_number}
+        </if>
+        HAVING 1 =1
+        <if test="null!=tray_number  and ''!= tray_number">
+            and tray_number = #{tray_number}
+        </if>
+
+
+    </select>
+
+
+</mapper>

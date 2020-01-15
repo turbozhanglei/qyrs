@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysRole">
+
+
+    <sql id="sql_where">
+        <if test="null!=name  and ''!= name">
+            and a.role_name like Concat ('%',#{name},'%')
+        </if>
+        <if test="null!=type">
+            and a.type = #{type}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, b.lname AS creater_name
+        FROM
+        sys_role a
+        LEFT JOIN sys_user b ON a.creator = b.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM sys_role a
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_role (role_name, type,
+        remark, status,create_time,creator,update_time,updator,is_delete)
+        values (#{role_name}, 1,#{remark}, 0,now(),#{creator},now(),#{updator},'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+    <!-- 插入 -->
+    <insert id="saveRoleMenu" parameterType="dto">
+        insert into sys_role_menu (
+        <if test="null!=roleid  and ''!= roleid">
+            roleid,
+        </if>
+        <if test="null!=menuid  and ''!= menuid">
+            menuid,
+        </if>
+        status
+        )
+        values (
+        <if test="null!=roleid  and ''!= roleid">
+            #{roleid},
+        </if>
+        <if test="null!=menuid  and ''!= menuid">
+            #{menuid},
+        </if>
+        0 )
+    </insert>
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE sys_role set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 角色菜单删除 -->
+    <delete id="deleteInfoByRoleId" parameterType="map">
+        delete from sys_role_user WHERE roleid = #{roleid}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_role
+        set role_name = #{role_name},
+        type = #{type},
+        remark = #{remark},
+        status = #{status},
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_role a
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+    <!-- 查询关联用户 -->
+    <select id="getRoleUser" parameterType="map" resultType="dto">
+        SELECT * FROM sys_user WHERE `status`='1' and roleid=#{id} limit 1
+    </select>
+    <!-- 查询关联用户 -->
+    <delete id="deleteByRoleId" parameterType="map">
+        delete from sys_role_menu where roleid=#{roleid}
+    </delete>
+
+
+    <select id="getSysRoleDept" parameterType="map" resultType="dto">
+        SELECT
+        b.*,
+        c.role_name
+        FROM
+        sys_role_dept a
+        LEFT JOIN
+        sys_dept b on a.dept_id = b.id and b.is_delete = 'N'
+        LEFT JOIN
+        sys_role c on a.role_id = c.id and c.is_delete = 'N'
+        where 1 = 1
+        <if test="null!=role_id  and ''!= role_id">
+            and a.role_id = #{role_id}
+        </if>
+        <if test="null!=dept_id  and ''!= dept_id">
+            and a.dept_id = #{dept_id}
+        </if>
+
+    </select>
+
+
+    <select id="getFirstParent" parameterType="map" resultType="dto">
+        SELECT getFirstParent(#{dept_id}) as deptid
+    </select>
+
+
+    <!-- 角色菜单删除 -->
+    <delete id="deleteSysRoleDept" parameterType="map">
+        delete from sys_role_dept WHERE role_id = #{role_id}
+    </delete>
+
+
+    <!-- 插入 -->
+    <insert id="saveSysRoleDept" parameterType="dto">
+        INSERT INTO `sys_role_dept` (
+        `role_id`,
+        `dept_id`,
+        `create_by`,
+        `create_time`,
+        `last_update_by`,
+        `last_update_time`
+        )
+        VALUES
+        (
+        #{role_id},
+        #{dept_id},
+        #{creator},
+        now(),
+        #{updator},
+        now()
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="cmnProvider">
+
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=name  and ''!= name">
+            and a.name = #{name}
+        </if>
+        <if test="null!=mobile  and ''!= mobile">
+            and a.mobile = #{mobile}
+        </if>
+        <if test="null!=userName  and ''!= userName">
+            and a.userName = #{userName}
+        </if>
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(a.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(a.create_time) &lt;= #{endTime}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,c.val
+        FROM
+        oms_cmn_provider a
+        LEFT JOIN sys_config c ON a.type = c.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=depositSort">
+            ORDER BY id
+        </if>
+        <if test="null!=depositSort  and ''!= depositSort">
+
+        </if>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into oms_cmn_provider
+        (name,number,user_name,mobile,tel,address,type,remains,login_account,login_password,funds_account,remark,create_time,creator,update_time,updator,is_delete)
+        values
+        (name,number,user_name,mobile,tel,address,type,remains,login_account,login_password,funds_account,remark,now(),#{creator},now(),#{updator},'N')
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE oms_cmn_provider set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update oms_cmn_provider
+        set
+        <if test="null!=name  and ''!= name">
+            name = #{name},
+        </if>
+        <if test="null!=number  and ''!= number">
+            number = #{number},
+        </if>
+        <if test="null!=user_name  and ''!= user_name">
+            user_name = #{user_name},
+        </if>
+        <if test="null!=mobile  and ''!= mobile">
+            mobile = #{mobile},
+        </if>
+        <if test="null!=tel  and ''!= tel">
+            tel = #{tel},
+        </if>
+        <if test="null!=address  and ''!= address">
+            address = #{address},
+        </if>
+        <if test="null!=type">
+            type = #{type},
+        </if>
+        <if test="null!=remains  and ''!= remains">
+            remains = #{remains},
+        </if>
+        <if test="null!=login_account  and ''!= login_account">
+            login_account = #{login_account},
+        </if>
+        <if test="null!=login_password  and ''!= login_password">
+            login_password = #{login_password},
+        </if>
+        <if test="null!=funds_account  and ''!= funds_account">
+            funds_account = #{funds_account},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,c.val
+        FROM
+        oms_cmn_provider a
+        LEFT JOIN sys_config c ON a.type = c.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<!-- ASN表商品关联表 -->
+<mapper namespace="orderWaybillSku">
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_order_waybill_sku a
+        <include refid="sql_where"/>
+        ORDER by a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_waybill_sku a
+        <include refid="sql_where"/>
+        ORDER by a.id
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_order_waybill_sku a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        insert into w_order_waybill_sku
+        (
+        waybill_id,
+        business_id,
+        create_time,
+        creator,
+        is_delete
+        )
+        values (#{waybill_id}, #{business_id},now(),#{creator}, 'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_order_waybill_sku set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!--查询已发运打包信息-->
+    <select id="queryWaybillSkuInfos" parameterType="map" resultType="dto">
+        SELECT
+        a.*, b.val AS package_type_name
+        FROM
+        w_order_waybill_sku as c
+        LEFT JOIN w_package AS a on(c.business_id=a.id)
+        LEFT JOIN sys_config AS b ON (a.package_type = b.id)
+        WHERE
+        a.is_delete = 'N' and c.waybill_id=#{waybill_id}
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <select id="queryWaybillSkuInfosCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        w_order_waybill_sku as c
+        LEFT JOIN w_package AS a on(c.business_id=a.id)
+        LEFT JOIN sys_config AS b ON (a.package_type = b.id)
+        WHERE
+        a.is_delete = 'N' and c.waybill_id=#{waybill_id}
+    </select>
+
+    <!-- 发运报表查询 -->
+    <select id="waybillSkuReport" parameterType="map" resultType="dto">
+        SELECT w.*,a.package_no,a.package_name,b.val as package_type_name,
+        s.val as carrierval,p.`name` as carriername
+        FROM w_order_waybill_sku as c
+        LEFT JOIN w_order_waybill w ON c.waybill_id = w.id
+        LEFT JOIN w_package as a ON c.business_id=a.id
+        LEFT JOIN sys_config as b ON a.package_type = b.id
+        LEFT JOIN sys_config as s ON w.carrier = s.id
+        LEFT JOIN w_cmn_provider as p ON w.provider_carrier_id = p.id
+        WHERE a.is_delete = 'N'
+        <if test="null!=startDate  and ''!= startDate">
+            and DATE(c.create_time) &gt;= #{startDate}
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and DATE(c.create_time) &lt;= #{endDate}
+        </if>
+        <if test="null!=waybill  and ''!= waybill">
+            and w.waybill LIKE concat('%',#{waybill},'%')
+        </if>
+        <if test="null!=carriername  and ''!= carriername">
+            and p.name LIKE concat('%',#{carriername},'%')
+        </if>
+        <if test="null!=carrier  and ''!= carrier">
+            and w.carrier = #{carrier}
+        </if>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <select id="waybillSkuReportCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_waybill_sku as c
+        LEFT JOIN w_order_waybill w ON c.waybill_id = w.id
+        LEFT JOIN w_package as a ON c.business_id=a.id
+        LEFT JOIN sys_config as b ON a.package_type = b.id
+        LEFT JOIN sys_config as s ON w.carrier = s.id
+        LEFT JOIN w_cmn_provider as p ON w.provider_carrier_id = p.id
+        WHERE a.is_delete = 'N'
+        <if test="null!=startDate  and ''!= startDate">
+            and DATE(c.create_time) &gt;= #{startDate}
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and DATE(c.create_time) &lt;= #{endDate}
+        </if>
+        <if test="null!=waybill  and ''!= waybill">
+            and w.waybill LIKE concat('%',#{waybill},'%')
+        </if>
+        <if test="null!=carriername  and ''!= carriername">
+            and p.name LIKE concat('%',#{carriername},'%')
+        </if>
+        <if test="null!=carrier  and ''!= carrier">
+            and w.carrier = #{carrier}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="customerRelation">
+
+
+    <sql id="sql_where">
+        <if test="null!=customer_id  and ''!= customer_id">
+            and a.customer_id = #{customer_id}
+        </if>
+        <if test="null!=deptid  and ''!= deptid">
+            and a.deptid = #{deptid}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_customer_relation a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        ORDER BY id
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        INSERT INTO
+        `w_customer_relation` (`customer_id`, `deptid`)
+        VALUES (#{customer_id}, #{deptid})
+
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="dto">
+        DELETE FROM w_customer_relation WHERE 1= 1
+        <if test="null!=id  and ''!= id">
+            and id = #{id}
+        </if>
+        <if test="null!=customer_id  and ''!= customer_id">
+            and customer_id = #{customer_id}
+        </if>
+    </delete>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_customer_relation a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_customer_relation
+        set customer_id = #{customer_id},
+        deptid = #{deptid},
+        where id = #{id}
+    </update>
+
+
+    <!-- 查询 -->
+    <select id="getCustomerByDeptId" parameterType="map" resultType="dto">
+        SELECT
+             b.*
+        FROM
+            w_customer_relation a
+        LEFT JOIN w_customer b ON a.customer_id = b.id
+        WHERE a.deptid = #{deptid} AND  b.is_delete = 'N'
+        limit 0,1
+    </select>
+
+</mapper>

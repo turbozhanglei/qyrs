@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysRoleMenuLog">
+
+
+    <sql id="sql_where">
+        <if test="null!=roleid  and ''!= roleid">
+            and a.roleid = #{roleid}
+        </if>
+        <if test="null!=menuid  and ''!= menuid">
+            and a.menuid = #{menuid}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=queryname  and ''!= queryname">
+            and b.role_name LIKE CONCAT('%', #{queryname}, '%')
+        </if>
+
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*,b.role_name as rolename,c.name as menuname,d.username as username
+        FROM sys_role_menu_log a
+        LEFT JOIN sys_role b on a.roleid = b.id
+        LEFT JOIN sys_menu c on a.menuid = c.id
+        LEFT JOIN sys_user d on a.userid = d.id
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id desc
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_role_menu_log
+        (roleid, menuid, userid, types,branchname,subcode, create_time,creator,update_time,updator,is_delete)
+        values (#{roleid}, #{menuid},
+        #{userid}, #{types}, #{branchname},#{subcode},now(),#{creator},now(),#{updator},'N')
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE sys_role_menu_log set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_role_menu_log
+        set roleid = #{roleid},
+        menuid = #{menuid},
+        userid = #{userid},
+        types = #{types},
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*,c.name as menuname,
+        IFNULL((SELECT name FROM sys_menu s WHERE s.id=c.pid),
+        (SELECT name FROM sys_menu s WHERE s.id=a.menuid)) as modulename
+        FROM sys_role_menu_log a
+        LEFT JOIN sys_menu c on a.menuid = c.id
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="orderSaleExcel">
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        IFNULL(sum(oss.out_stock_num),0) as out_stock_num,
+        GROUP_CONCAT(s.name) as product_name,
+        c.client_name
+        FROM
+        w_order_sale a
+        LEFT JOIN w_order_sale_sku oss on oss.sale_id=a.id
+        LEFT JOIN w_sku s on s.id=oss.sku_id
+        LEFT JOIN w_customer c on c.id=a.customer_id
+        WHERE a.status=50
+        <if test="null!=order_no  and ''!= order_no">
+            and a.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=customer_no  and ''!= customer_no">
+            and a.customer_no like Concat ('%',#{customer_no},'%')
+        </if>
+        GROUP BY a.id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        a.*
+        FROM
+        w_order_sale a
+        LEFT JOIN w_order_sale_sku oss ON oss.sale_id = a.id
+        LEFT JOIN w_sku s ON s.id = oss.sku_id
+        LEFT JOIN w_customer c ON c.id = a.customer_id
+        WHERE
+        a. STATUS = 50
+        <if test="null!=order_no  and ''!= order_no">
+            and a.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=customer_no  and ''!= customer_no">
+            and a.customer_no like Concat ('%',#{customer_no},'%')
+        </if>
+        GROUP BY
+        a.id
+        ) AS a
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        s.name as product_name
+        FROM
+        w_order_sale_sku a
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        WHERE a.sale_id=#{sale_id}
+    </select>
+
+</mapper>

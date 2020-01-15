@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 公司账户 -->
+<mapper namespace="companyAccount">
+
+    <sql id="sql_where">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_account  and ''!= _account">
+            and a.account = #{_account}
+        </if>
+        <if test="null!=_company_name  and ''!= _company_name">
+            and a.company_name = #{_company_name}
+        </if>
+        <if test="null!=_remains  and ''!= _remains">
+            and a.remains = #{_remains}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO
+        company_account (
+
+        <if test="null!=account  and ''!= account">
+            account ,
+        </if>
+        <if test="null!=company_name  and ''!= company_name">
+            company_name ,
+        </if>
+        <if test="null!=remains  and ''!= remains">
+            remains ,
+        </if>
+        create_time,
+        creator,
+        update_time,
+        updator
+        ) VALUES(
+
+        <if test="null!=account  and ''!= account">
+            #{account} ,
+        </if>
+        <if test="null!=company_name  and ''!= company_name">
+            #{company_name} ,
+        </if>
+        <if test="null!=remains  and ''!= remains">
+            #{remains} ,
+        </if>
+        now(),
+        creator,
+        now(),
+        updator
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE company_account set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE company_account a
+        set
+
+        <if test="null!=account  and ''!= account">
+            a.account = #{account} ,
+        </if>
+        <if test="null!=company_name  and ''!= company_name">
+            a.company_name = #{company_name} ,
+        </if>
+        <if test="null!=remains  and ''!= remains">
+            a.remains = #{remains} ,
+        </if>
+        <if test="null!=create_time  and ''!= create_time">
+            a.create_time = #{create_time} ,
+        </if>
+        <if test="null!=creator  and ''!= creator">
+            a.creator = #{creator} ,
+        </if>
+        <if test="null!=is_delete  and ''!= is_delete">
+            a.is_delete = #{is_delete} ,
+        </if>
+        update_time = now(),
+        a.updator = #{updator}
+        where
+        a.id = #{id}
+    </update>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.account,
+        a.company_name,
+        a.remains,
+        a.create_time
+        FROM
+        company_account a
+        <include refid="sql_where"/>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表查询 -->
+    <select id="queryBoxList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.company_name as name
+        FROM
+        company_account a
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        company_account a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        company_account a
+        <include refid="sql_where"/>
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active:
+    - dev
+---
+spring:
+  application:
+    name: wms-service
+
+---
+
+spring: 
+  datasource: 
+    initialize: false

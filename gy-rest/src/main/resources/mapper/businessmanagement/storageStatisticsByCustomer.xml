@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="storageStatisticsByCustomer">
+
+
+    <sql id="sql_where">
+
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=food_add_type  and ''!= food_add_type">
+            and b.food_add_type =#{food_add_type}
+        </if>
+        <if test="null!=sku_type_text  and ''!= sku_type_text">
+            and b.sku_type_text=#{sku_type_text}
+        </if>
+        <if test="null!=sku_name  and ''!= sku_name">
+            and b.sku_name LIKE concat('%',#{sku_name},'%')
+        </if>
+        <if test="null!=sku_number  and ''!= sku_number">
+            and b.sku_number LIKE concat('%',#{sku_number},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name LIKE concat('%',#{client_name},'%')
+        </if>
+
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        b.*, c.client_name,
+        SUM(b.arrival_num) AS arrival_nums,
+        SUM(b.qualified_num) AS qualified_nums,
+        SUM(b.unqualified_num) AS unqualified_nums,
+        SUM(a.stock) as stock
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_checked b ON a.buy_checked_id = b.id
+        LEFT JOIN w_customer c ON b.customer_id = c.id
+        WHERE
+        a.is_delete = 'N'
+        AND a.`status` = 2
+        <include refid="sql_where"/>
+        GROUP BY b.customer_id,b.sku_id
+        ORDER BY a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryDetail" parameterType="map" resultType="dto">
+        SELECT
+        b.*, c.client_name,
+        o.order_no,
+        w.number as tray_number,
+        to_days(
+        ADDDATE(
+        b.roduction_date,
+        INTERVAL CEILING(
+        obk.shelflife * c.warningday_num
+        ) DAY
+        )
+        ) - to_days(now()) AS warning_days,
+       su.username as updator_name
+
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_checked b ON a.buy_checked_id = b.id
+        LEFT JOIN w_customer c ON b.customer_id = c.id
+        LEFT JOIN w_order_buy o ON b.order_id = o.id
+        LEFT JOIN w_warehouse_site_setting w ON a.setting_id = w.id
+        LEFT JOIN w_order_buy_sku obk ON b.buy_sku_id = obk.id
+        LEFT JOIN  sys_user su on su.id = a.creator
+        WHERE
+        a.is_delete = 'N'
+        AND a.`status` = 2
+        AND b.sku_id = #{sku_id}
+        AND b.customer_id = #{customer_id}
+        <include refid="sql_where"/>
+        ORDER BY a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryDetailCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_checked b ON a.buy_checked_id = b.id
+        LEFT JOIN w_customer c ON b.customer_id = c.id
+        LEFT JOIN w_order_buy o ON b.order_id = o.id
+        LEFT JOIN w_order_buy_sku obk ON b.buy_sku_id = obk.id
+        WHERE
+        a.is_delete = 'N'
+        AND a.`status` = 2
+        AND b.sku_id = #{sku_id}
+        AND b.customer_id = #{customer_id}
+        <include refid="sql_where"/>
+        ORDER BY a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        a.*
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_checked b ON a.buy_checked_id = b.id
+        LEFT JOIN w_customer c ON b.customer_id = c.id
+        WHERE
+        a.is_delete = 'N'
+        AND a.`status` = 2
+        GROUP BY b.customer_id,b.sku_id
+        ) AS a
+        <include refid="sql_where"/>
+    </select>
+
+
+</mapper>

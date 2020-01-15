@@ -1,0 +1,43 @@
+server:
+  port: 8085
+
+logging:
+  level:
+    root: INFO
+
+white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,/wms-rest/suser/login,/wms-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess,
+
+spring:
+  application:
+    name: wms-gateway #服务名称--调用的时候根据名称来调用该服务的方法
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: 47.111.101.112:${server.port}
+  client:
+    service-url:
+      defaultZone: http://47.111.101.112:8081/eureka,http://114.55.210.4:8081/eureka
+zuul:
+  retryable: true #是否开启重试功能
+  host:
+    socket-timeout-millis: 30000
+    connect-timeout-millis: 60000
+  routes:
+    wms-rest:
+      path: /**
+      serviceId: wms-rest
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 70000
+
+ribbon:
+  MaxAutoRetries: 1 #对当前服务的重试次数
+  MaxAutoRetriesNextServer: 1
+  ReadTimeout: 8000
+  ConnectTimeout: 8000

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="warehouseFacilitySetting">
+
+
+    <sql id="sql_where">
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=warehousename  and ''!= warehousename">
+            and b.name LIKE concat('%',#{warehousename},'%')
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*,b.`name` as warehousename,s.val as facilitytype,s1.val as materialval
+        FROM w_warehouse_facility_setting a
+        LEFT JOIN w_warehouse b on a.warehouse_id = b.id
+        LEFT JOIN sys_config s on a.facility_type = s.id
+        LEFT JOIN sys_config s1 on a.material = s1.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        select
+        count(1) as total
+        FROM w_warehouse_facility_setting a
+        LEFT JOIN w_warehouse b on a.warehouse_id = b.id
+        LEFT JOIN sys_config s on a.facility_type = s.id
+        LEFT JOIN sys_config s1 on a.material = s1.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*,b.`name` as warehousename,s.val as facilitytype,s1.val as materialval
+        FROM w_warehouse_facility_setting a
+        LEFT JOIN w_warehouse b on a.warehouse_id = b.id
+        LEFT JOIN sys_config s on a.facility_type = s.id
+        LEFT JOIN sys_config s1 on a.material = s1.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into w_warehouse_facility_setting (warehouse_id, facility_type,
+        number, name, material,
+        lpn, specification, longs,
+        width, high, weight_stint,
+        volume_stint, status, remark,
+        create_time, creator, is_delete)
+        values (#{warehouse_id}, #{facility_type},
+        #{number}, #{name}, #{material},
+        #{lpn}, #{specification}, #{longs},
+        #{width}, #{high}, #{weight_stint},
+        #{volume_stint}, #{status}, #{remark},
+        now(), #{creator}, 'N')
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_warehouse_facility_setting
+        set
+        <if test="null!=warehouse_id  and ''!= warehouse_id">
+            warehouse_id = #{warehouse_id},
+        </if>
+        <if test="null!=facility_type  and ''!= facility_type">
+            facility_type = #{facility_type},
+        </if>
+        <if test="null!=number  and ''!= number">
+            number = #{number},
+        </if>
+        <if test="null!=name  and ''!= name">
+            name = #{name},
+        </if>
+        <if test="null!=material  and ''!= material">
+            material = #{material},
+        </if>
+        <if test="null!=lpn  and ''!= lpn">
+            lpn = #{lpn},
+        </if>
+        <if test="null!=specification  and ''!= specification">
+            specification = #{specification},
+        </if>
+        <if test="null!=longs  and ''!= longs">
+            longs = #{longs},
+        </if>
+        <if test="null!=width  and ''!= width">
+            width = #{width},
+        </if>
+        <if test="null!=high  and ''!= high">
+            high = #{high},
+        </if>
+        <if test="null!=weight_stint  and ''!= weight_stint">
+            weight_stint = #{weight_stint},
+        </if>
+        <if test="null!=volume_stint  and ''!= volume_stint">
+            volume_stint = #{volume_stint},
+        </if>
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_warehouse_facility_setting set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+</mapper>

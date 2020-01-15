@@ -1,0 +1,56 @@
+server:
+  port: 8085
+
+logging:
+  level:
+    root: INFO
+
+white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,,/wms-rest/suser/login
+
+spring:
+  application:
+    name: wms-gateway #服务名称--调用的时候根据名称来调用该服务的方法
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8081/eureka
+
+zuul:
+  SendErrorFilter:
+    post:
+      disable: true
+  retryable: true #是否开启重试功能
+  max:
+    host:
+      connections: 500
+  host:
+    socket-timeout-millis: 30000
+    connect-timeout-millis: 30000
+  routes:
+    zgt-order:
+      path: /**
+      serviceId: wms-rest
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 100
+      maximumSize: 10000
+      allowMaximumSizeToDivergeFromCoreSize: true
+      maxQueueSize: -1
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+ribbon:
+  MaxAutoRetries: 2 #对当前服务的重试次数
+  ReadTimeout: 60000
+  ConnectTimeout: 60000

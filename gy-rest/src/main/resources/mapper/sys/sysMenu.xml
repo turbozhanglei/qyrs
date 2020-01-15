@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysMenu">
+
+
+    <sql id="sql_where">
+        <if test="null!=name  and ''!= name">
+            and a.name = #{name}
+        </if>
+        <if test="null!=pid  and ''!= pid">
+            and a.pid = #{pid}
+        </if>
+        <if test="null!=types  and ''!= types">
+            and a.types = #{types}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*,m.status as checked
+        FROM sys_menu a
+        left join sys_role_menu m on m.menuid = a.id
+        <if test="null!=roleid  and ''!= roleid">
+            and m.roleid= #{roleid}
+        </if>
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.order_num
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryRoleMenuList" parameterType="map" resultType="dto">
+        SELECT a.*,m.status as checked
+        FROM sys_menu a
+        inner join sys_role_menu m on m.menuid = a.id
+        <if test="null!=roleid  and ''!= roleid">
+            and m.roleid= #{roleid}
+        </if>
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.order_num
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryMenuList" parameterType="map" resultType="dto">
+        SELECT a.*,m.status as checked
+        FROM sys_menu a
+        left join sys_role_menu m on m.menuid = a.id
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=roleid  and ''!= roleid">
+            and m.roleid= #{roleid}
+        </if>
+        ORDER BY a.order_num
+    </select>
+    <!-- 查询 -->
+    <select id="queryBranchList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_role_branch a
+        WHERE menuid = #{menuid} and a.is_delete = 'N'
+        ORDER BY id desc
+    </select>
+    <select id="queryBranchCodeList" parameterType="map" resultType="dto">
+        SELECT distinct(subcode),subname
+        FROM sys_role_branch_config a
+        WHERE menuid = #{menuid}
+    </select>
+    <select id="queryBranchConfigList" parameterType="map" resultType="dto">
+        SELECT a.*,b.val as checked
+        FROM sys_role_branch_config a
+        left join sys_role_branch b on a.menuid = b.menuid
+        and a.subcode = b.subcode and b.roleid = #{roleid} and a.val = b.val
+        WHERE a.menuid = #{menuid} and a.subcode = #{subcode}
+        ORDER BY id
+    </select>
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_menu (id, pid, name,
+        url, perms, type, icon,
+        order_num, create_by, create_time,
+        last_update_by, last_update_time, is_delete
+        )
+        values (#{id}, #{parentId}, #{name},
+        #{url}, #{perms}, #{type}, #{icon},
+        #{order_num}, #{creator}, NOW(),
+        #{updator}, #{last_update_time}, 'N'
+        )
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE sys_menu set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_menu
+        set pid = #{pid},
+        name = #{name},
+        url = #{url},
+        perms = #{perms},
+        type = #{type},
+        icon = #{icon},
+        order_num = #{order_num},
+        last_update_by = #{last_update_by},
+        last_update_time = NOW(),
+        is_delete = #{is_delete}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_menu a
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="getListByRole" parameterType="map" resultType="dto">
+        SELECT
+        m.*
+        FROM
+        sys_menu m,
+        sys_user u,
+        sys_role_user ur,
+        sys_role_menu rm
+        WHERE
+        u.id = ur.userid
+        AND ur.roleid = rm.roleid
+        AND rm.menuid = m.id
+        AND m.is_delete = 'N'
+
+        <if test="null!=roleid  and ''!= roleid">
+            and ur.roleid = #{roleid}
+        </if>
+
+        <if test="null!=userid  and ''!= userid">
+            and u.id = #{userid}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryMenuListByUserid" parameterType="map" resultType="dto">
+        SELECT
+        a.*,a.order_num as orderNum
+        FROM
+        sys_menu a
+        WHERE
+        a.id IN (
+        SELECT
+        srm.menuid AS menuid
+        FROM
+        sys_user a
+        LEFT JOIN sys_role_user sru ON sru.userid = a.id
+        LEFT JOIN sys_role_menu srm ON srm.roleid = sru.roleid
+        WHERE
+        a.id = #{id}) and a.is_delete='N'
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+    </select>
+
+    <!-- 根据角色id查询菜单 -->
+    <select id="queryMenuTreeByRoleId" parameterType="map" resultType="dto">
+        SELECT
+        sm.*
+        FROM
+        sys_role_menu AS srm
+        LEFT JOIN sys_menu sm ON sm.id = srm.menuid
+        WHERE
+        srm.roleid =#{roleid}
+    </select>
+</mapper>

@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="orderInStoreExcel">
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        s.name as product_name,
+        s.`level` as product_level,
+        s.number as sku_number,
+        obs.number as order_number,
+        obs.roduction_date,
+        obs.expiration_date,
+        c.client_name,
+        wss.number as wnumber,
+        t.number as tnumber,
+        t.`name` as tname,
+        ob.order_no,
+        obc.sku_type_number,
+        obc.sku_type_text
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        LEFT JOIN w_order_buy_sku obs on obs.id=a.buy_sku_id
+        LEFT JOIN w_customer c on c.id=a.provider_id
+        LEFT JOIN w_order_buy_checked obc on obc.id=a.buy_checked_id
+        LEFT JOIN w_order_buy ob on ob.id=obc.order_id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id=a.setting_id
+        LEFT JOIN w_tray t on t.id=a.tray_id
+        WHERE a.`status`=2
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            and a.batch_number like Concat ('%',#{batch_number},'%')
+        </if>
+        GROUP BY a.batch_number
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (select
+        a.*
+        from w_order_in_store a
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        LEFT JOIN w_order_buy_sku obs on obs.id=a.buy_sku_id
+        LEFT JOIN w_customer c on c.id=a.provider_id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id=a.setting_id
+        LEFT JOIN w_tray t on t.id=a.tray_id
+        WHERE a.`status`=2
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            and a.batch_number like Concat ('%',#{batch_number},'%')
+        </if>
+        GROUP BY a.batch_number) as a
+
+    </select>
+
+
+    <!-- 列表查询 -->
+    <select id="queryCompareCenterSiterList" parameterType="map" resultType="dto">
+        SELECT
+        e.sku_name,
+        e.sku_level,
+        a.update_time,
+        a.batch_number,
+        a.setting_id,
+        a.tray_id,
+        a.provider_id,
+        c.client_name,
+        a.stock AS in_stock,
+        IFNULL(SUM(d.out_stock_num), 0) AS out_stock,
+        to_days(
+        ADDDATE(
+        b.roduction_date,
+        INTERVAL CEILING(
+        b.shelflife * c.warningday_num
+        ) DAY
+        )
+        ) - to_days(now()) AS distance_day,
+        e.sku_number,
+        e.sku_type_text,
+        IFNULL(SUM(oss.stock),0) as total,
+        onss.num as no_order_total,
+        t.number as tray_number,
+        wss.number as setting_number
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_sku b ON a.buy_sku_id = b.id
+        LEFT JOIN w_customer c ON a.provider_id = c.id
+        LEFT JOIN w_order_sale_sku d ON d.in_batch_number = a.batch_number
+        LEFT JOIN w_order_buy_checked e ON a.buy_checked_id = e.id
+        LEFT JOIN w_order_store_sku oss on oss.in_batch_number = a.batch_number and oss.`status` = 0
+        LEFT JOIN w_tray t on a.setting_id = t.id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id = a.setting_id
+        LEFT JOIN w_order_no_sale_sku onss on a.batch_number = onss.in_batch_number
+        WHERE
+        a.is_delete = 'N'
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=sku_name  and ''!= sku_name">
+            and e. `sku_name` like Concat ('%',#{sku_name},'%')
+        </if>
+        <if test="null!=sku_number  and ''!= sku_number">
+            and e.sku_number like Concat ('%',#{sku_number},'%')
+        </if>
+        <if test="null!=sku_type_id  and ''!= sku_type_id">
+            and e.sku_type_id = #{sku_type_id}
+        </if>
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(a.update_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(a.update_time) &lt;= #{endTime}
+        </if>
+
+
+        GROUP BY
+        a.id
+        ORDER BY
+        a.id DESC
+
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+
+
+    </select>
+    <!-- 查询 -->
+    <select id="countCompareCenterSiterList" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        e.sku_name,
+        e.sku_level,
+        a.update_time,
+        a.batch_number,
+        a.setting_id,
+        a.tray_id,
+        a.provider_id,
+        c.client_name,
+        a.stock AS in_stock,
+        IFNULL(SUM(d.out_stock_num), 0) AS out_stock,
+        to_days(
+        ADDDATE(
+        b.roduction_date,
+        INTERVAL CEILING(
+        b.shelflife * c.warningday_num
+        ) DAY
+        )
+        ) - to_days(now()) AS distance_day,
+        e.sku_number,
+        e.sku_type_text
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_order_buy_sku b ON a.buy_sku_id = b.id
+        LEFT JOIN w_customer c ON a.provider_id = c.id
+        LEFT JOIN w_order_sale_sku d ON d.in_batch_number = a.batch_number
+        LEFT JOIN w_order_buy_checked e ON a.buy_checked_id = e.id
+        WHERE
+        a.is_delete = 'N'
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=sku_name  and ''!= sku_name">
+            and b. `name` like Concat ('%',#{sku_name},'%')
+        </if>
+        <if test="null!=sku_number  and ''!= sku_number">
+            and e.sku_number like Concat ('%',#{sku_number},'%')
+        </if>
+        <if test="null!=sku_type_id  and ''!= sku_type_id">
+            and e.sku_type_id = #{sku_type_id}
+        </if>
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(a.update_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(a.update_time) &lt;= #{endTime}
+        </if>
+        GROUP BY
+        a.id
+        ORDER BY
+        a.id DESC
+        ) as a
+
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailList" parameterType="map" resultType="dto">
+        SELECT
+        s.`name`,
+        s.`level`,
+        s.number,
+        st.number as tnumber,
+        st.text as tname,
+        a.stock,
+        s.id,
+        obs.roduction_date,
+        a.create_time,
+        wss.number as wnumber,
+        wss.`name` AS wname
+        FROM
+        (
+        SELECT
+        IFNULL(SUM(a.stock), 0) AS stock,
+        a.sku_id,
+        a.buy_sku_id,
+        a.create_time,
+        a.setting_id
+        FROM
+        w_order_store_sku a
+        WHERE
+        a. STATUS = 0
+        GROUP BY
+        a.setting_id,
+        a.in_batch_number
+        ) a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_sku_type st ON st.id = s.type_id
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_warehouse_site_setting wss ON wss.id = a.setting_id
+        WHERE
+        1 = 1
+        AND a.sku_id =#{id}
+    </select>
+
+
+    <!-- 列表查询 -->
+    <select id="queryListByOrderNo" parameterType="map" resultType="dto">
+        SELECT
+        c.client_name,
+        GROUP_CONCAT(s. NAME) AS product_name,
+        GROUP_CONCAT(s.`level`) AS product_level,
+        c.client_name,
+        ob.order_no,
+        SUM(a.stock) AS total,
+        ob.bill
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_customer c ON c.id = a.provider_id
+        LEFT JOIN w_order_buy_checked obc ON obc.id = a.buy_checked_id
+        LEFT JOIN w_order_buy ob ON ob.id = obc.order_id
+        WHERE
+        a.`status` = 2
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            and a.batch_number like Concat ('%',#{batch_number},'%')
+        </if>
+        GROUP BY ob.order_no
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCountByOrderNo" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        ( SELECT
+        c.client_name,
+        GROUP_CONCAT(s. NAME) AS product_name,
+        GROUP_CONCAT(s.`level`) AS product_level,
+        c.client_name,
+        ob.order_no,
+        SUM(a.stock) AS total,
+        ob.bill
+        FROM
+        w_order_in_store a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_customer c ON c.id = a.provider_id
+        LEFT JOIN w_order_buy_checked obc ON obc.id = a.buy_checked_id
+        LEFT JOIN w_order_buy ob ON ob.id = obc.order_id
+        WHERE
+        a.`status` = 2
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            and a.batch_number like Concat ('%',#{batch_number},'%')
+        </if>
+        GROUP BY ob.order_no) as a
+
+    </select>
+
+
+</mapper>

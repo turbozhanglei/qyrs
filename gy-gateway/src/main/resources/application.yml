@@ -1,0 +1,20 @@
+spring:
+  profiles:
+    active:
+    - dev
+---
+spring:
+  application:
+    name: wms-gateway
+
+---
+
+spring: 
+  datasource: 
+    initialize: false 
+---
+
+feign:
+  hystrix:
+    enabled: true
+    

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="wmsStoreLog">
+
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=check_number1  and ''!= check_number1">
+            and a.check_number LIKE concat('%',#{check_number1},'%')
+        </if>
+        <if test="null!=check_status1  and ''!= check_status1">
+            and a.check_status = #{check_status1}
+        </if>
+        <if test="null!=operator1  and ''!= operator1">
+            and a.operator LIKE concat('%',#{operator1},'%')
+        </if>
+        <if test="null!=begin_time  and ''!= begin_time">
+            and a.create_time &gt;= #{begin_time}
+        </if>
+        <if test="null!=end_time  and ''!= end_time">
+            and a.create_time &lt;= #{end_time}
+        </if>
+    </sql>
+
+    <!-- 查询列表 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*,b.name as warehouse,c.val
+        from wms_store_log a
+        LEFT JOIN wms_warehouse b ON b.id=a.warehous_id
+        LEFT JOIN sys_config c ON c.id=a.check_status
+        where
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*, b. NAME AS warehouse,
+        c.val
+        FROM
+        wms_store_log a
+        LEFT JOIN wms_warehouse b ON b.id = a.warehous_id
+        LEFT JOIN sys_config c ON c.id = a.check_status
+        where 1=1
+        and a.id=#{id}
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE wms_store_log set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update wms_store_log
+        set
+        <if test="null!=check_name2  and ''!= check_name2">
+            check_name = #{check_name2},
+        </if>
+        <if test="null!=check_number2  and ''!= check_number2">
+            check_number = #{check_number2},
+        </if>
+        <if test="null!=warehouse_id2  and ''!= warehouse_id2">
+            warehous_id = #{warehouse_id2},
+        </if>
+        <if test="null!=operator2  and ''!= operator2">
+            operator = #{operator2},
+        </if>
+        <if test="null!=check_status2  and ''!= check_status2">
+            check_status = #{check_status2},
+        </if>
+        <if test="null!=remark2  and ''!= remark2">
+            remark = #{remark2},
+        </if>
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        INSERT INTO wms_store_log
+        (
+        check_name,
+        check_number,
+        warehous_id,
+        operator,
+        check_status,
+        remark,
+        create_time,
+        creator,
+        is_delete
+        )
+        VALUES
+        (#{check_name},#{check_number},#{warehouse_id},#{operator},#{check_status},#{remark},now(),#{creator},'N')
+    </insert>
+
+</mapper>

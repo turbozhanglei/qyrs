@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysConfig">
+
+
+    <sql id="sql_where">
+        <if test="null!=key  and ''!= key">
+            and a.key like '%' #{key} '%'
+        </if>
+        <if test="null!=val  and ''!= val">
+            and a.val LIKE CONCAT('%', #{val}, '%')
+        </if>
+        <if test="null!=type">
+            and a.type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test="null!=queryname  and ''!= queryname">
+            and (a.val LIKE CONCAT('%', #{queryname}, '%') or  a.remark LIKE CONCAT('%', #{queryname}, '%'))
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,u1.username AS creatorName,u2.username AS updatorName
+        FROM sys_config a
+        LEFT JOIN sys_user u1 ON a.creator = u1.id
+        LEFT JOIN sys_user u2 ON a.updator = u2.id
+        WHERE 1=1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=creatorName  and ''!= creatorName">
+            and u1.username LIKE CONCAT('%', #{creatorName}, '%')
+        </if>
+        ORDER BY id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM sys_config a
+        LEFT JOIN sys_user u1 ON a.creator = u1.id
+        LEFT JOIN sys_user u2 ON a.updator = u2.id
+        WHERE 1=1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=creatorName  and ''!= creatorName">
+            and u1.username LIKE CONCAT('%', #{creatorName}, '%')
+        </if>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_config
+        (`key`, val, type, remark,
+        create_time,creator,update_time,updator,is_delete)
+        values (#{key}, #{val},
+        #{type}, #{remark},now(),#{creator},now(),#{updator},'N')
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        DELETE FROM sys_config WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_config a
+        SET
+        <if test="null!=key   and ''!= key ">
+            a.key = #{key} ,
+        </if>
+        <if test="null!=keyNote   and ''!= keyNote ">
+            a.keyNote = #{keyNote} ,
+        </if>
+        <if test="null!=val   and ''!= val ">
+            a.val = #{val} ,
+        </if>
+        <if test="null!=type   and ''!= type ">
+            a.type = #{type} ,
+        </if>
+        <if test="null!=remark   and ''!= remark ">
+            a.remark = #{remark} ,
+        </if>
+        update_time = NOW()
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,u1.username AS creatorName,u2.username AS updatorName
+        FROM sys_config a
+        LEFT JOIN sys_user u1 ON a.creator = u1.id
+        LEFT JOIN sys_user u2 ON a.updator = u2.id
+        WHERE 1=1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=creatorName  and ''!= creatorName">
+            and u1.username LIKE CONCAT('%', #{creatorName}, '%')
+        </if>
+        limit 0,1
+    </select>
+
+
+    <select id="queryConfigList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_config a
+        WHERE a.is_delete = 'N'
+    </select>
+
+    <!--初始化类型查询 -->
+    <select id="queryInitList" parameterType="map" resultType="dto">
+        SELECT id,val
+        FROM sys_config
+        WHERE is_delete = 'N'
+        and type = #{type}
+    </select>
+    <!--供应商k>v -->
+    <select id="querySupplierType" parameterType="map" resultType="dto">
+        SELECT id,val
+        FROM sys_config
+        WHERE is_delete = 'N'
+        and key = #{key}
+    </select>
+</mapper>

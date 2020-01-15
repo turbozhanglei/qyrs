@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="orderStoreSkuForQuery">
+
+
+    <sql id="sql_where">
+
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number like Concat ('%',#{in_batch_number},'%')
+        </if>
+        <if test="null!=isreceipt  and ''!= isreceipt">
+            and a.isreceipt = #{isreceipt}
+        </if>
+        <if test="null!=operator  and ''!= operator">
+            and s.username like Concat ('%',#{operator},'%')
+        </if>
+        <if test="null!=refuse_reason  and ''!= refuse_reason">
+            and a.refuse_reason like Concat ('%',#{refuse_reason},'%')
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            and a.remark like Concat ('%',#{remark},'%')
+        </if>
+        <if test="null!=status">
+            and a.status like Concat ('%',#{status},'%')
+        </if>
+        <if test="null!=is_adjustment  and ''!= is_adjustment">
+            and a.is_adjustment = #{is_adjustment}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=return_goods_id  and ''!= return_goods_id">
+            and a.return_goods_id = #{return_goods_id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        b.name,b.level,b.roduction_date,b.expiration_date,b.sku_id,sum(IF(a. STATUS = 0, a.stock, 0)) AS num,
+        c.number as product_code,c.type_id,d.number as storage_location,e.client_name,f.number as type_num,text as
+        type_name,
+        to_days(
+        ADDDATE(
+        b.roduction_date,
+        INTERVAL CEILING(
+        b.shelflife * e.warningday_num
+        ) DAY
+        )
+        ) - to_days(now()) AS distance_day,
+        ob.bill,
+        ob.bill_photo,
+        obc.instock_time,
+        to_days(b.expiration_date) - to_days(now()) AS is_expired_days,
+        ob.order_no
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku b on a.buy_sku_id=b.id
+        LEFT JOIN w_sku c on c.id=b.sku_id
+        LEFT JOIN w_warehouse_site_setting d on d.id=a.setting_id
+        LEFT JOIN w_customer e on e.id=a.provider_id
+        LEFT JOIN w_sku_type f on f.id=c.type_id
+        LEFT JOIN w_order_buy_checked obc on obc.buy_sku_id=b.id
+        LEFT JOIN w_order_buy ob on ob.id=b.order_id
+
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        GROUP BY a.in_batch_number
+        ORDER BY
+        a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,s.username as operatorname
+        FROM
+        w_return_goods a
+        LEFT JOIN sys_user s on s.id=a.operator
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+
+</mapper>

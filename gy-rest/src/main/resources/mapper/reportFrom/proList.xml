@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="proList">
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        order_buy.id,
+        order_buy.order_no AS buy_order_no,
+        sku.name AS sku_name,
+        sku.level,
+        sku_type.text AS sku_type_1,
+        sku_type1.text AS sku_type_2,
+        order_buy_sku.measure_unit,
+        order_buy_sku.price,
+        order_buy_sku.number,
+        provider.name,
+        provider.address
+        FROM
+        oms_order_buy_sku order_buy_sku
+        LEFT JOIN oms_order_buy order_buy ON order_buy.id = order_buy_sku.order_id
+        LEFT JOIN oms_cmn_provider provider ON provider.id = order_buy.coma
+        LEFT JOIN oms_sku sku ON sku.id = order_buy_sku.sku_id
+        LEFT JOIN oms_sku_type sku_type ON sku_type.id = sku.type_id
+        LEFT JOIN oms_sku_type sku_type1 ON sku_type1.id = sku_type.parent_id
+        where order_buy_sku.is_delete = 'N'
+        <if test="null!=_order_no  and ''!= _order_no">
+            and buy_order_no = #{_order_no}
+        </if>
+        <if test="null!=_name  and ''!= _name">
+            and provider.name LIKE CONCAT('%', #{_name}, '%')
+        </if>
+        <if test="null!=_sku_name  and ''!= _sku_name">
+            and sku_name LIKE CONCAT('%', #{_sku_name}, '%')
+        </if>
+        <if test="null!=_address  and ''!= _address">
+            and provider.address LIKE CONCAT('%', #{_address}, '%')
+        </if>
+        ORDER BY
+        order_buy_sku.update_time DESC
+    </select>
+
+    <!-- 合计查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        count(sku.name) AS buy_account,
+        sum(order_buy_sku.number) AS buy_sku_account
+        FROM
+        oms_order_buy_sku order_buy_sku
+        LEFT JOIN oms_order_buy order_buy ON order_buy.id = order_buy_sku.order_id
+        LEFT JOIN oms_cmn_provider provider ON provider.id = order_buy.coma
+        LEFT JOIN oms_sku sku ON sku.id = order_buy_sku.sku_id
+        LEFT JOIN oms_sku_type sku_type ON sku_type.id = sku.type_id
+        LEFT JOIN oms_sku_type sku_type1 ON sku_type1.id = sku_type.parent_id
+        where order_buy_sku.is_delete = 'N'
+        <if test="null!=_order_no  and ''!= _order_no">
+            and buy_order_no = #{_order_no}
+        </if>
+        <if test="null!=_name  and ''!= _name">
+            and provider.name LIKE CONCAT('%', #{_name}, '%')
+        </if>
+        <if test="null!=_sku_name  and ''!= _sku_name">
+            and sku_name LIKE CONCAT('%', #{_sku_name}, '%')
+        </if>
+        <if test="null!=_address  and ''!= _address">
+            and provider.address LIKE CONCAT('%', #{_address}, '%')
+        </if>
+    </select>
+</mapper>

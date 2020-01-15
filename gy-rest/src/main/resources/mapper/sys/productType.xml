@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="productType">
+
+
+    <sql id="sql_where">
+        <if test="null!=shop_id  and ''!= shop_id">
+            and a.shop_id = #{shop_id}
+        </if>
+        <if test="null!=q_text  and ''!= q_text">
+            and a.text = #{q_text}
+        </if>
+        <if test="null!=q_status  and ''!= q_status">
+            and a.status = #{q_status}
+        </if>
+        <if test="null!=parent_id  and ''!= parent_id">
+            and a.parent_id = #{parent_id}
+        </if>
+        <if test="null!=text  and ''!= text">
+            and a.text = #{text}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=mall  and ''!= mall">
+            and a.parent_id = #{mall}
+
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        select
+        a.*,p.text as ptext
+        from
+        oms_sku_type a
+        left join oms_sku_type p on a.parent_id = p.id
+        where 1=1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+    </select>
+    <!-- 查询子菜单 -->
+    <select id="queryListMenu" parameterType="map" resultType="dto">
+        select a.*,b.text as btext, c.text AS ctext,c.parent_id as cparent_id , c.id as cid from oms_sku_type a
+        left join oms_sku_type b on b.parent_id = a.id
+        left join oms_sku_type c on c.parent_id = b.id
+        WHERE a.id!=1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+    </select>
+    <!-- 查询父级菜单 -->
+    <select id="queryListFather" parameterType="map" resultType="dto">
+        select * from oms_sku_type a where 1=1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+    </select>
+
+    <select id="queryListCount" parameterType="map" resultType="java.lang.Integer">
+        SELECT count(1) as count FROM oms_sku_type a WHERE id!=1
+        <include refid="sql_where"/>
+    </select>
+
+    <select id="getInfo" parameterType="map" resultType="dto">
+        select a.*,p.text as ptext from oms_sku_type a
+        left join oms_sku_type p on a.parent_id = p.id
+        WHERE 1=1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+    </select>
+
+    <!-- 查询 -->
+    <select id="getChildren" parameterType="map" resultType="dto">
+        select a.* from oms_sku_type a where a.parent_id = #{parent_id}
+        ORDER BY a.id
+    </select>
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into oms_sku_type (text, parent_id,shop_id, leaf,sortno,
+        describes, pic,status,create_time,
+        <if test="null!=creator  and ''!= creator">
+            creator,
+        </if>
+        update_time,
+        <if test="null!=updator  and ''!= updator">
+            updator,
+        </if>
+        is_delete)
+        values (#{text}, #{parent_id},#{shop_id}, #{leaf}, #{sortno},
+        #{describes}, #{pic},#{status},now(),
+        <if test="null!=creator  and ''!= creator">
+            #{creator},
+        </if>
+        now(),
+        <if test="null!=updator  and ''!= updator">
+            #{updator},
+        </if>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update oms_sku_type
+        set text = #{text},
+        parent_id = #{parent_id},
+        describes = #{describes},
+        pic = #{pic},
+        sortno = #{sortno}
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        DELETE FROM oms_sku_type WHERE id = #{id}
+    </delete>
+
+    <insert id="saveBatch" parameterType="java.util.List">
+        <![CDATA[
+            insert into oms_sku_type(
+              text,parent_id,shop_id,pic,leaf,sortno,describes,mallflag,indexflag,status,create_time,creator
+            ) values
+        ]]>
+        <foreach collection="list" item="list" open="(" separator="," close=")">
+            <![CDATA[
+                (#{list[].text},#{list[].parent_id},#{list[].shop_id},#{list[].pic},#{list[].leaf},#{list[].sortno},#{list[].describes},#{list[].mallflag},#{list[].indexflag},#{list[].status},now(),#{list[].creator})
+            ]]>
+        </foreach>
+    </insert>
+
+</mapper>

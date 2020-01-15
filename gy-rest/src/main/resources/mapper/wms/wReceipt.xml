@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 接单员 -->
+<mapper namespace="wReceipt">
+
+    <sql id="sql_where">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_receipt_no  and ''!= _receipt_no">
+            and a.receipt_no = #{_receipt_no}
+        </if>
+        <if test="null!=_name  and ''!= _name">
+            and a.name = #{_name}
+        </if>
+        <if test="null!=_sex  and ''!= _sex">
+            and a.sex = #{_sex}
+        </if>
+        <if test="null!=_moile  and ''!= _moile">
+            and a.moile = #{_moile}
+        </if>
+        <if test="null!=_email  and ''!= _email">
+            and a.email = #{_email}
+        </if>
+        <if test="null!=_status  and ''!= _status">
+            and a.status = #{_status}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO
+        w_receipt (
+
+        <if test="null!=receipt_no  and ''!= receipt_no">
+            receipt_no ,
+        </if>
+        <if test="null!=name  and ''!= name">
+            name ,
+        </if>
+        <if test="null!=sex  and ''!= sex">
+            sex ,
+        </if>
+        <if test="null!=moile  and ''!= moile">
+            moile ,
+        </if>
+        <if test="null!=email  and ''!= email">
+            email ,
+        </if>
+        <if test="null!=status">
+            status ,
+        </if>
+        create_time,
+        creator,
+        update_time,
+        updator
+        ) VALUES(
+
+        <if test="null!=receipt_no  and ''!= receipt_no">
+            #{receipt_no} ,
+        </if>
+        <if test="null!=name  and ''!= name">
+            #{name} ,
+        </if>
+        <if test="null!=sex  and ''!= sex">
+            #{sex} ,
+        </if>
+        <if test="null!=moile  and ''!= moile">
+            #{moile} ,
+        </if>
+        <if test="null!=email  and ''!= email">
+            #{email} ,
+        </if>
+        <if test="null!=status">
+            #{status} ,
+        </if>
+        now(),
+        #{creator},
+        now(),
+        #{updator}
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_receipt set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE w_receipt a
+        set
+
+        <if test="null!=receipt_no  and ''!= receipt_no">
+            a.receipt_no = #{receipt_no} ,
+        </if>
+        <if test="null!=name  and ''!= name">
+            a.name = #{name} ,
+        </if>
+        <if test="null!=sex  and ''!= sex">
+            a.sex = #{sex} ,
+        </if>
+        <if test="null!=moile  and ''!= moile">
+            a.moile = #{moile} ,
+        </if>
+        <if test="null!=email  and ''!= email">
+            a.email = #{email} ,
+        </if>
+        <if test="null!=status">
+            a.status = #{status} ,
+        </if>
+        <if test="null!=create_time  and ''!= create_time">
+            a.create_time = #{create_time} ,
+        </if>
+        <if test="null!=creator  and ''!= creator">
+            a.creator = #{creator} ,
+        </if>
+        <if test="null!=is_delete  and ''!= is_delete">
+            a.is_delete = #{is_delete} ,
+        </if>
+        update_time = now(),
+        a.updator = #{updator}
+        where
+        a.id = #{id}
+    </update>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.receipt_no,
+        a.name,
+        a.sex,
+        a.moile,
+        a.email,
+        a.status,
+        a.create_time
+        FROM
+        w_receipt a
+        <include refid="sql_where"/>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 下拉列表查询 -->
+    <select id="queryBoxList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.name
+        FROM
+        w_receipt a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        w_receipt a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_receipt a
+        <include refid="sql_where"/>
+    </select>
+</mapper>

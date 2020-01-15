@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="cmnProviderCharge">
+
+
+    <sql id="sql_where">
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE concat('%', #{number}, '%')
+        </if>
+        <if test="null!=type">
+            and a.type LIKE concat('%', #{type}, '%')
+        </if>
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(a.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(a.create_time) &lt;= #{endTime}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,p.name,o.order_no,s.val
+        FROM
+        oms_cmn_provider_charge a
+        LEFT JOIN oms_cmn_provider p ON a.provider_id = p.id
+        LEFT JOIN oms_order_buy o ON a.order_id = o.id
+        LEFT JOIN sys_config s ON a.config_id = s.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=orderNo  and ''!= orderNo">
+            and o.order_no LIKE concat('%', #{orderNo}, '%')
+        </if>
+        <if test="null!=name  and ''!= name">
+            and p.name LIKE concat('%', #{name}, '%')
+        </if>
+        ORDER BY id
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into oms_cmn_provider_charge
+        (provider_id,number,type,amount,direction,remains,order_id,config_id,create_time,creator,update_time,updator,is_delete)
+        values
+        (#{provider_id},#{number},#{type},#{amount},#{direction},#{remains},#{order_id},#{config_id},now(),#{creator},now(),#{updator},'N')
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE oms_cmn_provider_charge set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update oms_cmn_provider_charge
+        set
+        <if test="null!=provider_id  and ''!= provider_id">
+            provider_id = #{provider_id},
+        </if>
+        <if test="null!=number  and ''!= number">
+            number = #{number},
+        </if>
+        <if test="null!=type">
+            type = #{type},
+        </if>
+        <if test="null!=amount  and ''!= amount">
+            amount = #{amount},
+        </if>
+        <if test="null!=direction  and ''!= direction">
+            direction = #{direction},
+        </if>
+        <if test="null!=remains  and ''!= remains">
+            remains = #{remains},
+        </if>
+        <if test="null!=order_id  and ''!= order_id">
+            order_id = #{order_id},
+        </if>
+        <if test="null!=config_id  and ''!= config_id">
+            config_id = #{config_id},
+        </if>
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,p.name,o.order_no,s.val
+        FROM
+        oms_cmn_provider_charge a
+        LEFT JOIN oms_cmn_provider p ON a.provider_id = p.id
+        LEFT JOIN oms_order_buy o ON a.order_id = o.id
+        LEFT JOIN sys_config s ON a.config_id = s.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+</mapper>

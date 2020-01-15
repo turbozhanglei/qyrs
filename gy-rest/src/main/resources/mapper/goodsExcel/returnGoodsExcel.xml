@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="returnGoodsExcel">
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, c.client_name,
+        ob.supplier_company,
+        ob.supplier_people,
+        ob.supplier_people_mobile,
+        ob.order_no
+
+        FROM
+        w_order_buy_sku a
+        LEFT JOIN w_order_buy ob ON ob.id = a.order_id
+        LEFT JOIN w_customer c ON c.id = ob.customer_id
+        WHERE
+        a.`status` = 4
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=supplier_company  and ''!= supplier_company">
+            and ob.supplier_company like Concat ('%',#{supplier_company},'%')
+        </if>
+        <if test="null!=supplier_people  and ''!= supplier_people">
+            and ob.supplier_people like Concat ('%',#{supplier_people},'%')
+        </if>
+
+        <if test="null!=supplier_people_mobile  and ''!= supplier_people_mobile">
+            and ob.supplier_people_mobile like Concat ('%',#{supplier_people_mobile},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=number  and ''!= number">
+            and a.number like Concat ('%',#{number},'%')
+        </if>
+        GROUP BY a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        a.*, c.client_name,
+        ob.supplier_company,
+        ob.supplier_people,
+        ob.supplier_people_mobile,
+        ob.order_no
+
+        FROM
+        w_order_buy_sku a
+        LEFT JOIN w_order_buy ob ON ob.id = a.order_id
+        LEFT JOIN w_customer c ON c.id = ob.customer_id
+        WHERE
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=supplier_company  and ''!= supplier_company">
+            and ob.supplier_company like Concat ('%',#{supplier_company},'%')
+        </if>
+        <if test="null!=supplier_people  and ''!= supplier_people">
+            and ob.supplier_people like Concat ('%',#{supplier_people},'%')
+        </if>
+        <if test="null!=supplier_people_mobile  and ''!= supplier_people_mobile">
+            and ob.supplier_people_mobile like Concat ('%',#{supplier_people_mobile},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and ob.order_no like Concat ('%',#{order_no},'%')
+        </if>
+        <if test="null!=number  and ''!= number">
+            a.number like Concat ('%',#{number},'%')
+        </if>
+        a.`status` = 4
+        GROUP BY a.id
+        ) AS a
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        s.`name` AS product_name,
+        s.`level` AS product_level,
+        s.number AS product_number
+        FROM
+        w_order_buy_sku a
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        WHERE
+        a.`status` = 4
+        and a.id=#{id}
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        ( select a.*
+        from
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku obs on obs.id=a.buy_sku_id
+        LEFT JOIN w_order_buy ob on ob.id=obs.order_id
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id=a.setting_id
+        LEFT JOIN w_tray w on w.id=a.tray_id
+        WHERE
+        a. STATUS = 0 and
+        a.provider_id=#{provider_id} and a.sku_id=#{sku_id}
+        GROUP BY a.in_batch_number
+        ) as a
+
+    </select>
+</mapper>

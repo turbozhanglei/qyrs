@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="goodsStock">
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        s.`name`,
+        s.`level`,
+        s.number,
+        st.number as tnumber,
+        st.text as tname,
+        a.stock,
+        s.id
+        FROM
+        (
+        SELECT
+        IFNULL(SUM(a.stock), 0) AS stock,
+        a.sku_id
+        FROM
+        w_order_store_sku a
+        WHERE
+        a. STATUS = 0
+        GROUP BY
+        a.sku_id
+        ) a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_sku_type st ON st.id = s.type_id
+        where 1=1
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=number  and ''!= number">
+            and s.number like Concat ('%',#{number},'%')
+        </if>
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        IFNULL(SUM(a.stock), 0) AS stock,
+        a.sku_id
+        FROM
+        w_order_store_sku a
+        WHERE
+        a. STATUS = 0
+        GROUP BY
+        a.sku_id
+        ) a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_sku_type st ON st.id = s.type_id
+        <if test="null!=product_name  and ''!= product_name">
+            and s.name like Concat ('%',#{product_name},'%')
+        </if>
+        <if test="null!=number  and ''!= number">
+            and s.number like Concat ('%',#{number},'%')
+        </if>
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailList" parameterType="map" resultType="dto">
+        SELECT
+        s.`name`,
+        s.`level`,
+        s.number,
+        st.number as tnumber,
+        st.text as tname,
+        a.stock,
+        s.id,
+        obs.roduction_date,
+        a.create_time,
+        wss.number as wnumber,
+        wss.`name` AS wname
+        FROM
+        (
+        SELECT
+        IFNULL(SUM(a.stock), 0) AS stock,
+        a.sku_id,
+        a.buy_sku_id,
+        a.create_time,
+        a.setting_id
+        FROM
+        w_order_store_sku a
+        WHERE
+        a. STATUS = 0
+        GROUP BY
+        a.setting_id,
+        a.in_batch_number
+        ) a
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_sku_type st ON st.id = s.type_id
+        LEFT JOIN w_order_buy_sku obs ON obs.id = a.buy_sku_id
+        LEFT JOIN w_warehouse_site_setting wss ON wss.id = a.setting_id
+        WHERE
+        1 = 1
+        AND a.sku_id =#{id}
+    </select>
+
+</mapper>

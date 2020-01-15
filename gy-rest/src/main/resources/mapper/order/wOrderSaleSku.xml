@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 发货商品关联表 -->
+<mapper namespace="wOrderSaleSku">
+
+    <sql id="sql_where">
+        where
+        a.is_delete = 'N'
+        <if test="null!=_id  and ''!= _id">
+            and a.id = #{_id}
+        </if>
+        <if test="null!=_sku_id  and ''!= _sku_id">
+            and a.sku_id = #{_sku_id}
+        </if>
+        <if test="null!=_order_id  and ''!= _order_id">
+            and a.order_id = #{_order_id}
+        </if>
+        <if test="null!=_batch_number  and ''!= _batch_number">
+            and a.batch_number = #{_batch_number}
+        </if>
+        <if test="null!=_measure_unit  and ''!= _measure_unit">
+            and a.measure_unit = #{_measure_unit}
+        </if>
+        <if test="null!=_price  and ''!= _price">
+            and a.price = #{_price}
+        </if>
+        <if test="null!=_amount  and ''!= _amount">
+            and a.amount = #{_amount}
+        </if>
+        <if test="null!=_status  and ''!= _status">
+            and a.status = #{_status}
+        </if>
+        <if test="null!=_remark  and ''!= _remark">
+            and a.remark = #{_remark}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.create_time >= concat(#{startDate},' ','00:00:00')
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.create_time &lt;= concat(#{endDate},' ','23:59:59')
+        </if>
+        <if test="null!=_creator  and ''!= _creator">
+            and a.creator = #{_creator}
+        </if>
+        <if test="null!=_update_time  and ''!= _update_time">
+            and a.update_time = #{_update_time}
+        </if>
+        <if test="null!=_updator  and ''!= _updator">
+            and a.updator = #{_updator}
+        </if>
+
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO
+        w_order_sale_sku (
+
+        <if test="null!=sku_id  and ''!= sku_id">
+            sku_id ,
+        </if>
+        <if test="null!=sale_id  and ''!= sale_id">
+            sale_id ,
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            batch_number ,
+        </if>
+        <if test="null!=measure_unit  and ''!= measure_unit">
+            measure_unit ,
+        </if>
+        <if test="null!=price  and ''!= price">
+            price ,
+        </if>
+        <if test="null!=amount  and ''!= amount">
+            amount ,
+        </if>
+        <if test="null!=out_stock_num  and ''!= out_stock_num">
+            out_stock_num ,
+        </if>
+        <if test="null!=status">
+            status ,
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark ,
+        </if>
+        create_time,
+        creator,
+        update_time,
+        updator
+        ) VALUES(
+
+        <if test="null!=sku_id  and ''!= sku_id">
+            #{sku_id} ,
+        </if>
+        <if test="null!=sale_id  and ''!= sale_id">
+            #{sale_id} ,
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            #{batch_number} ,
+        </if>
+        <if test="null!=measure_unit  and ''!= measure_unit">
+            #{measure_unit} ,
+        </if>
+        <if test="null!=price  and ''!= price">
+            #{price} ,
+        </if>
+        <if test="null!=amount  and ''!= amount">
+            #{amount} ,
+        </if>
+        <if test="null!=out_stock_num  and ''!= out_stock_num">
+            #{out_stock_num} ,
+        </if>
+        <if test="null!=status">
+            #{status} ,
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            #{remark} ,
+        </if>
+        now(),
+        #{creator},
+        now(),
+        #{updator}
+        );
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_order_sale_sku set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE w_order_sale_sku a
+        set
+
+        <if test="null!=sku_id  and ''!= sku_id">
+            a.sku_id = #{sku_id} ,
+        </if>
+        <if test="null!=order_id  and ''!= order_id">
+            a.order_id = #{order_id} ,
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            a.batch_number = #{batch_number} ,
+        </if>
+        <if test="null!=measure_unit  and ''!= measure_unit">
+            a.measure_unit = #{measure_unit} ,
+        </if>
+        <if test="null!=price  and ''!= price">
+            a.price = #{price} ,
+        </if>
+        <if test="null!=amount  and ''!= amount">
+            a.amount = #{amount} ,
+        </if>
+        <if test="null!=status">
+            a.status = #{status} ,
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            a.remark = #{remark} ,
+        </if>
+        <if test="null!=create_time  and ''!= create_time">
+            a.create_time = #{create_time} ,
+        </if>
+        <if test="null!=creator  and ''!= creator">
+            a.creator = #{creator} ,
+        </if>
+        <if test="null!=is_delete  and ''!= is_delete">
+            a.is_delete = #{is_delete} ,
+        </if>
+        update_time = now(),
+        a.updator = #{updator}
+        where
+        a.id = #{id}
+    </update>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.id,
+        a.sku_id,
+        a.order_id,
+        a.batch_number,
+        a.measure_unit,
+        a.price,
+        a.amount,
+        a.status,
+        a.remark,
+        a.create_time
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        w_order_sale_sku a
+        <include refid="sql_where"/>
+    </select>
+
+    <select id="orderSaleSkuReport" parameterType="map" resultType="dto">
+        SELECT a.id,a.order_no,a.end_time,a.seller,a.receive,a.remark,
+        GROUP_CONCAT(sk.`name`,',') as skuname,c.`name` as ownername,
+        c1.`name` as providername,s.val AS priorityval,SUM(oa.out_stock_num) as number
+        FROM w_order_sale a
+        LEFT JOIN w_order_sale_sku oa on a.id = oa.sale_id
+        LEFT JOIN w_sku sk on sk.id = oa.sku_id
+        LEFT JOIN w_cmn_provider c ON a.provider_owner_id = c.id
+        LEFT JOIN w_cmn_provider c1 ON a.provider_id = c1.id
+        LEFT JOIN sys_config s on a.priority = s.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <if test="null!=order_no  and ''!= order_no">
+            and a.order_no LIKE concat('%',#{order_no},'%')
+        </if>
+        <if test="null!=ownername  and ''!= ownername">
+            and c.name LIKE concat('%',#{ownername},'%')
+        </if>
+        <if test="null!=providername  and ''!= providername">
+            and c1.name LIKE concat('%',#{providername},'%')
+        </if>
+        <if test="null!=priority  and ''!= priority">
+            and a.priority = #{priority}
+        </if>
+        GROUP BY a.id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+
+
+    <select id="orderSaleSkuReportCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_sale a
+        LEFT JOIN w_order_sale_sku oa on a.id = oa.sale_id
+        LEFT JOIN w_sku sk on sk.id = oa.sku_id
+        LEFT JOIN w_cmn_provider c ON a.provider_owner_id = c.id
+        LEFT JOIN w_cmn_provider c1 ON a.provider_id = c1.id
+        LEFT JOIN sys_config s on a.priority = s.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <if test="null!=order_no  and ''!= order_no">
+            and a.order_no LIKE concat('%',#{order_no},'%')
+        </if>
+        <if test="null!=ownername  and ''!= ownername">
+            and c.name LIKE concat('%',#{ownername},'%')
+        </if>
+        <if test="null!=providername  and ''!= providername">
+            and c1.name LIKE concat('%',#{providername},'%')
+        </if>
+        <if test="null!=priority  and ''!= priority">
+            and a.priority = #{priority}
+        </if>
+        GROUP BY a.id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+
+
+    <select id="saleSkuReport" parameterType="map" resultType="dto">
+        SELECT a.*,o.order_no,o.end_time,o.seller,o.receive,o.remark as remarks,
+        sk.`name` as skuname,c.`name` as ownername,
+        c1.`name` as providername,s.val AS priorityval
+        FROM w_order_sale_sku a
+        LEFT JOIN w_order_sale o on o.id = a.sale_id
+        LEFT JOIN w_sku sk on sk.id = a.sku_id
+        LEFT JOIN w_cmn_provider c ON o.provider_owner_id = c.id
+        LEFT JOIN w_cmn_provider c1 ON o.provider_id = c1.id
+        LEFT JOIN sys_config s on o.priority = s.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <if test="null!=order_no  and ''!= order_no">
+            and o.order_no LIKE concat('%',#{order_no},'%')
+        </if>
+        <if test="null!=ownername  and ''!= ownername">
+            and c.name LIKE concat('%',#{ownername},'%')
+        </if>
+        <if test="null!=batchnumber  and ''!= batchnumber">
+            and a.batch_number LIKE concat('%',#{batchnumber},'%')
+        </if>
+        <if test="null!=priority  and ''!= priority">
+            and a.priority = #{priority}
+        </if>
+        ORDER BY a.id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+
+
+    <select id="saleSkuReportCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_sale_sku a
+        LEFT JOIN w_order_sale o on o.id = a.sale_id
+        LEFT JOIN w_sku sk on sk.id = a.sku_id
+        LEFT JOIN w_cmn_provider c ON o.provider_owner_id = c.id
+        LEFT JOIN w_cmn_provider c1 ON o.provider_id = c1.id
+        LEFT JOIN sys_config s on o.priority = s.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <if test="null!=order_no  and ''!= order_no">
+            and o.order_no LIKE concat('%',#{order_no},'%')
+        </if>
+        <if test="null!=ownername  and ''!= ownername">
+            and c.name LIKE concat('%',#{ownername},'%')
+        </if>
+        <if test="null!=batchnumber  and ''!= batchnumber">
+            and a.batch_number LIKE concat('%',#{batchnumber},'%')
+        </if>
+        <if test="null!=priority  and ''!= priority">
+            and o.priority = #{priority}
+        </if>
+        ORDER BY a.id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+</mapper>

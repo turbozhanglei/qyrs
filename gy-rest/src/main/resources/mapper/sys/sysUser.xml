@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="sysUser">
+
+
+    <sql id="sql_where">
+        <if test="null!=username  and ''!= username">
+            and a.username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="null!=targetToken  and ''!= targetToken">
+            and a.token = #{targetToken}
+        </if>
+        <if test="null!=account  and ''!= account">
+            and a.account = #{account}
+        </if>
+        <if test="null!=pid  and ''!= pid">
+            and a.pid = #{pid}
+        </if>
+        <if test="null!=clientId  and ''!= clientId">
+            and a.id in (select agent from c_client where id = #{clientId})
+        </if>
+        <if test="null!=cqueryname  and ''!= cqueryname">
+            and a.username = #{cqueryname}
+        </if>
+        <if test="null!=password  and ''!= password">
+            and a.password = password(#{password})
+        </if>
+        <if test="null!=lname  and ''!= lname">
+            and a.lname LIKE CONCAT('%', #{lname}, '%')
+        </if>
+        <if test="null!=cnumber  and ''!= cnumber">
+            and a.number = #{cnumber}
+        </if>
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE CONCAT('%', #{number}, '%')
+        </if>
+        <if test="null!=number1  and ''!= number1">
+            and a.number = #{number1}
+        </if>
+        <if test="null!=deptid  and ''!= deptid">
+            and (a.deptid = #{deptid}
+            and or a.deptid in (select id from sys_dept where pid = #{deptid})
+            and or a.deptid in (select id from sys_dept where pid in
+            and (select id from sys_dept where pid = #{deptid})))
+        </if>
+        <if test="null!=q_status">
+            and a.status = 1
+        </if>
+        <if test="null!=q_status  and ''!= q_status">
+            and a.status = #{q_status}
+        </if>
+        <if test="null!=checkFlag  and ''!= checkFlag">
+            and a.check_flag = #{checkFlag}
+        </if>
+        <if test="null!=roleid  and ''!= roleid">
+            and a.roleid = #{roleid}
+        </if>
+        <if test="null!=agentid  and ''!= agentid">
+            and a.id = #{agentid}
+        </if>
+        <if test="null!=selfFlag  and ''!= selfFlag">
+            and a.id != #{userid}
+        </if>
+        <if test="null!=deptname  and ''!= deptname">
+            and a.deptid in (select id from sys_dept where dept_name LIKE CONCAT('%', #{deptname}, '%'))
+        </if>
+        <if test="null!=pname  and ''!= pname">
+            and a.pid in (select id from sys_user where username LIKE CONCAT('%', #{pname}, '%'))
+        </if>
+        <if test="null!=queryname  and ''!= queryname">
+            and (a.lname LIKE CONCAT('%', #{queryname}, '%') or
+            and a.deptid in (select id from sys_dept where dept_name LIKE CONCAT('%', #{queryname}, '%')) or
+            and a.username LIKE CONCAT('%', #{queryname}, '%'))
+        </if>
+        <if test="null!=createtime  and ''!= createtime">
+            and DATE_FORMAT(a.create_time,'%Y-%m-%d') = #{createtime}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="''!=wopenid and null!=wopenid">
+            and a.wopenid= #{wopenid}
+        </if>
+        <if test="''!=zopenid and null!=zopenid">
+            and a.zopenid= #{zopenid}
+        </if>
+    </sql>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE sys_user set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+    <select id="queryConfigList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_config a
+        WHERE a.is_delete = 'N'
+    </select>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*,d.dept_name as deptname,r.role_name as rolename,b.username as pname,
+        CONCAT(b.number,'-',b.username) as numbername,d.`type` as dept_type,d.is_delete as dept_is_delete
+        FROM sys_user a
+        left join sys_user b on a.pid = b.id
+        left join sys_dept d on a.deptid = d.id
+        left join sys_role r on a.roleid = r.id
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+    <select id="queryAutoUser" resultType="dto">
+        SELECT a.* from sys_user a
+        WHERE a.is_delete = 'N' and a.check_flag = 1 and check_index = 0
+        order by a.id desc
+    </select>
+
+    <update id="updateAutoUser" parameterType="dto">
+        update sys_user set check_index = 1
+        where id = #{id}
+    </update>
+
+    <update id="updateAutoUserWait" parameterType="dto">
+        update sys_user set check_index = 0 where check_flag = 1
+    </update>
+
+    <update id="updateByAppuserid" parameterType="dto">
+        update c_client set agent = #{agentid} where id in (select client_id from app_user where id=#{userid})
+    </update>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        d.dept_name AS deptname,
+        r.role_name AS rolename,
+        b.username AS pname,
+        CONCAT(a.number, '-', a.username) AS numbername,
+        r.role_id_list
+        FROM
+        sys_user a
+        LEFT JOIN sys_user b ON a.pid = b.id
+        LEFT JOIN sys_dept d ON a.deptid = d.id
+        LEFT JOIN
+        (
+        SELECT
+        a.userid,
+        GROUP_CONCAT(b.role_name) role_name,
+        GROUP_CONCAT(b.id) role_id_list
+        FROM sys_role_user a
+        LEFT JOIN
+        sys_role b on a.roleid = b.id
+        GROUP BY a.userid
+        ) r on a.id = r.userid
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM sys_user a
+        left join sys_user b on a.pid = b.id
+        left join sys_dept d on a.deptid = d.id
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_user (username, pid,
+        number, moile, sex,
+        deptid, lname, roleid,
+        account, password, status,create_time,creator,update_time,updator,is_delete,wopenid,zopenid
+        )
+        values (#{username}, #{pid}, #{number}, #{moile}, #{sex},
+        #{deptid}, #{lname}, #{roleid}, #{account}, password(#{password}), 1,
+        now(),#{creator},now(),#{updator},'N',#{wopenid},#{zopenid})
+        <selectKey resultType="string" keyProperty="id">
+            select last_insert_id() as ID from sys_user limit 1
+        </selectKey>
+    </insert>
+
+    <!-- 离职  -->
+    <update id="leaveInfo" parameterType="map">
+        UPDATE sys_user
+        set status = 0,
+        update_time = now()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_user
+        set
+        <if test="null!=username  and ''!= username">
+            username = #{username},
+        </if>
+        <if test="null!=pid  and ''!= pid">
+            pid = #{pid},
+        </if>
+        <if test="null!=sex  and ''!= sex">
+            sex = #{sex},
+        </if>
+        <if test="null!=shopid  and ''!= shopid">
+            shopid = #{shopid},
+        </if>
+        <if test="null!=number  and ''!= number">
+            number = #{number},
+        </if>
+        <if test="null!=moile  and ''!= moile">
+            moile = #{moile},
+        </if>
+        <if test="null!=deptid  and ''!= deptid">
+            deptid = #{deptid},
+        </if>
+        <if test="null!=lname  and ''!= lname">
+            lname = #{lname},
+        </if>
+        <if test="null!=roleid  and ''!= roleid">
+            roleid = #{roleid},
+        </if>
+        <if test="null!=account  and ''!= account">
+            account = #{account},
+        </if>
+        <if test="null!=password  and ''!= password">
+            password = password(#{password}),
+        </if>
+        <if test="null!=wopenid  and ''!= wopenid">
+            wopenid = #{wopenid},
+        </if>
+        <if test="null!=zopenid  and ''!= zopenid">
+            zopenid = #{zopenid},
+        </if>
+        <if test="null!=status  and ''!= status">
+            status = #{status},
+        </if>
+
+
+        update_time = now(),
+        updator = #{updator}
+        where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateToken" parameterType="dto">
+        update sys_user
+        set rytoken = #{rytoken}
+        where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateCheckFlag" parameterType="dto">
+        update sys_user
+        set check_flag = #{checkFlag}
+        where id = #{id}
+    </update>
+    <update id="setPid" parameterType="dto">
+        update sys_user
+        set pid = #{pid}
+        where id = #{id}
+    </update>
+    <!-- 查询 -->
+    <select id="loginByAccount" parameterType="map" resultType="dto">
+        SELECT a.*,b.dept_name,b.`type` as dept_type,b.is_delete as dept_is_delete
+        FROM sys_user a
+        LEFT JOIN sys_dept as b on(a.deptid=b.id)
+        WHERE a.is_delete = 'N'
+        <if test="null!=account  and ''!= account">
+            and a.account = #{account}
+        </if>
+        <if test="null!=moile  and ''!= moile">
+            and a.moile = #{moile}
+        </if>
+        and password = password(#{password})
+    </select>
+
+    <!-- 查询 -->
+    <select id="getKftoken" parameterType="map" resultType="dto">
+        SELECT a.token,a.rytoken,a.id,a.username,a.pic
+        FROM sys_user a
+        WHERE lname = '客服'
+        order by id desc
+        limit 1
+    </select>
+    <select id="getLnametoken" parameterType="map" resultType="dto">
+        SELECT a.token,a.rytoken,a.id,a.username,a.pic
+        FROM sys_user a
+        WHERE lname = #{lname}
+        order by id desc
+        limit 1
+    </select>
+    <select id="getXTtoken" parameterType="map" resultType="dto">
+        SELECT a.token,a.rytoken,a.id,a.username,a.pic
+        FROM sys_user a
+        WHERE lname = '系统'
+        order by id desc
+        limit 1
+    </select>
+    <select id="querySysInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_user a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        limit 1
+    </select>
+    <!-- 查询 -->
+    <select id="getTokenByDid" parameterType="map" resultType="dto">
+        SELECT a.token,a.rytoken,a.id
+        FROM sys_user a
+        WHERE a.id in (select agent from c_client where id in
+        (select clientId from tr_declare where id = #{declareid}))
+        limit 1
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryListKpi" parameterType="map" resultType="dto">
+        SELECT
+        a.*, d.dept_name AS deptname,
+        r.role_name AS rolename,
+        b.username AS pname,
+        CONCAT(a.number, '-', a.username) AS numbername,
+        r.role_id_list,
+        COUNT(DISTINCT ois.id) AS in_store_num,
+        COUNT(DISTINCT oss.id) AS out_store_num,
+        COUNT(DISTINCT rg.id) AS return_store_num,
+        COUNT(DISTINCT wlt.id) AS transfer_store_num,
+        COUNT(DISTINCT wps.id) AS wps_store_num,
+        COUNT(DISTINCT wic.id) AS wic_store_num
+        FROM
+        sys_user a
+        LEFT JOIN sys_user b ON a.pid = b.id
+        LEFT JOIN sys_dept d ON a.deptid = d.id
+        LEFT JOIN (
+        SELECT
+        a.userid,
+        GROUP_CONCAT(b.role_name) role_name,
+        GROUP_CONCAT(b.id) role_id_list
+        FROM
+        sys_role_user a
+        LEFT JOIN sys_role b ON a.roleid = b.id
+        GROUP BY
+        a.userid
+        ) r ON a.id = r.userid
+        LEFT JOIN w_order_in_store ois ON ois.creator = a.id AND ois.`status` = 2
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(ois.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(ois.create_time) &lt;= #{endTime}
+        </if>
+        LEFT JOIN w_order_sale_sku oss ON oss.creator = a.id
+        AND oss.`status` = 50
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(oss.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(oss.create_time) &lt;= #{endTime}
+        </if>
+        LEFT JOIN w_return_goods rg ON rg.creator = a.id
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(rg.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(rg.create_time) &lt;= #{endTime}
+        </if>
+        LEFT JOIN w_location_transfer wlt ON wlt.creator = a.id
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(wlt.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(wlt.create_time) &lt;= #{endTime}
+        </if>
+        LEFT JOIN w_inventory_check wic ON wic.creator = a.id
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(wic.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(wic.create_time) &lt;= #{endTime}
+        </if>
+        LEFT JOIN w_productin_spection wps ON wps.creator = a.id
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(wps.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(wps.create_time) &lt;= #{endTime}
+        </if>
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        GROUP BY
+        a.id
+        ORDER BY
+        a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryListKpiCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM sys_user a
+        left join sys_user b on a.pid = b.id
+        left join sys_dept d on a.deptid = d.id
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+
+    <!-- 修改 -->
+    <update id="updateDeptid" parameterType="dto">
+        update sys_user
+        set deptid = #{deptid}
+        where account = #{account}
+    </update>
+
+
+    <!-- 修改 -->
+    <update id="updateWxOpenid" parameterType="dto">
+        update sys_user
+        set wopenid  = NULL
+        where wopenid = #{wopenid} and username = #{username}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="order_buy_checked">
+
+
+    <sql id="sql_where">
+        <if test="null!=sku_name  and ''!= sku_name">
+            and a.sku_name LIKE concat('%',#{sku_name},'%')
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            and a.remark LIKE concat('%',#{remark},'%')
+        </if>
+        <if test="null!=order_id  and ''!= order_id">
+            and a.order_id= #{order_id}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=sku_number  and ''!= sku_number">
+            and a.sku_number = #{sku_number}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=sku_level  and ''!= sku_level">
+            and a.sku_level = #{sku_level}
+        </if>
+        <if test="null!=food_add_type  and ''!= food_add_type">
+            and a.food_add_type LIKE concat('%',#{food_add_type},'%')
+        </if>
+        <if test="null!=sku_type_number  and ''!= sku_type_number">
+            and a.sku_type_number LIKE concat('%',#{sku_type_number},'%')
+        </if>
+        <if test="null!=sku_type_text  and ''!= sku_type_text">
+            and a.sku_type_text LIKE concat('%',#{sku_type_text},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and d.client_name LIKE concat('%',#{client_name},'%')
+        </if>
+        <if test="null!=customerno  and ''!= customerno">
+            and d.customerno LIKE concat('%',#{customerno},'%')
+        </if>
+
+
+        <if test="null!=checked_warehouse_id  and ''!= checked_warehouse_id">
+            and a.checked_warehouse_id = #{checked_warehouse_id}
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            and a.buy_sku_id = #{buy_sku_id}
+        </if>
+        <if test="null!=warehouse_site_setting  and ''!= warehouse_site_setting">
+            and a.warehouse_site_setting = #{warehouse_site_setting}
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">
+            and a.unit_volume = #{unit_volume}
+        </if>
+        <if test="null!=unit_weight  and ''!= unit_weight">
+            and a.unit_weight = #{unit_weight}
+        </if>
+        <if test="null!=inspecter_result  and ''!= inspecter_result">
+            and a.inspecter_result = #{inspecter_result}
+        </if>
+        <if test="null!=isexpired  and ''!= isexpired">
+            and a.isexpired = #{isexpired}
+        </if>
+        <if test="null!=bill  and ''!= bill">
+            and a.bill LIKE concat('%',#{bill},'%')
+        </if>
+
+        <if test="null!=min_instock_time  and ''!= min_instock_time">
+            and a.instock_time >= #{min_instock_time}
+        </if>
+        <if test="null!=max_start_time  and ''!= max_start_time">
+            and a.instock_time &lt;= #{max_instock_time}
+        </if>
+        <if test="null!=min_arrival_date  and ''!= min_arrival_date">
+            and a.arrival_date >= #{min_arrival_date}
+        </if>
+        <if test="null!=max_arrival_date  and ''!= max_arrival_date">
+            and a.arrival_date &lt;= #{max_arrival_date}
+        </if>
+
+        <if test="null!=min_checked_time  and ''!= min_checked_time">
+            and a.checked_time >= #{min_checked_time}
+        </if>
+        <if test="null!=max_checked_time  and ''!= max_checked_time">
+            and a.checked_time &lt;= #{max_checked_time}
+        </if>
+        <if test="null!=creator_name  and ''!= creator_name">
+            and s.username LIKE concat('%',#{creator_name},'%')
+        </if>
+        <if test="null!=order_no  and ''!= order_no">
+            and worder.order_no LIKE concat('%',#{order_no},'%')
+        </if>
+        <if test="null!=buy_sku_status  and ''!= buy_sku_status">
+            and obs.`status` = #{buy_sku_status}
+        </if>
+
+    </sql>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        b.`name` as checked_warehouse_name,
+        c.number as warehouse_site_number,
+        e.drivername drivername,
+        e.driver_number driver_number,
+        d.customerno,
+        d.client_name,
+        s.username as creator_name,
+        obs.number as order_buy_sku_number,
+        obs.num as buy_sku_num,
+        obs.status as buy_sku_status,
+        worder.order_no
+
+        FROM
+        w_order_buy_checked a
+        LEFT JOIN w_order_buy worder on a.order_id = worder.id
+        and worder.is_delete = 'N'
+        LEFT JOIN
+        sys_user s ON a.creator = s.id
+        LEFT JOIN
+        w_warehouse b on a.checked_warehouse_id = b.id AND b.is_delete = 'N'
+        LEFT JOIN
+        w_warehouse_site_setting c on a.warehouse_site_setting = c.id AND c.is_delete = 'N'
+        LEFT JOIN
+        w_customer d on a.customer_id = d.id AND d.is_delete = 'N'
+        LEFT JOIN w_order_buy_sku obs on obs.id = a.buy_sku_id AND obs.is_delete = 'N'
+        LEFT JOIN
+        (
+        SELECT
+        a.buy_sku_id,
+        GROUP_CONCAT(b.drivername) drivername,
+        GROUP_CONCAT(b.driver_number) driver_number
+        FROM
+        w_order_buy_sku_driver a
+        LEFT JOIN
+        w_driverinfo b on a.driver_id = b.id
+        WHERE a.is_delete ='N' AND b.is_delete ='N'
+        GROUP BY a.buy_sku_id
+        ) e on e.buy_sku_id = a.buy_sku_id
+
+        WHERE a.is_delete ='N'
+        <include refid="sql_where"/>
+        ORDER BY a.id DESC
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) as total
+        FROM
+        (
+        SELECT
+        a.*,
+        b.`name` as checked_warehouse_name,
+        c.number as warehouse_site_number
+        FROM
+        w_order_buy_checked a
+        LEFT JOIN w_order_buy worder on a.order_id = worder.id
+        and worder.is_delete = 'N'
+        LEFT JOIN
+        sys_user s ON a.creator = s.id
+        LEFT JOIN
+        w_warehouse b on a.checked_warehouse_id = b.id AND b.is_delete = 'N'
+        LEFT JOIN
+        w_warehouse_site_setting c on a.warehouse_site_setting = c.id AND c.is_delete = 'N'
+        LEFT JOIN
+        w_customer d on a.customer_id = d.id AND d.is_delete = 'N'
+        LEFT JOIN w_order_buy_sku obs on obs.id = a.buy_sku_id AND obs.is_delete = 'N'
+        WHERE a.is_delete ='N'
+        <include refid="sql_where"/>
+        ) a
+
+    </select>
+
+    <!-- 订单修改 -->
+    <update id="updateInfo" parameterType="dto">
+        UPDATE `w_order_buy_checked`
+        SET
+        <if test="null!=sku_id  and ''!= sku_id">sku_id=#{sku_id} ,</if>
+        <if test="null!=sku_name  and ''!= sku_name">sku_name=#{sku_name} ,</if>
+        <if test="null!=sku_number  and ''!= sku_number">sku_number=#{sku_number} ,</if>
+        <if test="null!=sku_level  and ''!= sku_level">sku_level=#{sku_level} ,</if>
+        <if test="null!=roduction_date  and ''!= roduction_date">roduction_date=#{roduction_date} ,</if>
+        <if test="null!=expiration_date  and ''!= expiration_date">expiration_date=#{expiration_date} ,</if>
+        <if test="null!=sku_type_id  and ''!= sku_type_id">sku_type_id=#{sku_type_id} ,</if>
+        <if test="null!=food_add_type  and ''!= food_add_type">food_add_type=#{food_add_type} ,</if>
+        <if test="null!=sku_type_number  and ''!= sku_type_number">sku_type_number=#{sku_type_number} ,</if>
+        <if test="null!=sku_type_text  and ''!= sku_type_text">sku_type_text=#{sku_type_text} ,</if>
+        <if test="null!=instock_time  and ''!= instock_time">instock_time=#{instock_time} ,</if>
+        <if test="null!=arrival_date  and ''!= arrival_date">arrival_date=#{arrival_date} ,</if>
+        <if test="null!=checked_warehouse_id  and ''!= checked_warehouse_id">
+            checked_warehouse_id=#{checked_warehouse_id}
+            ,
+        </if>
+        <if test="null!=warehouse_site_setting  and ''!= warehouse_site_setting">
+            warehouse_site_setting=#{warehouse_site_setting} ,
+        </if>
+        <if test="null!=unit_volume  and ''!= unit_volume">unit_volume=#{unit_volume} ,</if>
+        <if test="null!=unit_weight  and ''!= unit_weight">unit_weight=#{unit_weight} ,</if>
+        <if test="null!=arrival_num  and ''!= arrival_num">arrival_num=#{arrival_num} ,</if>
+        <if test="null!=qualified_num  and ''!= qualified_num">qualified_num=#{qualified_num} ,</if>
+        <if test="null!=unqualified_num  and ''!= unqualified_num">unqualified_num=#{unqualified_num} ,</if>
+        <if test="null!=inspecter_result  and ''!= inspecter_result">inspecter_result=#{inspecter_result} ,</if>
+        <if test="null!=isexpired  and ''!= isexpired">isexpired=#{isexpired} ,</if>
+        <if test="null!=driver_id  and ''!= driver_id">driver_id=#{driver_id} ,</if>
+        <if test="null!=customer_id  and ''!= customer_id">customer_id=#{customer_id} ,</if>
+        <if test="null!=remark  and ''!= remark">remark=#{remark} ,</if>
+        <if test="null!=status">status=#{status} ,</if>
+        <if test="null!=bill  and ''!= bill">bill=#{bill} ,</if>
+        <if test="null!=bill_photo  and ''!= bill_photo">bill_photo=#{bill_photo} ,</if>
+        <if test="null!=create_time  and ''!= create_time">create_time=#{create_time} ,</if>
+        <if test="null!=creator  and ''!= creator">creator=#{creator} ,</if>
+        <if test="null!=updator  and ''!= updator">updator=#{updator} ,</if>
+        <if test="null!=is_delete  and ''!= is_delete">is_delete=#{is_delete} ,</if>
+        <if test="null!=checked_time  and ''!= checked_time">checked_time=#{checked_time} ,</if>
+        <if test="null!=order_id  and ''!= order_id">order_id=#{order_id} ,</if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">buy_sku_id=#{buy_sku_id} ,</if>
+        <if test="null!=bill_zip  and ''!= bill_zip">bill_zip=#{bill_zip} ,</if>
+        update_time = now()
+        where
+        1=1
+        <if test="null!=id  and ''!= id">
+            and id = #{id}
+        </if>
+    </update>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        *
+        FROM
+        w_order_buy_checked a
+        WHERE a.is_delete ='N'
+        <include refid="sql_where"/>
+        limit 1
+    </select>
+
+    <!-- 对象添加 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO `w_order_buy_checked` ( `buy_sku_id`, `order_id`, `checked_time`, `sku_id`, `sku_name`,
+        `sku_number`, `sku_level`, `roduction_date`, `expiration_date`, `sku_type_id`, `food_add_type`,
+        `sku_type_number`, `sku_type_text`, `instock_time`, `arrival_date`, `checked_warehouse_id`,
+        `warehouse_site_setting`, `unit_volume`, `unit_weight`, `arrival_num`, `qualified_num`, `unqualified_num`,
+        `inspecter_result`, `isexpired`, `customer_id`, `remark`, `status`, `bill`, `bill_photo`, `create_time`,
+        `creator`, `update_time`, `updator`, `is_delete`,bill_zip)
+        VALUES ( #{buy_sku_id},#{order_id},#{checked_time}, #{sku_id}, #{sku_name}, #{sku_number}, #{sku_level},
+        #{roduction_date}, #{expiration_date}, #{sku_type_id}, #{food_add_type}, #{sku_type_number}, #{sku_type_text},
+        #{instock_time}, #{arrival_date}, #{checked_warehouse_id}, #{warehouse_site_setting}, #{unit_volume},
+        #{unit_weight},
+        #{arrival_num}, #{qualified_num}, #{unqualified_num}, #{inspecter_result}, #{isexpired}, #{customer_id},
+        #{remark},0,
+        #{bill}, #{bill_photo}, NOW(), #{creator}, NOW(), #{updator}, 'N',#{bill_zip})
+        <selectKey resultType="java.lang.Long" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+
+</mapper>

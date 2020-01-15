@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="Assessment">
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        provider.name,
+        contract.number,
+        contract.begin_time,
+        contract.totals
+        FROM
+        oms_contract contract
+        left join oms_cmn_provider provider on provider.id = contract.coma
+        contract.is_delete = 'N'
+        <if test="null!=user  and ''!= user">
+            and provider.id != 1
+        </if>
+        <if test="null!=customer  and ''!= customer">
+            and customer.id = 1
+        </if>
+    </select>
+</mapper>

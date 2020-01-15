@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+
+<!-- 参数管理手工映射SQL语句 -->
+<!-- 库存 -->
+<mapper namespace="worderinstore">
+
+
+    <sql id="sql_where">
+        <if test="null!=batch_number  and ''!= batch_number">
+            and a.batch_number LIKE concat('%',#{batch_number},'%')
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            and a.buy_sku_id = #{buy_sku_id}
+        </if>
+        <if test="null!=tray_id  and ''!= tray_id">
+            and a.tray_id = #{tray_id}
+        </if>
+        <if test="null!=buy_checked_id  and ''!= buy_checked_id">
+            and a.buy_checked_id = #{buy_checked_id}
+        </if>
+        <if test="null!=buy_checked_ids  and ''!= buy_checked_ids">
+            and a.buy_checked_id in ( ${buy_checked_ids} )
+        </if>
+        <if test="null!=ids  and ''!= ids">
+            and a.id in ( ${ids} )
+        </if>
+    </sql>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,a.stock as total,
+        b.name as tray_name,
+        b.number as tray_number,
+        c.*,
+        obc.sku_name,
+        obc.roduction_date,
+        ifnull(obc.unit_volume * a.stock,0) as unit_volume,
+        ifnull(obc.unit_weight * a.stock,0) as unit_weight
+        FROM
+        w_order_in_store a
+        LEFT JOIN
+        w_tray b on a.tray_id = b.id
+        LEFT JOIN
+        (
+        SELECT
+        a.id,
+        a.`name` AS set_name,
+        a.number AS set_number,
+        a.warehouse_area_id,
+        a.warehouse_id,
+        b.`name` AS area_name,
+        b.number AS area_number,
+        c.`name` AS house_name,
+        c.number AS house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) c on a.setting_id = c.id
+        LEFT JOIN w_order_buy_checked obc on obc.id = a.buy_checked_id
+
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_in_store a
+        WHERE a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="map">
+        insert into w_order_in_store (buy_sku_id,buy_checked_id,tray_id,deptid, order_type,
+        sku_id, stock,
+        provider_id, setting_id, status,
+        create_time, creator, is_delete,batch_number)
+        values (#{buy_sku_id},#{buy_checked_id},#{tray_id},#{deptid}, '2', #{sku_id}, #{stock},
+        #{provider_id}, #{setting_id}, #{status},
+        now(), #{creator}, 'N',#{batch_number})
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="map">
+        UPDATE w_order_in_store set is_delete = 'Y' where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="map">
+        UPDATE w_order_in_store a
+        set
+        <if test="null!=deptid  and ''!= deptid">
+            a.deptid = #{deptid},
+        </if>
+        <if test="null!=sku_id  and ''!= sku_id">
+            a.sku_id = #{sku_id},
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            a.stock = #{stock},
+        </if>
+        <if test="null!=provider_id  and ''!= provider_id">
+            a.provider_id = #{provider_id},
+        </if>
+        <if test="null!=setting_id  and ''!= setting_id">
+            a.setting_id = #{setting_id},
+        </if>
+        <if test="null!=status">
+            a.status = #{status},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            a.updator = #{updator},
+        </if>
+        <if test="null!=buy_checked_id  and ''!= buy_checked_id">
+            a.buy_checked_id = #{buy_checked_id},
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            a.buy_sku_id = #{buy_sku_id},
+        </if>
+        <if test="null!=batch_number  and ''!= batch_number">
+            a.batch_number = #{batch_number},
+        </if>
+        update_time = now()
+        where a.id = #{id}
+    </update>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        b.name as tray_name,
+        b.number as tray_number,
+        c.*,
+        obc.sku_name,
+        ob.order_no
+        FROM
+        w_order_in_store a
+        LEFT JOIN
+        w_tray b on a.tray_id = b.id
+        LEFT JOIN
+        (
+        SELECT
+        a.id,
+        a.`name` AS set_name,
+        a.number AS set_number,
+        b.`name` AS area_name,
+        b.number AS area_number,
+        c.`name` AS house_name,
+        c.number AS house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) c on a.setting_id = c.id
+        LEFT JOIN w_order_buy_checked obc on obc.id = a.buy_checked_id
+        LEFT JOIN w_order_buy ob on obc.order_id = ob.id
+        WHERE
+        a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 1
+    </select>
+
+
+    <!-- 列表数量查询 -->
+    <select id="queryBatchCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_order_in_store a
+        WHERE a.buy_checked_id = #{buy_checked_id}
+    </select>
+
+
+    <!-- 列表数量查询 -->
+    <select id="queryStockCount" parameterType="map" resultType="dto">
+        SELECT ifnull(sum(stock),0) as total
+        FROM w_order_in_store a
+        WHERE a.buy_checked_id = #{buy_checked_id}
+    </select>
+
+
+    <!-- 列表查询 -->
+    <select id="queryListByTray" parameterType="map" resultType="dto">
+        SELECT
+        a.*, SUM(a.stock) numtotal, SUM(if(a. status = 0,a.stock,0)) total, SUM(if(a. status = 1,a.stock,0))
+        out_stock_num,
+        a.create_time AS storage_time,
+        d.roduction_date,
+        d.expiration_date,
+        b. NAME AS tray_name,
+        b.number AS tray_number,
+        d. NAME AS sku_name,
+        f.client_name,
+        d.roduction_date,
+        to_days(
+        ADDDATE(
+        d.roduction_date,
+        INTERVAL CEILING(
+        d.shelflife * f.warningday_num
+        ) DAY
+        )
+        ) - to_days(now()) AS distance_day,
+        to_days(d.expiration_date) - to_days(now()) AS is_expired_days,
+        t.*
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_tray b ON a.tray_id = b.id
+        LEFT JOIN w_order_buy_sku d ON a.buy_sku_id = d.id
+        LEFT JOIN w_customer f ON f.id = a.provider_id
+        LEFT JOIN (
+        SELECT
+        a.id,
+        a.`name` AS set_name,
+        a.number AS set_number,
+        a.warehouse_area_id,
+        a.warehouse_id,
+        b.`name` AS area_name,
+        b.number AS area_number,
+        c.`name` AS house_name,
+        c.number AS house_number
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse_area b ON a.warehouse_area_id = b.id
+        LEFT JOIN w_warehouse c ON a.warehouse_id = c.id
+        ) t ON a.setting_id = t.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        AND a. STATUS in (0,1)
+        <if test="null!=tray_id  and ''!= tray_id">
+            and a.tray_id = #{tray_id}
+        </if>
+        <if test="null!=tray_number  and ''!= tray_number">
+            and b.number = #{tray_number}
+        </if>
+        <if test="null!=buy_sku_id  and ''!= buy_sku_id">
+            and a.buy_sku_id = #{buy_sku_id}
+        </if>
+        <if test="null!=buy_checked_id  and ''!= buy_checked_id">
+            and a.buy_checked_id = #{buy_checked_id}
+        </if>
+        <if test="null!=provider_id  and ''!= provider_id">
+            and a.provider_id = #{provider_id}
+        </if>
+        <if test="null!=in_batch_number  and ''!= in_batch_number">
+            and a.in_batch_number = #{in_batch_number}
+        </if>
+        GROUP BY
+        a.in_batch_number
+        HAVING 1 = 1
+        <if test="null == is_expired_days">
+            and is_expired_days >= 0
+        </if>
+        ORDER BY
+        distance_day,
+        a.buy_checked_id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+</mapper>

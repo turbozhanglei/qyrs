@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="product">
+
+    <sql id="sql_where">
+        <if test="null!=name  and ''!= name">
+            and a.name like '%' #{name} '%'
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            and a.type_id = #{type_id}
+        </if>
+        <if test="null!=brand_id  and ''!= brand_id">
+            and a.brand_id = #{brand_id}
+        </if>
+        <if test="null!=q_status  and ''!= q_status">
+            and a.status = #{q_status}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=shop_id  and ''!= shop_id">
+            and a.shop_id = #{shop_id}
+        </if>
+        <if test="null!=flag  and ''!= flag">
+            and ( 1 = #{flag} or a.shop_id = #{flag})
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*, d.text AS typename
+        FROM
+        oms_sku a
+        LEFT JOIN oms_sku_type d ON a.type_id = d.id
+        WHERE
+        1 = 1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+    </select>
+
+    <select id="queryListCount" parameterType="map" resultType="java.lang.Integer">
+        SELECT count(1) as count FROM oms_sku a WHERE 1=1
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 查询单个商品详情信息 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        d.text AS typename
+        FROM
+        oms_sku a
+        LEFT JOIN oms_sku_type d ON a.type_id = d.id
+        WHERE
+        1 = 1
+        <include refid="sql_where"/>
+    </select>
+
+    <select id="queryListOne" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        oms_sku a LEFT JOIN
+        WHERE 1=1
+        <include refid="sql_where"/>
+        ORDER BY
+        a.id
+        DESC
+    </select>
+    <select id="queryListRecommend" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        FROM
+        oms_sku a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        ORDER BY a.id
+        LIMIT 0,6
+    </select>
+    <!-- 根据商品id,查询类似的商品4个 -->
+    <select id="showSimilar" parameterType="map" resultType="dto">
+        SELECT
+        *
+        FROM
+        oms_sku
+        WHERE
+        type_id = (
+        SELECT
+        a.type_id
+        FROM
+        oms_sku a
+        WHERE
+        a.id = #{id}
+        )
+        LIMIT 0,4
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into oms_sku
+        (name,number,discount,
+        price, price2,price3,stock, introduction,
+        sort, smallpic, bigpic,
+        type_id,
+        shop_id, brand_id,
+        price_id, describes, status,
+        create_time,
+        <if test="null!=creator  and ''!= creator">
+            creator,
+        </if>
+        update_time,
+        <if test="null!=updator  and ''!= updator">
+            updator,
+        </if>
+        is_delete
+        )
+        values (#{name},#{number},#{discount},
+        #{price},#{price2},#{price3},
+        #{stock,jdbcType=INTEGER}, #{introduction},
+        #{sort,jdbcType=INTEGER},
+        #{smallpic}, #{bigpic},
+        #{type_id,jdbcType=BIGINT},
+        #{shop_id,jdbcType=BIGINT}, #{brand_id,jdbcType=BIGINT},
+        #{price_id,jdbcType=BIGINT}, #{describes}, #{status},now(),
+        <if test="null!=creator  and ''!= creator">
+            #{creator},
+        </if>
+        now(),
+        <if test="null!=updator  and ''!= updator">
+            #{updator},
+        </if>
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update oms_sku a
+        set
+        <if test="null!=name  and ''!= name">
+            a.name = #{name},
+        </if>
+        <if test="null!=number  and ''!= number">
+            a.number = #{number},
+        </if>
+        <if test="null!=discount  and ''!= discount">
+            a.discount = #{discount},
+        </if>
+        <if test="null!=price  and ''!= price">
+            a.price = #{price},
+        </if>
+        <if test="null!=price2  and ''!= price2">
+            a.price2 = #{price2},
+        </if>
+        <if test="null!=price3  and ''!= price3">
+            a.price3 = #{price3},
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            a.stock = #{stock},
+        </if>
+        <if test="null!=introduction  and ''!= introduction">
+            a.introduction = #{introduction},
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            a.sort = #{sort},
+        </if>
+        <if test="null!=smallpic  and ''!= smallpic">
+            a.smallpic = #{smallpic},
+        </if>
+        <if test="null!=bigpic  and ''!= bigpic">
+            a.bigpic = #{bigpic},
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            a.type_id = #{type_id},
+        </if>
+        <if test="null!=shop_id  and ''!= shop_id">
+            a.shop_id = #{shop_id},
+        </if>
+        <if test="null!=brand_id  and ''!= brand_id">
+            a.brand_id = #{brand_id},
+        </if>
+        <if test="null!=price_id  and ''!= price_id">
+            a.price_id = #{price_id},
+        </if>
+        <if test="null!=describes  and ''!= describes">
+            a.describes = #{describes},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateProperties" parameterType="dto">
+        update oms_sku
+        set properties = #{properties}
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        DELETE FROM oms_sku
+        WHERE id = #{id}
+    </delete>
+
+    <insert id="saveBatch" parameterType="java.util.List">
+        <![CDATA[
+            insert into oms_sku(
+              name,number,price, price2,price3,stock, introduction,sort, smallpic, bigpic,type_id,shop_id, brand_id,price_id, describes, status,create_time,creator
+            ) values
+        ]]>
+        <foreach collection="list" item="list" open="(" separator="," close=")">
+
+            <![CDATA[
+                (#{list.name},#{list[].number},#{list[].price},#{list[].price2},#{list[].price3},#{list[].stock},#{list[].introduction},#{list[].sort},#{list[].smallpic},#{list[].bigpic},#{list[].type_id},#{list[].shop_id},#{list[].brand_id},#{list[].price_id}, #{list[].describes}, #{list[].status},now(),#{list[].creator})
+            ]]>
+        </foreach>
+    </insert>
+
+</mapper>

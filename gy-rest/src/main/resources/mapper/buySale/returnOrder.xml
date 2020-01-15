@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="returnOrder">
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        return_order.id,
+        return_order.order_return,
+        order_buy.order_no,
+        config.val,
+        provider.name AS coma,
+        provider1.name AS comb,
+        order_buy.create_order_time
+        FROM
+        oms_order_return return_order
+        LEFT JOIN oms_order_buy order_buy ON order_buy.id = return_order.buy_order_id
+        LEFT JOIN oms_contract contract ON contract.id = order_buy.contract_id
+        LEFT JOIN sys_config config ON config.id = contract.type
+        LEFT JOIN oms_cmn_provider provider ON provider.id = order_buy.coma
+        LEFT JOIN oms_cmn_provider provider1 ON provider1.id = order_buy.comb
+        WHERE
+        return_order.is_delete = 'N'
+        order by return_order.update_time desc
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        return_order.id,
+        return_order.order_return,
+        order_buy.order_no,
+        config.val,
+        provider.name AS coma,
+        provider1.name AS comb,
+        order_buy.create_order_time
+        FROM
+        oms_order_return return_order
+        LEFT JOIN oms_order_buy order_buy ON order_buy.id = return_order.buy_order_id
+        LEFT JOIN oms_contract contract ON contract.id = order_buy.contract_id
+        LEFT JOIN sys_config config ON config.id = contract.type
+        LEFT JOIN oms_cmn_provider provider ON provider.id = order_buy.coma
+        LEFT JOIN oms_cmn_provider provider1 ON provider1.id = order_buy.comb
+        WHERE
+        return_order.is_delete = 'N'
+        and return_order.id = #{id}
+    </select>
+
+    <!-- 对象添加 -->
+    <insert id="saveInfo" parameterType="map">
+        INSERT INTO oms_order_return (
+        order_return,
+        buy_order_id,
+        create_time,
+        creator,
+        update_time,
+        updator
+        )
+        VALUES
+        (
+        #{order_no},
+        #{buy_order_id},
+        now(),
+        #{creator},
+        now(),
+        #{updator}
+        )
+    </insert>
+
+    <!-- 对象修改 -->
+    <update id="updateInfo" parameterType="dto">
+        UPDATE oms_order_return
+        SET
+        <if test="null!=amount  and ''!= amount">amount = #{amount} ,</if>
+        update_time = now()
+        where id= #{id}
+    </update>
+</mapper>

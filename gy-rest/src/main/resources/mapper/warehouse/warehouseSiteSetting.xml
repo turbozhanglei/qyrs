@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="warehouseSiteSetting">
+
+
+    <sql id="sql_where">
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=warehousename  and ''!= warehousename">
+            and a.warehouse_id =#{warehousename}
+        </if>
+        <if test="null!=warehousearea  and ''!= warehousearea">
+            and a.warehouse_area_id =#{warehousearea}
+        </if>
+        <if test="null!=warehouse_area  and ''!= warehouse_area">
+            and a.warehouse_area =#{warehouse_area}
+        </if>
+        <if test="null!=attribute  and ''!= attribute">
+            and b.attribute =#{attribute}
+        </if>
+        <if test="null!=stratum  and ''!= stratum">
+            and a.stratum =#{stratum}
+        </if>
+        <if test="null!=columnss  and ''!= columnss">
+            and a.columnss =#{columnss}
+        </if>
+        <if test="null!=weight_stint  and ''!= weight_stint">
+            and a.weight_stint =#{weight_stint}
+        </if>
+        <if test="null!=volume_stint  and ''!= volume_stint">
+            and a.volume_stint =#{volume_stint}
+        </if>
+        <if test="null!=surplus_volume  and ''!= surplus_volume">
+            and a.surplus_volume =#{surplus_volume}
+        </if>
+        <if test="null!=surplus_quality  and ''!= surplus_quality">
+            and a.surplus_quality =#{surplus_quality}
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            and a.remark LIKE concat('%',#{remark},'%')
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+        <if test="null!=row  and ''!= row">
+            and a.row = #{row}
+        </if>
+        <if test="null!=w_tray_number  and ''!= w_tray_number">
+            and t.w_tray_number LIKE concat('%',#{w_tray_number},'%')
+        </if>
+        <if test="null!=w_id_null  and ''!= w_id_null">
+            and t.id is NULL
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,s.val as statusval,b.*,b.name as warehousename,
+        c.name as warehousearea,
+        t.number as w_tray_number,
+        t.id as w_tray_id
+        FROM
+        w_warehouse_site_setting a
+        left join w_warehouse b on a.warehouse_id=b.id
+        left join w_warehouse_area c on a.warehouse_area_id=c.id
+        LEFT JOIN sys_config s on a.status = s.id
+        LEFT JOIN w_tray t on t.savelocation = a.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_warehouse_site_setting a
+        left join w_warehouse b on a.warehouse_id=b.id
+        left join w_warehouse_area c on a.warehouse_area_id=c.id
+        LEFT JOIN sys_config s on a.status = s.id
+        LEFT JOIN w_tray t on t.savelocation = a.id
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+
+
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,CONCAT(row,stratum,columnss) as position,s.val as statusval
+        FROM
+        w_warehouse_site_setting a
+        left join w_warehouse b on a.warehouse_id=b.id
+        LEFT JOIN sys_config s on a.status = s.id
+        WHERE
+        1 = 1
+        and a.id=#{id}
+        AND a.is_delete = 'N'
+        limit 0,1
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into w_warehouse_site_setting ( warehouse_id,warehouse_area_id, warehouse_area,group_id,
+        number, name, lpn,
+        location_type, location_use_type, turnover_mode,
+        process_type, longs, width,
+        high, weight_stint, volume_stint,surplus_volume,surplus_quality,
+        tray_number, group_serial_number, logical_number,
+        row, stratum, columnss,
+        receipt_area_id, shelf_area_id, sorting_area_id,
+        is_cargo_mixing, is_batch_mixing, status,
+        remark, create_time, creator, is_delete
+        )
+        values (#{warehouse_id},#{warehouse_area_id},#{warehouse_area},#{group_id},
+        #{number}, #{name}, #{lpn},
+        #{location_type}, #{location_use_type}, #{turnover_mode},
+        #{process_type}, #{longs}, #{width},
+        #{high}, #{weight_stint}, #{volume_stint},#{surplus_volume},#{surplus_quality},
+        #{tray_number}, #{group_serial_number}, #{logical_number},
+        #{row}, #{stratum}, #{columnss},
+        #{receipt_area_id}, #{shelf_area_id}, #{sorting_area_id},
+        #{is_cargo_mixing}, #{is_batch_mixing}, #{status},
+        #{remark}, now(), #{creator}, 'N')
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_warehouse_site_setting
+        set
+        <if test="null!=warehouse_id  and ''!= warehouse_id">
+            warehouse_id = #{warehouse_id},
+        </if>
+        <if test="null!=warehouse_area_id  and ''!= warehouse_area_id">
+            warehouse_area_id = #{warehouse_area_id},
+        </if>
+        <if test="null!=warehouse_area  and ''!= warehouse_area">
+            warehouse_area = #{warehouse_area},
+        </if>
+        <if test="null!=group_id  and ''!= group_id">
+            group_id = #{group_id},
+        </if>
+        <if test="null!=number  and ''!= number">
+            number = #{number},
+        </if>
+        <if test="null!=name  and ''!= name">
+            name = #{name},
+        </if>
+        <if test="null!=lpn  and ''!= lpn">
+            lpn = #{lpn},
+        </if>
+        <if test="null!=location_type  and ''!= location_type">
+            location_type = #{location_type},
+        </if>
+        <if test="null!=location_use_type  and ''!= location_use_type">
+            location_use_type = #{location_use_type},
+        </if>
+        <if test="null!=turnover_mode  and ''!= turnover_mode">
+            turnover_mode = #{turnover_mode},
+        </if>
+        <if test="null!=process_type  and ''!= process_type">
+            process_type = #{process_type},
+        </if>
+        <if test="null!=longs  and ''!= longs">
+            longs = #{longs},
+        </if>
+        <if test="null!=width  and ''!= width">
+            width = #{width},
+        </if>
+        <if test="null!=high  and ''!= high">
+            high = #{high},
+        </if>
+        <if test="null!=weight_stint  and ''!= weight_stint">
+            weight_stint = #{weight_stint},
+        </if>
+        <if test="null!=volume_stint  and ''!= volume_stint">
+            volume_stint = #{volume_stint},
+        </if>
+        <if test="null!=surplus_volume  and ''!= surplus_volume">
+            surplus_volume = #{surplus_volume},
+        </if>
+        <if test="null!=surplus_quality  and ''!= surplus_quality">
+            surplus_quality = #{surplus_quality},
+        </if>
+        <if test="null!=tray_number  and ''!= tray_number">
+            tray_number = #{tray_number},
+        </if>
+        <if test="null!=group_serial_number  and ''!= group_serial_number">
+            group_serial_number = #{group_serial_number},
+        </if>
+        <if test="null!=logical_number  and ''!= logical_number">
+            logical_number = #{logical_number},
+        </if>
+        <if test="null!=row  and ''!= row">
+            row = #{row},
+        </if>
+        <if test="null!=stratum  and ''!= stratum">
+            stratum = #{stratum},
+        </if>
+        <if test="null!=columnss  and ''!= columnss">
+            columnss = #{columnss},
+        </if>
+        <if test="null!=receipt_area_id  and ''!= receipt_area_id">
+            receipt_area_id = #{receipt_area_id},
+        </if>
+        <if test="null!=deptid  and ''!= deptid">
+            shelf_area_id = #{shelfAreaId},
+        </if>
+        <if test="null!=sorting_area_id  and ''!= sorting_area_id">
+            sorting_area_id = #{sorting_area_id},
+        </if>
+        <if test="null!=is_cargo_mixing  and ''!= is_cargo_mixing">
+            is_cargo_mixing = #{is_cargo_mixing},
+        </if>
+        <if test="null!=is_batch_mixing  and ''!= is_batch_mixing">
+            is_batch_mixing = #{is_batch_mixing},
+        </if>
+        <if test="null!=status">
+            status = #{status},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            updator = #{updator},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        UPDATE w_warehouse_site_setting set is_delete = 'Y' WHERE id = #{id}
+    </delete>
+
+
+    <select id="unoccupiedSettingList" parameterType="map" resultType="dto">
+        SELECT a.*,w.`name` as warehousename,g.`name` as groupname
+        FROM w_warehouse_site_setting a
+        LEFT JOIN w_warehouse w ON a.warehouse_id = w.id
+        LEFT JOIN w_warehouse_site_group g ON a.group_id = g.id
+        WHERE a.id not in (SELECT id FROM w_order_store_sku GROUP BY id)
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=groupname  and ''!= groupname">
+            and g.name LIKE concat('%',#{groupname},'%')
+        </if>
+        <if test="null!=warehousename  and ''!= warehousename">
+            and b.name LIKE concat('%',#{warehousename},'%')
+        </if>
+        <if test="null!=location_type  and ''!= location_type">
+            and a.location_type = #{location_type}
+        </if>
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+
+    <select id="unoccupiedSettingListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total
+        FROM w_warehouse_site_setting a
+        LEFT JOIN w_warehouse w ON a.warehouse_id = w.id
+        LEFT JOIN w_warehouse_site_group g ON a.group_id = g.id
+        WHERE a.id not in (SELECT id FROM w_order_store_sku GROUP BY id)
+        <if test="null!=name  and ''!= name">
+            and a.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="null!=groupname  and ''!= groupname">
+            and g.name LIKE concat('%',#{groupname},'%')
+        </if>
+        <if test="null!=warehousename  and ''!= warehousename">
+            and b.name LIKE concat('%',#{warehousename},'%')
+        </if>
+        <if test="null!=location_type  and ''!= location_type">
+            and a.location_type = #{location_type}
+        </if>
+    </select>
+
+    <select id="selectWarehouseList" parameterType="map" resultType="dto">
+        SELECT
+        a.warehouse_id,
+        b.`name`
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse b ON a.warehouse_id = b.id
+        LEFT JOIN w_warehouse_area c ON a.warehouse_area_id = c.id
+        LEFT JOIN sys_config s ON a. STATUS = s.id
+        LEFT JOIN w_tray t ON t.savelocation = a.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <if test="checked == null">
+            and t.id is NULL
+        </if>
+        <if test="null!=checked  and ''!= checked">
+            and t.id is NOT NULL
+        </if>
+        <if test="null!=house_name  and ''!= house_name">
+            and b.name LIKE concat('%',#{house_name},'%')
+        </if>
+        <if test="null!=warehouse_id  and ''!= warehouse_id">
+            and a.warehouse_id = #{warehouse_id}
+        </if>
+        GROUP BY a.warehouse_id
+    </select>
+
+    <select id="selectAreaList" parameterType="map" resultType="dto">
+        SELECT
+        a.warehouse_area_id,
+        c.`name`,
+        a.warehouse_id
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_warehouse b ON a.warehouse_id = b.id
+        LEFT JOIN w_warehouse_area c ON a.warehouse_area_id = c.id
+        LEFT JOIN sys_config s ON a. STATUS = s.id
+        LEFT JOIN w_tray t ON t.savelocation = a.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <if test="checked == null">
+            and t.id is NULL
+        </if>
+        <if test="null!=checked  and ''!= checked">
+            and t.id is NOT NULL
+        </if>
+        <if test="null!=area_name  and ''!= area_name">
+            and c.name LIKE concat('%',#{area_name},'%')
+        </if>
+        <if test="null!=warehouse_id  and ''!= warehouse_id">
+            and a.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="null!=warehouse_area_id  and ''!= warehouse_area_id">
+            and a.warehouse_area_id = #{warehouse_area_id}
+        </if>
+        GROUP BY a.warehouse_area_id
+    </select>
+
+
+    <select id="selectSiteSettingList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,t.id as tray_id
+        FROM
+        w_warehouse_site_setting a
+        LEFT JOIN w_tray t ON t.savelocation = a.id
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <if test="checked == null">
+            and t.id is NULL
+        </if>
+        <if test="null!=checked  and ''!= checked">
+            and t.id is NOT NULL
+        </if>
+        <if test="null!=number  and ''!= number">
+            and a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="null!=warehouse_id  and ''!= warehouse_id">
+            and a.warehouse_id = #{warehouse_id}
+        </if>
+        <if test="null!=warehouse_area_id  and ''!= warehouse_area_id">
+            and a.warehouse_area_id = #{warehouse_area_id}
+        </if>
+        GROUP BY a.id
+
+    </select>
+</mapper>

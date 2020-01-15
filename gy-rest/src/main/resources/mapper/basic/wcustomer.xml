@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="wcustomer">
+
+
+    <sql id="sql_where">
+        <if test="null!=code  and ''!= code">
+            and a.customerno like Concat ('%',#{code},'%')
+        </if>
+        <if test="null!=client_name  and ''!= client_name">
+            and a.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=accounts  and ''!= accounts">
+            and a.account like Concat ('%',#{accounts},'%')
+        </if>
+        <if test="null!=unified_social_credit_code  and ''!= unified_social_credit_code">
+            and a.socialcode like Concat ('%',#{unified_social_credit_code},'%')
+        </if>
+        <if test="null!=registered_capital  and ''!= registered_capital">
+            and a.registered_capital like Concat ('%',#{registered_capital},'%')
+        </if>
+        <if test="null!=legal_name  and ''!= legal_name">
+            and a.legalname like Concat ('%',#{legal_name},'%')
+        </if>
+        <if test="null!=storage_warehouse  and ''!= storage_warehouse">
+            and a.paperwork_type =#{storage_warehouse}
+        </if>
+        <if test="null!=legal_document_number  and ''!= legal_document_number">
+            and a.paperwork_no like Concat ('%',#{legal_document_number},'%')
+        </if>
+        <if test="null!=startdate  and ''!= startdate">
+            and a.effective_time >= #{startdate}
+        </if>
+        <if test="null!=enddate  and ''!= enddate">
+            and a.effective_time &lt;= #{enddate}
+        </if>
+        <if test="null!=operator_name  and ''!= operator_name">
+            and a.manager_name like Concat ('%',#{operator_name},'%')
+        </if>
+        <if test="null!=operator_document_number  and ''!= operator_document_number">
+            and a.manager_paperwork like Concat ('%',#{operator_document_number},'%')
+        </if>
+        <if test="null!=startdate1  and ''!= startdate1">
+            and a.manager_effectivetime >= concat(#{startdate1},' ','00:00:00')
+        </if>
+        <if test="null!=enddate1  and ''!= enddate1">
+            and a.manager_effectivetime &lt;= concat(#{enddate1},' ','00:00:00')
+        </if>
+        <if test="null!=operator_document_type  and ''!= operator_document_type">
+            and a.manager_papertype = #{operator_document_type}
+        </if>
+        <if test="null!=customer_nature  and ''!= customer_nature">
+            and a.customer_type = #{customer_nature}
+        </if>
+        <if test="null!=industry_type  and ''!= industry_type">
+            and a.trade_type = #{industry_type}
+        </if>
+        <if test="null!=operator_phone  and ''!= operator_phone">
+            and a.manager_mobile like Concat ('%',#{operator_phone},'%')
+        </if>
+        <if test="null!=operator_email  and ''!= operator_email">
+            and a.manager_email like Concat ('%',#{operator_email},'%')
+        </if>
+        <if test="null!=is_contract  and ''!= is_contract">
+            and a.isdeal = #{is_contract}
+        </if>
+        <if test="null!=remarks  and ''!= remarks">
+            and a.remark like Concat ('%',#{remarks},'%')
+        </if>
+        <if test="null!=status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=customer_id">
+            and a.id = #{customer_id}
+        </if>
+    </sql>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        INSERT INTO w_customer (
+
+        <if test="null!=customerno  and ''!= customerno">customerno ,</if>
+        <if test="null!=account  and ''!= account">account ,</if>
+        <if test="null!=client_name  and ''!= client_name">client_name ,</if>
+        <if test="null!=socialcode  and ''!= socialcode">socialcode ,</if>
+        <if test="null!=registered_capital  and ''!= registered_capital">registered_capital ,</if>
+        <if test="null!=legalname  and ''!= legalname">legalname ,</if>
+        <if test="null!=paperwork_type  and ''!= paperwork_type">paperwork_type ,</if>
+        <if test="null!=paperwork_no  and ''!= paperwork_no">paperwork_no ,</if>
+        <if test="null!=effective_time  and ''!= effective_time">effective_time ,</if>
+        <if test="null!=manager_name  and ''!= manager_name">manager_name ,</if>
+        <if test="null!=manager_paperwork  and ''!= manager_paperwork">manager_paperwork ,</if>
+        <if test="null!=manager_papertype  and ''!= manager_papertype">manager_papertype ,</if>
+        <if test="null!=manager_effectivetime  and ''!= manager_effectivetime">manager_effectivetime ,</if>
+        <if test="null!=customer_type  and ''!= customer_type">customer_type ,</if>
+        <if test="null!=trade_type  and ''!= trade_type">trade_type ,</if>
+        <if test="null!=manager_mobile  and ''!= manager_mobile">manager_mobile ,</if>
+        <if test="null!=manager_email  and ''!= manager_email">manager_email ,</if>
+        <if test="null!=isdeal  and ''!= isdeal">isdeal ,</if>
+        <if test="null!=warningday  and ''!= warningday">warningday ,</if>
+        <if test="null!=warningday_num  and ''!= warningday_num">warningday_num ,</if>
+        <if test="null!=remark  and ''!= remark">remark ,</if>
+        <if test="null!=status">status ,</if>
+        <if test="null!=businesslicense  and ''!= businesslicense">businesslicense ,</if>
+        <if test="null!=business_date  and ''!= business_date">business_date ,</if>
+        <if test="null!=manager_photo  and ''!= manager_photo">manager_photo ,</if>
+        <if test="null!=paperwork_photo  and ''!= paperwork_photo">paperwork_photo ,</if>
+        <if test="null!=business_date_start  and ''!= business_date_start">business_date_start ,</if>
+        create_time,
+        update_time
+        )
+        VALUES
+        (
+
+        <if test="null!=customerno  and ''!= customerno">#{customerno} ,</if>
+        <if test="null!=account  and ''!= account">#{account} ,</if>
+        <if test="null!=client_name  and ''!= client_name">#{client_name} ,</if>
+        <if test="null!=socialcode  and ''!= socialcode">#{socialcode} ,</if>
+        <if test="null!=registered_capital  and ''!= registered_capital">#{registered_capital} ,</if>
+        <if test="null!=legalname  and ''!= legalname">#{legalname} ,</if>
+        <if test="null!=paperwork_type  and ''!= paperwork_type">#{paperwork_type} ,</if>
+        <if test="null!=paperwork_no  and ''!= paperwork_no">#{paperwork_no} ,</if>
+        <if test="null!=effective_time  and ''!= effective_time">#{effective_time} ,</if>
+        <if test="null!=manager_name  and ''!= manager_name">#{manager_name} ,</if>
+        <if test="null!=manager_paperwork  and ''!= manager_paperwork">#{manager_paperwork} ,</if>
+        <if test="null!=manager_papertype  and ''!= manager_papertype">#{manager_papertype} ,</if>
+        <if test="null!=manager_effectivetime  and ''!= manager_effectivetime">#{manager_effectivetime} ,</if>
+        <if test="null!=customer_type  and ''!= customer_type">#{customer_type} ,</if>
+        <if test="null!=trade_type  and ''!= trade_type">#{trade_type} ,</if>
+        <if test="null!=manager_mobile  and ''!= manager_mobile">#{manager_mobile} ,</if>
+        <if test="null!=manager_email  and ''!= manager_email">#{manager_email} ,</if>
+        <if test="null!=isdeal  and ''!= isdeal">#{isdeal} ,</if>
+        <if test="null!=warningday  and ''!= warningday">#{warningday} ,</if>
+        <if test="null!=warningday_num  and ''!= warningday_num">#{warningday_num} ,</if>
+        <if test="null!=remark  and ''!= remark">#{remark} ,</if>
+        <if test="null!=status">#{status} ,</if>
+        <if test="null!=businesslicense  and ''!= businesslicense">#{businesslicense} ,</if>
+        <if test="null!=business_date  and ''!= business_date">#{business_date} ,</if>
+        <if test="null!=manager_photo  and ''!= manager_photo">#{manager_photo} ,</if>
+        <if test="null!=paperwork_photo  and ''!= paperwork_photo">#{paperwork_photo} ,</if>
+        <if test="null!=business_date_start  and ''!= business_date_start">#{business_date_start} ,</if>
+        now(),
+        now()
+        )
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <update id="deleteInfo" parameterType="dto">
+        update w_customer
+        set is_delete = 'Y'
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update w_customer set
+
+        <if test="null!=customerno  and ''!= customerno">customerno = #{customerno} ,</if>
+        <if test="null!=account  and ''!= account">account= #{account} ,</if>
+        <if test="null!=client_name  and ''!= client_name">client_name=#{client_name} ,</if>
+        <if test="null!=socialcode  and ''!= socialcode">socialcode = #{socialcode} ,</if>
+        <if test="null!=registered_capital  and ''!= registered_capital">registered_capital = #{registered_capital} ,
+        </if>
+        <if test="null!=legalname  and ''!= legalname">legalname = #{legalname} ,</if>
+        <if test="null!=paperwork_type  and ''!= paperwork_type">paperwork_type = #{paperwork_type} ,</if>
+        <if test="null!=paperwork_no  and ''!= paperwork_no">paperwork_no = #{paperwork_no} ,</if>
+        <if test="null!=effective_time  and ''!= effective_time">effective_time= #{effective_time} ,</if>
+        <if test="null!=manager_name  and ''!= manager_name">manager_name = #{manager_name} ,</if>
+        <if test="null!=manager_paperwork  and ''!= manager_paperwork">manager_paperwork = #{manager_paperwork} ,</if>
+        <if test="null!=manager_papertype  and ''!= manager_papertype">manager_papertype = #{manager_papertype} ,</if>
+        <if test="null!=manager_effectivetime  and ''!= manager_effectivetime">
+        </if>
+        <if test="null!=customer_type  and ''!= customer_type">customer_type = #{customer_type} ,</if>
+        <if test="null!=trade_type  and ''!= trade_type">trade_type = #{trade_type} ,</if>
+        <if test="null!=manager_mobile  and ''!= manager_mobile">manager_mobile= #{manager_mobile} ,</if>
+        <if test="null!=manager_email  and ''!= manager_email">manager_email = #{manager_email} ,</if>
+        <if test="null!=isdeal  and ''!= isdeal">isdeal = #{isdeal} ,</if>
+        <if test="null!=warningday  and ''!= warningday">warningday = #{warningday} ,</if>
+        <if test="null!=warningday_num  and ''!= warningday_num">warningday_num = #{warningday_num} ,</if>
+        <if test="null!=remark  and ''!= remark">remark = #{remark} ,</if>
+        <if test="null!=status">status = #{status} ,</if>
+        <if test="null!=businesslicense  and ''!= businesslicense">businesslicense=#{businesslicense} ,</if>
+        <if test="null!=business_date  and ''!= business_date">business_date=#{business_date} ,</if>
+        <if test="null!=manager_photo  and ''!= manager_photo">manager_photo=#{manager_photo} ,</if>
+        <if test="null!=paperwork_photo  and ''!= paperwork_photo">paperwork_photo=#{paperwork_photo} ,</if>
+        <if test="null!=updator  and ''!= updator">updator = #{updator} ,</if>
+        <if test="null!=business_date_start  and ''!= business_date_start">business_date_start = #{business_date_start} ,</if>
+        update_time = now()
+        where id=#{id}
+    </update>
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT *,DATE_FORMAT(a.effective_time,'%Y%-%m%-%d') as
+        effectivedate,DATE_FORMAT(a.manager_effectivetime,'%Y%-%m%-%d') as effectivedates,
+        DATE_FORMAT(a.business_date,'%Y%-%m%-%d') as businessdate
+        FROM
+        w_customer a
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY a.id desc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 对象查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_customer a
+        WHERE 1 = 1
+        AND a.is_delete = 'N'
+
+        and id = #{id}
+        limit 0
+        ,1
+    </select>
+
+
+    <!-- 对象查询 -->
+    <select id="getCustomerInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM w_customer a
+        WHERE 1 = 1
+        AND a.is_delete = 'N'
+
+        and client_name = #{client_name}
+        limit 0
+        ,1
+    </select>
+
+    <!-- 列表数量查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        select
+        count(1) as total
+        FROM w_customer a
+        WHERE 1 = 1 AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+    </select>
+
+</mapper>

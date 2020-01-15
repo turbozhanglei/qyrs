@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="customerStore">
+
+
+    <!-- 列表查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        c.client_name,
+        c.customerno,
+        IFNULL(sum(a.stock),0) as totalstock,
+        s.`name` as product_name,
+        s.number as product_number,
+        s.`level` as product_level
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_customer c on c.id=a.provider_id
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        where a.status=0
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=customerno  and ''!= customerno">
+            and c.customerno like Concat ('%',#{customerno},'%')
+        </if>
+        <if test="null!=query  and ''!= query">
+            and
+            (s.`name` like Concat ('%',#{query},'%')
+            OR
+            s.number like Concat ('%',#{query},'%')
+            )
+        </if>
+        <if test="null!=customer_id  and ''!= customer_id">
+            and a.provider_id = #{customer_id}
+        </if>
+        GROUP BY a.provider_id,a.sku_id
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        (
+        SELECT
+        a.*
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_customer c on c.id=a.provider_id
+        LEFT JOIN w_sku s on s.id=a.sku_id
+        where a.status=0
+        <if test="null!=client_name  and ''!= client_name">
+            and c.client_name like Concat ('%',#{client_name},'%')
+        </if>
+        <if test="null!=customerno  and ''!= customerno">
+            and c.customerno like Concat ('%',#{customerno},'%')
+        </if>
+        GROUP BY a.provider_id
+        ) AS a
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailList" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        s.name as product_name,
+        obs.number as onumber,
+        wss.number as wnumber,
+        IFNULL(SUM(a.stock),0) as cstock,
+        w.number as tnumber,
+        obs.roduction_date,obs.expiration_date
+        FROM
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku obs on obs.id=a.buy_sku_id
+        LEFT JOIN w_order_buy ob on ob.id=obs.order_id
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id=a.setting_id
+        LEFT JOIN w_tray w on w.id=a.tray_id
+        WHERE
+        a. STATUS = 0 and
+        a.provider_id=#{provider_id} and a.sku_id=#{sku_id}
+        GROUP BY a.in_batch_number
+        <if test="null!=start">
+            limit ${start},${end}
+        </if>
+    </select>
+    <!-- 明细查询 -->
+    <select id="queryDetailListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(1) AS total
+        FROM
+        ( select a.*
+        from
+        w_order_store_sku a
+        LEFT JOIN w_order_buy_sku obs on obs.id=a.buy_sku_id
+        LEFT JOIN w_order_buy ob on ob.id=obs.order_id
+        LEFT JOIN w_sku s ON s.id = a.sku_id
+        LEFT JOIN w_warehouse_site_setting wss on wss.id=a.setting_id
+        LEFT JOIN w_tray w on w.id=a.tray_id
+        WHERE
+        a. STATUS = 0 and
+        a.provider_id=#{provider_id} and a.sku_id=#{sku_id}
+        GROUP BY a.in_batch_number
+        ) as a
+
+    </select>
+
+
+</mapper>

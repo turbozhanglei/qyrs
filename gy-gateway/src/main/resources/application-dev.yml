@@ -1,0 +1,43 @@
+server:
+  port: 8092
+
+logging:
+  level:
+    root: INFO
+
+white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,/wms-rest/suser/login,/wms-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/getMyPaySuccess,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess
+
+spring:
+  application:
+    name: wms-gateway #服务名称--调用的时候根据名称来调用该服务的方法
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8091/eureka
+zuul:
+  retryable: true #是否开启重试功能
+  host:
+    socket-timeout-millis: 30000
+    connect-timeout-millis: 60000
+  routes:
+    wms-rest:
+      path: /**
+      serviceId: wms-rest
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 70000
+
+ribbon:
+  MaxAutoRetries: 1 #对当前服务的重试次数
+  MaxAutoRetriesNextServer: 1
+  ReadTimeout: 8000
+  ConnectTimeout: 8000

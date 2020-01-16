@@ -1,7 +1,6 @@
 package com.guoye.controller.excel;
 
 import com.guoye.base.BizAction;
-import com.guoye.service.GuestService;
 import com.guoye.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,8 +26,8 @@ import java.util.*;
 @RequestMapping("/excel")
 public class ExcelManagerController extends BizAction {
 
-    @Autowired
-    GuestService guestService;
+//    @Autowired
+//    GuestService guestService;
 
     @Autowired
     OrderNumberUtils orderNumberUtils;
@@ -570,7 +569,7 @@ public class ExcelManagerController extends BizAction {
                             String warningday = next.getAsString("warningday");
                             //判断warningday存在则计算warningday_num
                             if (StringUtils.isNotEmpty(warningday)) {
-                                double warningday_num = guestService.getWarningdayNum(warningday);
+                                double warningday_num = 0;
                                 next.put("warningday_num", 1 - warningday_num);
                             }
 

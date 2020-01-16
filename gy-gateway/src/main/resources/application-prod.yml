@@ -9,7 +9,7 @@ white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,,/wms-rest/su
 
 spring:
   application:
-    name: wms-gateway #服务名称--调用的时候根据名称来调用该服务的方法
+    name: gy-gateway #服务名称--调用的时候根据名称来调用该服务的方法
 
 eureka:
   client:
@@ -30,7 +30,7 @@ zuul:
   routes:
     zgt-order:
       path: /**
-      serviceId: wms-rest
+      serviceId: gy-rest
 
 hystrix:
   threadpool:

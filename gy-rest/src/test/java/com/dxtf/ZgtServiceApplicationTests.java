@@ -1,6 +1,6 @@
-package com.dxtf;
+package com.guoye;
 
-import com.dxtf.service.BizService;
+import com.guoye.service.BizService;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;

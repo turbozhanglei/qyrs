@@ -5,7 +5,7 @@ spring:
 ---
 spring:
   application:
-    name: wms-gateway
+    name: gy-gateway
 
 ---
 

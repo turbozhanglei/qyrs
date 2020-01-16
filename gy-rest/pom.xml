@@ -8,10 +8,10 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.dxtf</groupId>
-	<artifactId>wms-rest</artifactId>
+	<groupId>com.guoye</groupId>
+	<artifactId>gy-rest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>wms-rest</name>
+	<name>gy-rest</name>
 	<description>Demo project for Spring Boot</description>
 	<packaging>jar</packaging>
 
@@ -49,8 +49,8 @@
 
 		<!--自己项目依赖-->
 		<dependency>
-			<groupId>com.dxtf</groupId>
-			<artifactId>wms-common</artifactId>
+			<groupId>com.guoye</groupId>
+			<artifactId>gy-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
@@ -183,8 +183,8 @@
 			<version>3.3.0</version>
 		</dependency>
         <dependency>
-            <groupId>com.dxtf</groupId>
-            <artifactId>wms-common</artifactId>
+            <groupId>com.guoye</groupId>
+            <artifactId>gy-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
@@ -194,8 +194,8 @@
 			<version>2.2.5</version>
 		</dependency>
 		<dependency>
-			<groupId>com.dxtf</groupId>
-			<artifactId>wms-common</artifactId>
+			<groupId>com.guoye</groupId>
+			<artifactId>gy-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

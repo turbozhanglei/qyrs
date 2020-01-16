@@ -8,10 +8,10 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.dxtf</groupId>
-	<artifactId>wms-gateway</artifactId>
+	<groupId>com.guoye</groupId>
+	<artifactId>gy-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>wms-gateway</name>
+	<name>gy-gateway</name>
 	<description>Demo project for Spring Boot</description>
 	<packaging>jar</packaging>
 

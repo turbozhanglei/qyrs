@@ -9,10 +9,10 @@
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.dxtf</groupId>
-    <artifactId>wms-service</artifactId>
+    <groupId>com.guoye</groupId>
+    <artifactId>gy-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>wms-service</name>
+    <name>gy-service</name>
     <description>Demo project for Spring Boot</description>
     <packaging>jar</packaging>
 

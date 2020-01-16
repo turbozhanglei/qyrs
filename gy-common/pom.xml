@@ -8,10 +8,10 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.dxtf</groupId>
-	<artifactId>wms-common</artifactId>
+	<groupId>com.guoye</groupId>
+	<artifactId>gy-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>wms-common</name>
+	<name>gy-common</name>
 	<description>Demo project for Spring Boot</description>
 	<packaging>jar</packaging>
 

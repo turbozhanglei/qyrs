@@ -39,8 +39,7 @@ public class SysUserController extends BizAction {
      */
     @ResponseBody
     @RequestMapping(value = "/login")
-    public BaseResult login(HttpServletRequest request,
-                            HttpServletResponse response) {
+    public BaseResult login(HttpServletRequest request, HttpServletResponse response) {
         Dto dto = WebUtils.getParamAsDto(request);
         BaseResult result = new BaseResult();
         try {
@@ -49,8 +48,7 @@ public class SysUserController extends BizAction {
                     throw new Exception("验证码错误。");
                 }
             }
-            Dto member = (BaseDto) bizService.queryForObject(
-                    "sysUser.loginByAccount", dto);
+            Dto member = (BaseDto) bizService.queryForObject("sysUser.loginByAccount", dto);
             if (member != null && member.getAsLong("id") != null) {
                 if (member.getAsString("status").equals("0")) {
                     throw new Exception("用户已离职，帐号失效");

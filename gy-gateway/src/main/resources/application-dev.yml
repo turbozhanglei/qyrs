@@ -5,7 +5,7 @@ logging:
   level:
     root: INFO
 
-white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,/wms-rest/suser/login,/wms-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/getMyPaySuccess,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/getMyPaySuccess,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess
 
 spring:
   application:

@@ -12,9 +12,9 @@
         <if test="null!=targetToken  and ''!= targetToken">
             and a.token = #{targetToken}
         </if>
-        <if test="null!=account  and ''!= account">
-            and a.account = #{account}
-        </if>
+        <!--<if test="null!=account  and ''!= account">-->
+            <!--and a.account = #{account}-->
+        <!--</if>-->
         <if test="null!=pid  and ''!= pid">
             and a.pid = #{pid}
         </if>
@@ -135,15 +135,11 @@
     <select id="queryList" parameterType="map" resultType="dto">
         SELECT
         a.*,
-        d.dept_name AS deptname,
         r.role_name AS rolename,
-        b.username AS pname,
-        CONCAT(a.number, '-', a.username) AS numbername,
+        CONCAT(a.mobile, '-', a.username) AS numbername,
         r.role_id_list
         FROM
-        sys_user a
-        LEFT JOIN sys_user b ON a.pid = b.id
-        LEFT JOIN sys_dept d ON a.deptid = d.id
+        g_user a
         LEFT JOIN
         (
         SELECT
@@ -155,7 +151,7 @@
         sys_role b on a.roleid = b.id
         GROUP BY a.userid
         ) r on a.id = r.userid
-        WHERE 1=1 and a.is_delete = 'N'
+        WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
         ORDER BY a.id desc
         <if test="null!=start">
@@ -168,16 +164,14 @@
     <select id="queryListCount" parameterType="map" resultType="dto">
         SELECT
         count(a.id) as total
-        FROM sys_user a
-        left join sys_user b on a.pid = b.id
-        left join sys_dept d on a.deptid = d.id
-        WHERE 1=1 and a.is_delete = 'N'
+        FROM g_user a
+        WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
     </select>
 
     <!-- 插入 -->
     <insert id="saveInfo" parameterType="dto">
-        insert into sys_user (username, pid,
+        insert into g_user (username, pid,
         number, moile, sex,
         deptid, lname, roleid,
         account, password, status,create_time,creator,update_time,updator,is_delete,wopenid,zopenid
@@ -271,12 +265,14 @@
     </update>
     <!-- 查询 -->
     <select id="loginByAccount" parameterType="map" resultType="dto">
-        SELECT a.*,b.dept_name,b.`type` as dept_type,b.is_delete as dept_is_delete
-        FROM sys_user a
-        LEFT JOIN sys_dept as b on(a.deptid=b.id)
-        WHERE a.is_delete = 'N'
-        <if test="null!=account  and ''!= account">
-            and a.account = #{account}
+        SELECT
+        a.*
+        FROM
+        g_user a
+        WHERE
+        a. delete_flag= 0
+        <if test="null!=username  and ''!= username">
+            and a.username = #{username}
         </if>
         <if test="null!=moile  and ''!= moile">
             and a.moile = #{moile}

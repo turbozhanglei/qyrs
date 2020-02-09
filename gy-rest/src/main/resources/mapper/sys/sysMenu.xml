@@ -129,7 +129,7 @@
         m.*
         FROM
         sys_menu m,
-        sys_user u,
+        g_user u,
         sys_role_user ur,
         sys_role_menu rm
         WHERE
@@ -159,7 +159,7 @@
         SELECT
         srm.menuid AS menuid
         FROM
-        sys_user a
+        g_user a
         LEFT JOIN sys_role_user sru ON sru.userid = a.id
         LEFT JOIN sys_role_menu srm ON srm.roleid = sru.roleid
         WHERE

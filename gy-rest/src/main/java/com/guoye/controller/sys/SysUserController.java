@@ -50,30 +50,30 @@ public class SysUserController extends BizAction {
             }
             Dto member = (BaseDto) bizService.queryForObject("sysUser.loginByAccount", dto);
             if (member != null && member.getAsLong("id") != null) {
-                if (member.getAsString("status").equals("0")) {
+                if (member.getAsString("status").equals("1")) {
                     throw new Exception("用户已离职，帐号失效");
                 }
                 String dept_type = member.getAsString("dept_type");
                 String dept_is_delete = member.getAsString("dept_is_delete");
                 Dto customer = null;
-                if (StringUtils.isNotEmpty(dept_type)) {
-                    if ("Y".equalsIgnoreCase(dept_is_delete)) {
-                        throw new Exception("用户权限已失效，请重新配置");
-                    }
-
-                    if (!dept_type.equals("20")) {
-                        customer = (Dto) bizService.queryForDto("customerRelation.getCustomerByDeptId", new BaseDto("deptid", member.getAsString("deptid")));
-                        if (customer != null) {
-                            member.put("customer", customer);
-                        } else {
-                            throw new Exception("用户公司无效，登录失败");
-                        }
-                    }
-
-
-                } else {
-                    throw new Exception("用户未分配有效权限");
-                }
+//                if (StringUtils.isNotEmpty(dept_type)) {
+//                    if ("Y".equalsIgnoreCase(dept_is_delete)) {
+//                        throw new Exception("用户权限已失效，请重新配置");
+//                    }
+//
+//                    if (!dept_type.equals("20")) {
+//                        customer = (Dto) bizService.queryForDto("customerRelation.getCustomerByDeptId", new BaseDto("deptid", member.getAsString("deptid")));
+//                        if (customer != null) {
+//                            member.put("customer", customer);
+//                        } else {
+//                            throw new Exception("用户公司无效，登录失败");
+//                        }
+//                    }
+//
+//
+//                } else {
+//                    throw new Exception("用户未分配有效权限");
+//                }
 
 
                 String token = UUID.randomUUID().toString();

@@ -803,4 +803,35 @@ public class SysUserController extends BizAction {
         }
         return openid;
     }
+
+    /**
+     * 修改用户状态信息
+     *
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateUserInfo")
+    public BaseResult updateUserInfo(HttpServletRequest request, HttpServletResponse response) {
+        Dto inDto = WebUtils.getParamAsDto(request);
+        BaseResult result = new BaseResult();
+        inDto.put("tableName", inDto.getAsString("t"));
+        try {
+            Dto member = redisService.getObject(inDto.getAsString("token"), BaseDto.class);
+            String []ids = inDto.getAsString("ids").split(",");
+            if (inDto.getAsLong("ids") != null) {
+                // 修改
+                inDto.put("updator", member == null ? "" : member.get("id"));
+                for(int i=0;i<ids.length;i++){
+                    inDto.put("id",ids[i]);
+                    bizService.updateInfo(inDto);
+                }
+            }
+            result.setData(new BaseDto("msg", "数据操作成功"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+        return result;
+    }
 }

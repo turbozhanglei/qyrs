@@ -101,13 +101,14 @@
 
     <!-- 查询 -->
     <select id="getInfo" parameterType="map" resultType="dto">
-        SELECT a.*,d.dept_name as deptname,r.role_name as rolename,b.username as pname,
-        CONCAT(b.number,'-',b.username) as numbername,d.`type` as dept_type,d.is_delete as dept_is_delete
-        FROM sys_user a
-        left join sys_user b on a.pid = b.id
-        left join sys_dept d on a.deptid = d.id
-        left join sys_role r on a.roleid = r.id
-        WHERE 1=1 and a.is_delete = 'N'
+        SELECT
+        a.*,case a.sex when '0' then '无' when '1' then '男' when '2' then '女' end as sec,
+        case a.source when '1' then '小程序' else '后台' end as sources
+        FROM
+        g_user a
+        WHERE
+        1 = 1
+        AND a.delete_flag = 0
         <include refid="sql_where"/>
         limit 0,1
     </select>
@@ -153,7 +154,7 @@
         ) r on a.id = r.userid
         WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
-        ORDER BY a.id desc
+        ORDER BY a.id asc
         <if test="null!=start">
             limit #{start},#{end}
         </if>
@@ -194,52 +195,47 @@
 
     <!-- 修改 -->
     <update id="updateInfo" parameterType="dto">
-        update sys_user
+        update g_user
         set
+        <if test="null!=nickname  and ''!= nickname">
+            nickname = #{nickname},
+        </if>
         <if test="null!=username  and ''!= username">
             username = #{username},
         </if>
-        <if test="null!=pid  and ''!= pid">
-            pid = #{pid},
+        <if test="null!=mobile  and ''!= mobile">
+            mobile = #{mobile},
+        </if>
+        <if test="null!=head_pic  and ''!= head_pic">
+            head_pic = #{head_pic},
         </if>
         <if test="null!=sex  and ''!= sex">
             sex = #{sex},
         </if>
-        <if test="null!=shopid  and ''!= shopid">
-            shopid = #{shopid},
+        <if test="null!=company_name  and ''!= company_name">
+            company_name = #{company_name},
         </if>
-        <if test="null!=number  and ''!= number">
-            number = #{number},
-        </if>
-        <if test="null!=moile  and ''!= moile">
-            moile = #{moile},
-        </if>
-        <if test="null!=deptid  and ''!= deptid">
-            deptid = #{deptid},
-        </if>
-        <if test="null!=lname  and ''!= lname">
-            lname = #{lname},
-        </if>
-        <if test="null!=roleid  and ''!= roleid">
-            roleid = #{roleid},
-        </if>
-        <if test="null!=account  and ''!= account">
-            account = #{account},
-        </if>
-        <if test="null!=password  and ''!= password">
-            password = password(#{password}),
-        </if>
-        <if test="null!=wopenid  and ''!= wopenid">
-            wopenid = #{wopenid},
-        </if>
-        <if test="null!=zopenid  and ''!= zopenid">
-            zopenid = #{zopenid},
+        <if test="null!=company_adress  and ''!= company_adress">
+            company_adress = #{company_adress},
         </if>
         <if test="null!=status  and ''!= status">
             status = #{status},
         </if>
-
-
+        <if test="null!=source  and ''!= source">
+            source = #{source},
+        </if>
+        <if test="null!=identity_type  and ''!= identity_type">
+            identity_type = #{identity_type},
+        </if>
+        <if test="null!=password  and ''!= password">
+            password = password(#{password}),
+        </if>
+        <if test="null!=real_name  and ''!= real_name">
+            real_name = #{real_name},
+        </if>
+        <if test="null!=desc  and ''!= desc">
+            desc = #{desc},
+        </if>
         update_time = now(),
         updator = #{updator}
         where id = #{id}

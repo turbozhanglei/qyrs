@@ -71,6 +71,11 @@ public class SysMenuController extends BizAction {
 
             String id = dto.getAsString("id");
             dto.put("tableName", "sysUser");
+            //判断手机号码是否重复
+            Dto mobile=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("mobile",dto.getAsString("mobile")));
+            if (null !=mobile){
+                throw new Exception("手机号码已存在，请重试");
+            }
             if (StringUtils.isNotEmpty(id)) {
                 //更新
                 // 修改

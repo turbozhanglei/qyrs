@@ -6,6 +6,9 @@
 
 
     <sql id="sql_where">
+        <if test="null!=nickname  and ''!= nickname">
+            and a.nickname LIKE CONCAT('%', #{nickname}, '%')
+        </if>
         <if test="null!=username  and ''!= username">
             and a.username LIKE CONCAT('%', #{username}, '%')
         </if>
@@ -32,6 +35,9 @@
         </if>
         <if test="null!=cnumber  and ''!= cnumber">
             and a.number = #{cnumber}
+        </if>
+        <if test="null!=mobile  and ''!= mobile">
+            and a.mobile = #{mobile}
         </if>
         <if test="null!=number  and ''!= number">
             and a.number LIKE CONCAT('%', #{number}, '%')
@@ -172,16 +178,16 @@
 
     <!-- 插入 -->
     <insert id="saveInfo" parameterType="dto">
-        insert into g_user (username, pid,
-        number, moile, sex,
-        deptid, lname, roleid,
-        account, password, status,create_time,creator,update_time,updator,is_delete,wopenid,zopenid
+        insert into g_user (nickname, username,mobile, head_pic, sex,
+        company_name, company_adress, status,
+        source, identity_type, real_name,roleid,password,remark,
+        create_time,creator,delete_flag
         )
-        values (#{username}, #{pid}, #{number}, #{moile}, #{sex},
-        #{deptid}, #{lname}, #{roleid}, #{account}, password(#{password}), 1,
-        now(),#{creator},now(),#{updator},'N',#{wopenid},#{zopenid})
+        values (#{nickname}, #{username}, #{mobile}, #{head_pic}, #{sex},
+        #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid}, password(#{password}), #{remark},
+        now(),#{creator},'0')
         <selectKey resultType="string" keyProperty="id">
-            select last_insert_id() as ID from sys_user limit 1
+            select last_insert_id() as ID from g_user limit 1
         </selectKey>
     </insert>
 

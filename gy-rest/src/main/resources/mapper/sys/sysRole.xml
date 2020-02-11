@@ -23,10 +23,10 @@
     <!-- 查询 -->
     <select id="queryList" parameterType="map" resultType="dto">
         SELECT
-        a.*, b.lname AS creater_name
+        a.*, b.nickname AS creater_name
         FROM
         sys_role a
-        LEFT JOIN sys_user b ON a.creator = b.id
+        LEFT JOIN g_user b ON a.creator = b.id
         WHERE
         1 = 1
         AND a.is_delete = 'N'

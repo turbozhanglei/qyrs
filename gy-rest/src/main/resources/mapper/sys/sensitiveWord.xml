@@ -44,11 +44,14 @@
     <!-- 修改 -->
     <update id="updateInfo" parameterType="dto">
         update g_sensitive_word
-        set word = #{word}
-        where id = #{id}
-        <if test="updator != null and updator != ''">
-            and updator = #{updator}
+        set
+        <if test="word!=desc  and ''!= word">
+            word = #{word},
         </if>
+        <if test="updator!=desc  and ''!= updator">
+            updator = #{updator},
+        </if>
+        where id = #{id}
     </update>
 
     <!-- 查询 -->

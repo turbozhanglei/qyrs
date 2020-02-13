@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="adSource">
+
+
+    <sql id="sql_where">
+        <if test="null!=name  and ''!= name">
+            and a.name like CONCAT('%', #{name}, '%')
+        </if>
+        <if test="null!=type  and ''!= type">
+            and a.type = #{type}
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            and a.start_date &gt;= #{startDate}
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            and a.end_date &lt;= #{endDate}
+        </if>
+        <if test="null!=adCodeId  and ''!= adCodeId">
+            and a.ad_code_id = #{adCodeId}
+        </if>
+        <if test="status != null and status != ''">
+            <if test="status == 0">
+                AND a.start_date &lt;= NOW() AND a.end_date &gt;= NOW()
+            </if>
+            <if test="status == 1">
+                AND a.start_date &gt;= NOW()
+            </if>
+            <if test="status == 2">
+                AND a.end_date &lt; NOW()
+            </if>
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM g_ad_source a
+        WHERE 1=1
+        and a.delete_flag = 0
+        <include refid="sql_where"/>
+        ORDER BY create_time
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM g_ad_source a
+        WHERE 1=1 and a.delete_flag = 0
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        INSERT INTO
+        `g_ad_source` (`ad_code_id`, `name`,`type`,`content`,`link_url`,`image_url`,`sort`, `start_date`,`end_date`,`creator`, `updator`)
+        VALUES (#{adCodeId},#{name}, #{type},#{content},#{linkUrl},#{imageUrl},#{sort},#{startDate},#{endDate},#{creator},#{updator})
+
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="dto">
+        DELETE FROM g_ad_source WHERE 1= 1
+        <if test="null!=id  and ''!= id">
+            and id = #{id}
+        </if>
+
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update g_ad_source
+        set
+        <if test="null!=name  and ''!= name">
+            name = #{name},
+        </if>
+        <if test="null!=type  and ''!= type">
+            type = #{type},
+        </if>
+        <if test="null!=content  and ''!= content">
+            content = #{content},
+        </if>
+        <if test="null!=linkUrl  and ''!= linkUrl">
+            link_url = #{linkUrl},
+        </if>
+        <if test="null!=imageUrl  and ''!= imageUrl">
+            image_url = #{imageUrl},
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            sort = #{sort},
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            start_date = #{startDate},
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            end_date = #{endDate},
+        </if>
+        <if test="null!=deleteFlag  and ''!= deleteFlag">
+            delete_flag = #{deleteFlag},
+        </if>
+        <if test="updator!=null  and ''!= updator">
+            updator = #{updator},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM g_ad_source a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+</mapper>

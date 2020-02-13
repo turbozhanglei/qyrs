@@ -6,7 +6,7 @@ server:
   #  level:
   #    root: INFO
   config: classpath:logback.xml
-white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess,
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess,
 
 ribbon:
   ConnectTimeout: 60000
@@ -27,9 +27,9 @@ spring:
     readSize: 1
     type: com.alibaba.druid.pool.DruidDataSource
     master:
-      url: jdbc:mysql://127.0.0.1:3306/local?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://47.98.108.230:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
       username: root
-      password: 123456
+      password: 1a6XzyruFj;!32
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -47,9 +47,9 @@ spring:
       useGlobalDataSourceStat: true
       validationQuery: SELECT 1 FROM DUAL
     slave:
-      url: jdbc:mysql://127.0.0.1:3306/local?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://47.98.108.230:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
       username: root
-      password: 123456
+      password: 1a6XzyruFj;!32
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -87,9 +87,9 @@ mapper:
 ---
 spring:
   redis:
-    host: 116.62.67.88
+    host: 40.73.65.243
     port: 6379
-    password: <zgt789$$%%>
+    password: adminjic123456
     pool:
       max-active: 200
       max-idle: 100

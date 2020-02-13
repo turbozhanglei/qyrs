@@ -68,20 +68,38 @@ public class SysMenuController extends BizAction {
                 return result;
             }
 
-
             String id = dto.getAsString("id");
             dto.put("tableName", "sysUser");
             //判断手机号码是否重复
             Dto mobile=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("mobile",dto.getAsString("mobile")));
-            if (null !=mobile){
-                throw new Exception("手机号码已存在，请重试");
-            }
+            //判断用户名是否重复
+            Dto username=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("username",dto.getAsString("username")));
+
+            Dto udto=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("id",dto.getAsString("id")));
+
             if (StringUtils.isNotEmpty(id)) {
-                //更新
                 // 修改
+                if (udto.getAsString("mobile").equals(dto.getAsString("mobile"))==false){
+                    Dto mobileup=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("mobile",dto.getAsString("mobile")));
+                    if (null !=mobileup){
+                        throw new Exception("手机号码重复，请重试");
+                    }
+
+                }else if(udto.getAsString("username").equals(dto.getAsString("username"))==false){
+                    Dto usernameup=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("username",dto.getAsString("username")));
+                    if(null !=usernameup){
+                        throw new Exception("用户名已被注册，请重试");
+                    }
+                }
+
                 dto.put("updator", member == null ? "" : member.get("id"));
                 bizService.updateInfo(dto);
             } else {
+                if (null !=mobile){
+                    throw new Exception("手机号码重复，请重试");
+                }else if(null !=username){
+                    throw new Exception("用户名已被注册，请重试");
+                }
                 //插入
                 dto.put("creator", member == null ? "" : member.get("id"));
                 dto.put("updator", member == null ? "" : member.get("id"));
@@ -111,7 +129,6 @@ public class SysMenuController extends BizAction {
                     }
                 }
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();

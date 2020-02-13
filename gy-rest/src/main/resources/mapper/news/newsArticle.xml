@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="newsArticle">
+
+    <sql id="sql_where">
+        <if test="null!=title  and ''!= title">
+            and a.title like CONCAT('%', #{title}, '%')
+        </if>
+        <if test="null!=articleId ">
+            and a.id = #{articleId}
+        </if>
+        <if test="null!=categoryId  and ''!= categoryId">
+            and a.categoryId = #{categoryId}
+        </if>
+        <if test="null!=platform  and ''!= platform">
+            and a.platform = #{platform}
+        </if>
+        <if test="status != null">
+            <if test="status ==1">
+                AND a.start_date &lt;= NOW() AND a.end_date &gt;= NOW()
+            </if>
+            <if test="status ==2">
+                AND a.start_date &gt;= NOW()
+            </if>
+            <if test="status ==3">
+                AND a.end_date &lt; NOW()
+            </if>
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.id AS articleId,
+        a.platform,
+        a.title,
+        gnc. NAME AS categoryName,
+        a.update_time,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 4
+        WHERE
+        a.id = b.id
+        ) AS shares,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 5
+        WHERE
+        a.id = b.id
+        ) AS likes,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 6
+        WHERE
+        a.id = b.id
+        ) AS browses,
+        CONCAT(
+        a.start_date,
+        "-",
+        a.end_date
+        ) AS validDate,
+        <![CDATA[ CASE
+        WHEN a.start_date > NOW() THEN
+        "2"
+        WHEN  a.start_date<= NOW() && a.end_date>=now() THEN
+        "1"
+        ELSE
+        "3"
+        END ]]> AS `status`
+        FROM
+        g_news_article a
+        LEFT JOIN g_news_category gnc ON gnc.id = a.category_id
+        WHERE
+        1 = 1
+        AND a.delete_flag = 0
+        <include refid="sql_where"/>
+        group by a.id
+        ORDER BY a.id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <select id="queryListCount" parameterType="map" resultType="dto">
+        SELECT count(1) as total FROM g_news_article a WHERE 1=1 AND a.delete_flag = 0
+        <include refid="sql_where"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into g_news_article
+        (category_id,title,platform,
+        content,describes,images,
+       creator, updator,start_date,end_date,create_time
+        )
+        values (#{categoryId},#{title},#{platform},
+        #{content},#{describes},#{images},
+       #{creator},#{updator},#{startDate},#{endDate},
+        now()
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update oms_sku a
+        set
+        <if test="null!=name  and ''!= name">
+            a.name = #{name},
+        </if>
+        <if test="null!=number  and ''!= number">
+            a.number = #{number},
+        </if>
+        <if test="null!=discount  and ''!= discount">
+            a.discount = #{discount},
+        </if>
+        <if test="null!=price  and ''!= price">
+            a.price = #{price},
+        </if>
+        <if test="null!=price2  and ''!= price2">
+            a.price2 = #{price2},
+        </if>
+        <if test="null!=price3  and ''!= price3">
+            a.price3 = #{price3},
+        </if>
+        <if test="null!=stock  and ''!= stock">
+            a.stock = #{stock},
+        </if>
+        <if test="null!=introduction  and ''!= introduction">
+            a.introduction = #{introduction},
+        </if>
+        <if test="null!=sort  and ''!= sort">
+            a.sort = #{sort},
+        </if>
+        <if test="null!=smallpic  and ''!= smallpic">
+            a.smallpic = #{smallpic},
+        </if>
+        <if test="null!=bigpic  and ''!= bigpic">
+            a.bigpic = #{bigpic},
+        </if>
+        <if test="null!=type_id  and ''!= type_id">
+            a.type_id = #{type_id},
+        </if>
+        <if test="null!=shop_id  and ''!= shop_id">
+            a.shop_id = #{shop_id},
+        </if>
+        <if test="null!=brand_id  and ''!= brand_id">
+            a.brand_id = #{brand_id},
+        </if>
+        <if test="null!=price_id  and ''!= price_id">
+            a.price_id = #{price_id},
+        </if>
+        <if test="null!=describes  and ''!= describes">
+            a.describes = #{describes},
+        </if>
+        update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        DELETE FROM oms_sku
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 查询咨询子类 -->
+    <select id="queryCategorys" parameterType="map" resultType="dto">
+            SELECT
+                a.`name`,
+                a.id
+            FROM
+                g_news_category a
+            WHERE
+                a.`level` = 2
+            AND a.delete_flag = 0
+    </select>
+    <!--通过咨询ID获取咨询详情-->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.category_id as categoryId,
+        a.start_date as startDate,
+        a.end_date  as endDate,
+        a.platform,
+        a.title,
+        a.content,
+        a.images,
+        a.describes
+        FROM
+        g_news_article a
+        WHERE
+        1 = 1
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+</mapper>

@@ -45,10 +45,10 @@
     <update id="updateInfo" parameterType="dto">
         update g_sensitive_word
         set
-        <if test="word!=desc  and ''!= word">
+        <if test="word!=null  and ''!= word">
             word = #{word},
         </if>
-        <if test="updator!=desc  and ''!= updator">
+        <if test="updator!=null  and ''!= updator">
             updator = #{updator},
         </if>
         where id = #{id}

@@ -21,8 +21,8 @@ import java.util.Date;
 * @Description:
 */
 @RestController
-@RequestMapping("/advert")
-public class AvertController extends BizAction {
+@RequestMapping("/advertSource")
+public class AvertSourceController extends BizAction {
 
     @ResponseBody
     @RequestMapping(value = "/saveInfo")
@@ -37,7 +37,7 @@ public class AvertController extends BizAction {
                 result.setMsg("请登录");
                 return result;
             }
-            dto.put("tableName", "adCode");
+            dto.put("tableName", "adSource");
             //id 不为空则修改
             if (StringUtils.isNotEmpty(dto.getAsString("id"))){
                 dto.put("update_time",new Date());
@@ -75,9 +75,9 @@ public class AvertController extends BizAction {
                 return result;
             }
 
-            Dto adCode = (BaseDto) bizService.queryForObject("adCode.getInfo", dto);
-            if (adCode != null && adCode.getAsLong("id") != null) {
-                result.setData(adCode);
+            Dto adSource = (BaseDto) bizService.queryForObject("adSource.getInfo", dto);
+            if (adSource != null && adSource.getAsLong("id") != null) {
+                result.setData(adSource);
             }
         }catch (Exception e) {
             e.printStackTrace();

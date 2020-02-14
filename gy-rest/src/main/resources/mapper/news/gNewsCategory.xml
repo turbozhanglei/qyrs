@@ -67,7 +67,7 @@
         )
     </insert>
 
- <!--启用禁用-->
+    <!--启用禁用-->
     <update id="updateSecondCateGoryStatus" parameterType="dto">
         update g_news_category
         set
@@ -79,7 +79,7 @@
         </if>
         update_time = now()
         where
-         ref_id = #{refId}
+        ref_id = #{refId}
     </update>
 
 

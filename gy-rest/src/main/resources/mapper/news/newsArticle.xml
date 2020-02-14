@@ -58,7 +58,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 4
+        AND ggc.ref_type = 4 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS shares,
@@ -68,7 +68,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 5
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS likes,
@@ -78,7 +78,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 6
+        AND ggc.ref_type = 6 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS browses,
@@ -216,6 +216,69 @@
         <if test="null!=refId and ''!=refId">
           and  a.ref_id = #{refId}
         </if>
+
+    </select>
+    <!--通过咨询ID获取咨询详情 前台-->
+    <select id="queryArticleDetail" parameterType="map" resultType="dto">
+        SELECT
+        a.title,
+        a.content,
+        a.describes,
+        a.images,
+        a.create_time as createTime,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        ) AS likes,
+        (
+        SELECT
+        if(COUNT(ggc.id)>0,0,1)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        and ggc.user_id=#{userId}
+        ) AS isLikes,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 6  and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        ) AS browses
+        FROM
+        g_news_article a
+        WHERE
+        1 = 1
+        AND a.delete_flag = 0
+        and a.id=#{articleId}
+    </select>
+
+    <!--根据二级分类id查询咨询列表-->
+    <select id="queryArticleListByCategoryId" parameterType="map" resultType="dto">
+        SELECT
+        a.title,
+        a.images,
+        a.describes,
+        a.id,
+        a.create_time as createTime
+        FROM
+        g_news_article a
+        WHERE
+        1 = 1
+        and a.delete_flag=0
+        and  a.category_id=#{categoryId}
 
     </select>
 </mapper>

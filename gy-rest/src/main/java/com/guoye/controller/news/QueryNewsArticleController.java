@@ -22,8 +22,8 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/queryCategory")
-public class QueryNewsCategoryController extends BizAction {
+@RequestMapping("/queryArticle")
+public class QueryNewsArticleController extends BizAction {
       /*
       * 咨询分类初始化*/
       @ResponseBody
@@ -42,7 +42,29 @@ public class QueryNewsCategoryController extends BizAction {
              result.setData(categoryList);
           return  result;
       }
+    /*
+     * 查询前台咨询详情*/
+    @ResponseBody
+    @RequestMapping(value = "/queryArticleDetail")
+    public BaseResult queryArticleDetail(HttpServletRequest request){
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result =new BaseResult();
+         Dto aDto=(Dto)bizService.queryForDto("newsArticle.queryArticleDetail", dto);
+        result.setData(aDto);
+        result.setMsg("调用成功");
+        return  result;
+    }
 
-
-
+    /*
+     * 前台二级分类Id查询咨询文章*/
+    @ResponseBody
+    @RequestMapping(value = "/queryArticleListByCategoryId")
+    public BaseResult queryArticleListByCategoryId(HttpServletRequest request){
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result =new BaseResult();
+        List<Dto> articleList=bizService.queryForList("newsArticle.queryArticleListByCategoryId", dto);
+        result.setData(articleList);
+        result.setMsg("调用成功");
+        return  result;
+    }
 }

@@ -38,6 +38,7 @@
     <select id="queryList" parameterType="map" resultType="dto">
         SELECT
         a.id AS articleId,
+        a.id,
         a.platform,
         a.title,
         gnc. NAME AS categoryName,
@@ -93,7 +94,7 @@
         AND a.delete_flag = 0
         <include refid="sql_where"/>
         group by a.id
-        ORDER BY a.id
+        ORDER BY a.id desc
         <if test="null!=start">
             limit #{start},#{end}
         </if>
@@ -120,55 +121,34 @@
 
     <!-- 修改 -->
     <update id="updateInfo" parameterType="dto">
-        update oms_sku a
+        update g_news_article a
         set
-        <if test="null!=name  and ''!= name">
-            a.name = #{name},
+        <if test="null!=categoryId">
+            a.category_id = #{categoryId},
         </if>
-        <if test="null!=number  and ''!= number">
-            a.number = #{number},
+        <if test="null!=title  and ''!= title">
+            a.title = #{title},
         </if>
-        <if test="null!=discount  and ''!= discount">
-            a.discount = #{discount},
+        <if test="null!=platform ">
+            a.platform = #{platform},
         </if>
-        <if test="null!=price  and ''!= price">
-            a.price = #{price},
-        </if>
-        <if test="null!=price2  and ''!= price2">
-            a.price2 = #{price2},
-        </if>
-        <if test="null!=price3  and ''!= price3">
-            a.price3 = #{price3},
-        </if>
-        <if test="null!=stock  and ''!= stock">
-            a.stock = #{stock},
-        </if>
-        <if test="null!=introduction  and ''!= introduction">
-            a.introduction = #{introduction},
-        </if>
-        <if test="null!=sort  and ''!= sort">
-            a.sort = #{sort},
-        </if>
-        <if test="null!=smallpic  and ''!= smallpic">
-            a.smallpic = #{smallpic},
-        </if>
-        <if test="null!=bigpic  and ''!= bigpic">
-            a.bigpic = #{bigpic},
-        </if>
-        <if test="null!=type_id  and ''!= type_id">
-            a.type_id = #{type_id},
-        </if>
-        <if test="null!=shop_id  and ''!= shop_id">
-            a.shop_id = #{shop_id},
-        </if>
-        <if test="null!=brand_id  and ''!= brand_id">
-            a.brand_id = #{brand_id},
-        </if>
-        <if test="null!=price_id  and ''!= price_id">
-            a.price_id = #{price_id},
+        <if test="null!=content  and ''!= content">
+            a.content = #{content},
         </if>
         <if test="null!=describes  and ''!= describes">
             a.describes = #{describes},
+        </if>
+        <if test="null!=images  and ''!= images">
+            a.images = #{images},
+        </if>
+        <if test="null!=startDate  and ''!= startDate">
+            a.start_date = #{startDate},
+        </if>
+        <if test="null!=endDate  and ''!= endDate">
+            a.end_date = #{endDate},
+        </if>
+        <if test="null!=updator">
+            a.updator = #{updator},
         </if>
         update_time = now()
         where id = #{id}
@@ -176,7 +156,7 @@
 
     <!-- 删除 -->
     <delete id="deleteInfo" parameterType="map">
-        DELETE FROM oms_sku
+        UPDATE g_news_article a set a.delete_flag=1
         WHERE id = #{id}
     </delete>
 
@@ -201,7 +181,8 @@
         a.title,
         a.content,
         a.images,
-        a.describes
+        a.describes,
+        a.id
         FROM
         g_news_article a
         WHERE

@@ -12,6 +12,7 @@ import com.gy.resource.response.manager.ReportResponse;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,43 +26,43 @@ import lombok.extern.slf4j.Slf4j;
  * @date: 2020-02-14
  * @remark:
  */
-@Slf4j
 @RestController
 @RequestMapping("/resource-manager")
 @Api(tags = {"资源后台管理接口"})
+@Slf4j
 public class ResourceManagerController implements ResourceManagerApi {
-    @Override
     @ApiOperation(value = "资源信息列表分页查询")
+    @PostMapping(value = "/query-resource-manager")
     public RestResult<PageResult<QueryResourceManagerResponse>> queryResourceManager(@RequestBody  QueryResourceManagerRequest resourceManagerRequest) {
         return null;
     }
 
-    @Override
     @ApiOperation(value = "批量审核")
+    @PostMapping(value = "/batch-check")
     public RestResult<Boolean> checkBatch(@RequestBody CheckBatchRequest request) {
         return null;
     }
 
-    @Override
     @ApiOperation(value = "单个审核")
+    @PostMapping(value = "/check")
     public RestResult<Boolean> check(@RequestBody CheckRequest request) {
         return null;
     }
 
-    @Override
     @ApiOperation(value = "置顶")
+    @PostMapping(value = "/top")
     public RestResult<Boolean> top(@RequestBody TopRequest request) {
         return null;
     }
 
-    @Override
     @ApiOperation(value = "导出")
+    @PostMapping(value = "/download")
     public void download(@RequestBody DownloadRequest downloadRequest) {
 
     }
 
-    @Override
     @ApiOperation(value = "资源信息汇总报表")
+    @PostMapping(value = "/resource-report")
     public RestResult<ReportResponse> resourceReport(@RequestBody ReportRequest reportRequest) {
         return null;
     }

@@ -1,6 +1,7 @@
 package com.gy.resource.request.manager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.gy.resource.request.TokenRequest;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -35,7 +36,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueryResourceManagerRequest implements Serializable {
+public class QueryResourceManagerRequest extends TokenRequest {
     private static final long serialVersionUID = 6411666076751426670L;
 
     @ApiModelProperty(notes = "资源Id",required = true)

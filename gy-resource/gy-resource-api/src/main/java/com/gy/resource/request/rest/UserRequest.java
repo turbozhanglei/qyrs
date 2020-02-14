@@ -1,5 +1,7 @@
 package com.gy.resource.request.rest;
 
+import com.gy.resource.request.TokenRequest;
+
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest implements Serializable {
+public class UserRequest extends TokenRequest {
 
     private static final long serialVersionUID = 6088214497383157656L;
 

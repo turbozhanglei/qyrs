@@ -2,6 +2,7 @@ package com.gy.resource;
 
 import com.jic.common.swagger.config.Swagger2Config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,6 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableSwagger2
+@MapperScan("com.gy.resource.mapper")
 public class GyResourceImplApplication {
     public static void main(String[] args) {
         SpringApplication.run(GyResourceImplApplication.class, args);
@@ -29,4 +31,5 @@ public class GyResourceImplApplication {
     public Docket getDocket() {
         return new Swagger2Config().createRestApi(this.getClass().getSimpleName());
     }
+
 }

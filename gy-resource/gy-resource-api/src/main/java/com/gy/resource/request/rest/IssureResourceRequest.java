@@ -1,5 +1,7 @@
 package com.gy.resource.request.rest;
 
+import com.gy.resource.request.TokenRequest;
+
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -37,7 +39,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class IssureResourceRequest implements Serializable {
+public class IssureResourceRequest extends TokenRequest {
     private static final long serialVersionUID = 6472584298779825446L;
     @ApiModelProperty(notes = "发布人id",required = true)
     private String issureId;

@@ -5,6 +5,7 @@ import com.gy.resource.request.manager.QueryDictionaryRequest;
 import com.gy.resource.response.manager.QueryDictionaryResponse;
 import com.jic.common.base.vo.RestResult;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DictionController implements DictionaryApi {
     @ApiOperation(value = "字典值查询")
+    @PostMapping(value = "/query-dictionary")
     public RestResult<List<QueryDictionaryResponse>> getDictionaryByCode(@RequestBody QueryDictionaryRequest request) {
         return null;
     }

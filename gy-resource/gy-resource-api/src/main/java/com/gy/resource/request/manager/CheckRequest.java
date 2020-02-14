@@ -1,5 +1,7 @@
 package com.gy.resource.request.manager;
 
+import com.gy.resource.request.TokenRequest;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,9 +18,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CheckRequest implements Serializable {
+public class CheckRequest extends TokenRequest {
 
     private static final long serialVersionUID = -4348674747346926405L;
+
+    @ApiModelProperty(notes = "审核人Id")
+    private String checkUserId;
 
     @ApiModelProperty(notes = "资源id")
     private String resourceIdList;

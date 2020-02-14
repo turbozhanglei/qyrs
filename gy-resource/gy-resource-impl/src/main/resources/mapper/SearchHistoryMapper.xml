@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.resource.mapper.SearchHistoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gy.resource.entity.SearchHistoryModel">
+            <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="word" property="word" />
+        <result column="valid_time" property="validTime" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="creator" property="creator" />
+        <result column="updator" property="updator" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        <trim suffixOverrides=",">
+              id,
+              user_id,
+              word,
+              valid_time,
+              delete_flag,
+              create_time,
+              update_time,
+              creator,
+              updator,
+        </trim>
+    </sql>
+
+
+    <sql id="Plain_Where_Clause">
+        <where>
+            <trim prefixOverrides="AND">
+                    <if test="id != null">
+                        AND id = #{id}
+                    </if>
+                    <if test="userId != null">
+                        AND user_id = #{userId}
+                    </if>
+                    <if test="word != null">
+                        AND word = #{word}
+                    </if>
+                    <if test="validTime != null">
+                        AND valid_time = #{validTime}
+                    </if>
+                    <if test="deleteFlag != null">
+                        AND delete_flag = #{deleteFlag}
+                    </if>
+                    <if test="createTime != null">
+                        AND create_time = #{createTime}
+                    </if>
+                    <if test="updateTime != null">
+                        AND update_time = #{updateTime}
+                    </if>
+                    <if test="creator != null">
+                        AND creator = #{creator}
+                    </if>
+                    <if test="updator != null">
+                        AND updator = #{updator}
+                    </if>
+            </trim>
+        </where>
+    </sql>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <trim prefixOverrides="AND">
+                        <if test="example.userId != null">
+                            AND user_id = #{example.userId}
+                        </if>
+                        <if test="example.word != null">
+                            AND word = #{example.word}
+                        </if>
+                        <if test="example.validTime != null">
+                            AND valid_time = #{example.validTime}
+                        </if>
+                        <if test="example.deleteFlag != null">
+                            AND delete_flag = #{example.deleteFlag}
+                        </if>
+                        <if test="example.createTime != null">
+                            AND create_time = #{example.createTime}
+                        </if>
+                        <if test="example.updateTime != null">
+                            AND update_time = #{example.updateTime}
+                        </if>
+                        <if test="example.creator != null">
+                            AND creator = #{example.creator}
+                        </if>
+                        <if test="example.updator != null">
+                            AND updator = #{example.updator}
+                        </if>
+            </trim>
+        </where>
+    </sql>
+    <!--搜索历史 新增-->
+    <insert id="searchHistoryAdd" parameterType="com.gy.resource.entity.SearchHistoryModel">
+        INSERT INTO g_search_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="word != null">
+                word,
+            </if>
+            <if test="validTime != null">
+                valid_time,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="updator != null">
+                updator,
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="word != null">
+                #{word},
+            </if>
+            <if test="validTime != null">
+                #{validTime},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="creator != null">
+                #{creator},
+            </if>
+            <if test="updator != null">
+                #{updator},
+            </if>
+        </trim>
+    </insert>
+
+    <!--搜索历史 编辑-->
+    <update id="searchHistoryEdit" parameterType="com.gy.resource.entity.SearchHistoryModel">
+        UPDATE g_search_history
+        <set>
+                            <if test="record.userId != null">
+                user_id = #{record.userId},
+            </if>
+            <if test="record.word != null">
+                word = #{record.word},
+            </if>
+            <if test="record.validTime != null">
+                valid_time = #{record.validTime},
+            </if>
+            <if test="record.deleteFlag != null">
+                delete_flag = #{record.deleteFlag},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime},
+            </if>
+            <if test="record.updateTime != null">
+                update_time = #{record.updateTime},
+            </if>
+            <if test="record.creator != null">
+                creator = #{record.creator},
+            </if>
+            <if test="record.updator != null">
+                updator = #{record.updator},
+            </if>
+                </set>
+        <include refid="Example_Where_Clause" />
+    </update>
+
+    <!--搜索历史 删除-->
+    <update id="searchHistoryDelete" parameterType="map">
+        delete  from g_search_history where id = #{id}
+    </update>
+
+    <!--搜索历史 查询详情-->
+    <select id="searchHistoryQuery" parameterType="map" resultType="com.gy.resource.entity.SearchHistoryModel">
+        select
+        <include refid="Base_Column_List"/>
+        from  g_search_history
+        where id = #{id}
+    </select>
+
+    <!--搜索历史 查询分页-->
+    <select id="searchHistoryQueryPageList" parameterType="com.gy.resource.entity.SearchHistoryModel" resultType="com.gy.resource.entity.SearchHistoryModel">
+        select
+        <include refid="Base_Column_List"/>
+        from g_search_history
+        <include refid="Example_Where_Clause" />
+        limit #{startIndex},#{limit}
+    </select>
+
+    <!--搜索历史 查询分页之数量-->
+    <select id="searchHistoryQueryPageCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from g_search_history
+        <include refid="Example_Where_Clause" />
+    </select>
+
+        <!--搜索历史修改单据状态-->
+    <update id="searchHistoryChangeStatus" parameterType="map">
+         update  g_search_history set status = #{status} where id = #{id}
+    </update>
+
+        <!--搜索历史 修改审批状态-->
+    <update id="searchHistoryChangeApproveStatus" parameterType="map">
+        update  g_search_history set
+        status = #{status},
+        updator = #{updator},
+        update_name = #{updateName},
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+
+
+
+</mapper>

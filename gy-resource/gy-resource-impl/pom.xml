@@ -11,6 +11,13 @@
 
     <artifactId>gy-resource-impl</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.gy.resource</groupId>
+            <artifactId>gy-resource-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

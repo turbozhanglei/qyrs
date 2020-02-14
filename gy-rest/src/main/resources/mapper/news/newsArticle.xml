@@ -11,10 +11,19 @@
         <if test="null!=articleId ">
             and a.id = #{articleId}
         </if>
-        <if test="null!=categoryId  and ''!= categoryId">
-            and a.categoryId = #{categoryId}
+        <if test="isFirstLevel==0">
+            and a.category_id in (SELECT
+              a.id
+            FROM
+            g_news_category a
+            WHERE
+            a.ref_id =#{categoryId}
+            )
         </if>
-        <if test="null!=platform  and ''!= platform">
+        <if test="isFirstLevel==1">
+            and a.category_id = #{categoryId}
+        </if>
+        <if test="null!=platform">
             and a.platform = #{platform}
         </if>
         <if test="status != null">
@@ -28,7 +37,7 @@
                 AND a.end_date &lt; NOW()
             </if>
         </if>
-        <if test="null!=id  and ''!= id">
+        <if test="null!=id">
             and a.id = #{id}
         </if>
 
@@ -49,7 +58,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 4
+        AND ggc.ref_type = 4 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS shares,
@@ -59,7 +68,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 5
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS likes,
@@ -69,7 +78,7 @@
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
-        AND ggc.ref_type = 6
+        AND ggc.ref_type = 6 and ggc.delete_flag=0
         WHERE
         a.id = b.id
         ) AS browses,
@@ -189,5 +198,87 @@
         1 = 1
         <include refid="sql_where"/>
         limit 0,1
+    </select>
+
+    <!-- 查询咨询分类 -->
+    <select id="queryCategoryList" parameterType="map" resultType="dto">
+            SELECT
+              a.id,
+              a.name as label,
+              if(a.level=1,0,1) as isFirstLevel
+            FROM
+                g_news_category a
+            WHERE
+        a.delete_flag = 0
+        <if test="null!=level and ''!=level">
+           and  a.level = #{level}
+        </if>
+        <if test="null!=refId and ''!=refId">
+          and  a.ref_id = #{refId}
+        </if>
+
+    </select>
+    <!--通过咨询ID获取咨询详情 前台-->
+    <select id="queryArticleDetail" parameterType="map" resultType="dto">
+        SELECT
+        a.title,
+        a.content,
+        a.describes,
+        a.images,
+        a.create_time as createTime,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        ) AS likes,
+        (
+        SELECT
+        if(COUNT(ggc.id)>0,0,1)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 5 and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        and ggc.user_id=#{userId}
+        ) AS isLikes,
+        (
+        SELECT
+        COUNT(ggc.id)
+        FROM
+        g_news_article b
+        LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id
+        AND ggc.ref_type = 6  and ggc.delete_flag=0
+        WHERE
+        a.id = b.id
+        ) AS browses
+        FROM
+        g_news_article a
+        WHERE
+        1 = 1
+        AND a.delete_flag = 0
+        and a.id=#{articleId}
+    </select>
+
+    <!--根据二级分类id查询咨询列表-->
+    <select id="queryArticleListByCategoryId" parameterType="map" resultType="dto">
+        SELECT
+        a.title,
+        a.images,
+        a.describes,
+        a.id,
+        a.create_time as createTime
+        FROM
+        g_news_article a
+        WHERE
+        1 = 1
+        and a.delete_flag=0
+        and  a.category_id=#{categoryId}
+
     </select>
 </mapper>

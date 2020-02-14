@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.resource.mapper.DictionaryCodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gy.resource.entity.DictionaryCodeModel">
+            <id column="id" property="id" />
+        <result column="category" property="category" />
+        <result column="code" property="code" />
+        <result column="desc" property="desc" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="creator" property="creator" />
+        <result column="updator" property="updator" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        <trim suffixOverrides=",">
+              id,
+              category,
+              code,
+              desc,
+              delete_flag,
+              create_time,
+              update_time,
+              creator,
+              updator,
+        </trim>
+    </sql>
+
+
+    <sql id="Plain_Where_Clause">
+        <where>
+            <trim prefixOverrides="AND">
+                    <if test="id != null">
+                        AND id = #{id}
+                    </if>
+                    <if test="category != null">
+                        AND category = #{category}
+                    </if>
+                    <if test="code != null">
+                        AND code = #{code}
+                    </if>
+                    <if test="desc != null">
+                        AND desc = #{desc}
+                    </if>
+                    <if test="deleteFlag != null">
+                        AND delete_flag = #{deleteFlag}
+                    </if>
+                    <if test="createTime != null">
+                        AND create_time = #{createTime}
+                    </if>
+                    <if test="updateTime != null">
+                        AND update_time = #{updateTime}
+                    </if>
+                    <if test="creator != null">
+                        AND creator = #{creator}
+                    </if>
+                    <if test="updator != null">
+                        AND updator = #{updator}
+                    </if>
+            </trim>
+        </where>
+    </sql>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <trim prefixOverrides="AND">
+                        <if test="example.category != null">
+                            AND category = #{example.category}
+                        </if>
+                        <if test="example.code != null">
+                            AND code = #{example.code}
+                        </if>
+                        <if test="example.desc != null">
+                            AND desc = #{example.desc}
+                        </if>
+                        <if test="example.deleteFlag != null">
+                            AND delete_flag = #{example.deleteFlag}
+                        </if>
+                        <if test="example.createTime != null">
+                            AND create_time = #{example.createTime}
+                        </if>
+                        <if test="example.updateTime != null">
+                            AND update_time = #{example.updateTime}
+                        </if>
+                        <if test="example.creator != null">
+                            AND creator = #{example.creator}
+                        </if>
+                        <if test="example.updator != null">
+                            AND updator = #{example.updator}
+                        </if>
+            </trim>
+        </where>
+    </sql>
+    <!--字典表 新增-->
+    <insert id="dictionaryCodeAdd" parameterType="com.gy.resource.entity.DictionaryCodeModel">
+        INSERT INTO g_dictionary_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="category != null">
+                category,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="desc != null">
+                desc,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="updator != null">
+                updator,
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="category != null">
+                #{category},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="desc != null">
+                #{desc},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="creator != null">
+                #{creator},
+            </if>
+            <if test="updator != null">
+                #{updator},
+            </if>
+        </trim>
+    </insert>
+
+    <!--字典表 编辑-->
+    <update id="dictionaryCodeEdit" parameterType="com.gy.resource.entity.DictionaryCodeModel">
+        UPDATE g_dictionary_code
+        <set>
+                            <if test="record.category != null">
+                category = #{record.category},
+            </if>
+            <if test="record.code != null">
+                code = #{record.code},
+            </if>
+            <if test="record.desc != null">
+                desc = #{record.desc},
+            </if>
+            <if test="record.deleteFlag != null">
+                delete_flag = #{record.deleteFlag},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime},
+            </if>
+            <if test="record.updateTime != null">
+                update_time = #{record.updateTime},
+            </if>
+            <if test="record.creator != null">
+                creator = #{record.creator},
+            </if>
+            <if test="record.updator != null">
+                updator = #{record.updator},
+            </if>
+                </set>
+        <include refid="Example_Where_Clause" />
+    </update>
+
+    <!--字典表 删除-->
+    <update id="dictionaryCodeDelete" parameterType="map">
+        delete  from g_dictionary_code where id = #{id}
+    </update>
+
+    <!--字典表 查询详情-->
+    <select id="dictionaryCodeQuery" parameterType="map" resultType="com.gy.resource.entity.DictionaryCodeModel">
+        select
+        <include refid="Base_Column_List"/>
+        from  g_dictionary_code
+        where id = #{id}
+    </select>
+
+    <!--字典表 查询分页-->
+    <select id="dictionaryCodeQueryPageList" parameterType="com.gy.resource.entity.DictionaryCodeModel" resultType="com.gy.resource.entity.DictionaryCodeModel">
+        select
+        <include refid="Base_Column_List"/>
+        from g_dictionary_code
+        <include refid="Example_Where_Clause" />
+        limit #{startIndex},#{limit}
+    </select>
+
+    <!--字典表 查询分页之数量-->
+    <select id="dictionaryCodeQueryPageCount" resultType="java.lang.Integer">
+        select
+        count(1)
+        from g_dictionary_code
+        <include refid="Example_Where_Clause" />
+    </select>
+
+        <!--字典表修改单据状态-->
+    <update id="dictionaryCodeChangeStatus" parameterType="map">
+         update  g_dictionary_code set status = #{status} where id = #{id}
+    </update>
+
+        <!--字典表 修改审批状态-->
+    <update id="dictionaryCodeChangeApproveStatus" parameterType="map">
+        update  g_dictionary_code set
+        status = #{status},
+        updator = #{updator},
+        update_name = #{updateName},
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+
+
+
+</mapper>

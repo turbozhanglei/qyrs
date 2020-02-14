@@ -1,5 +1,7 @@
 package com.gy.resource.request.rest;
 
+import com.gy.resource.request.TokenRequest;
+
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -37,7 +39,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class IssureResourceRequest implements Serializable {
+public class IssureResourceRequest extends TokenRequest {
     private static final long serialVersionUID = 6472584298779825446L;
     @ApiModelProperty(notes = "发布人id",required = true)
     private String issureId;
@@ -47,4 +49,16 @@ public class IssureResourceRequest implements Serializable {
 
     @ApiModelProperty(notes = "资源发布类型 0求购 1出售",required = true)
     private String resourceType;
+
+    @ApiModelProperty(notes = "资源标签 0乙二醇 1PTA 2成品油 3PVC 4甲醇 5塑料 6其他",required = true)
+    private String resourceLabel;
+
+    @ApiModelProperty(notes = "资源区域 0东北 1华东 2华北 3华中 4华南 5西南 6西北 7境外",required = true)
+    private String resourceArea;
+
+    @ApiModelProperty(notes = "内贸外贸 0内贸 1进口 2出口",required = true)
+    private String tradeType;
+
+    @ApiModelProperty(notes = "资源信息内容",required = true)
+    private String resourceContent;
 }

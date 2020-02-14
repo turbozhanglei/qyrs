@@ -20,12 +20,11 @@ import lombok.extern.slf4j.Slf4j;
  * @date: 2020-02-14
  * @remark:
  */
-@Slf4j
 @RestController
 @RequestMapping("/resource-dictionary")
 @Api(tags = {"资源后台管理接口"})
+@Slf4j
 public class DictionController implements DictionaryApi {
-    @Override
     @ApiOperation(value = "字典值查询")
     public RestResult<List<QueryDictionaryResponse>> getDictionaryByCode(@RequestBody QueryDictionaryRequest request) {
         return null;

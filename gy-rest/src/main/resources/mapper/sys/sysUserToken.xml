@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
+<!-- 参数管理手工映射SQL语句 -->
+<mapper namespace="userToken">
+
+
+    <sql id="sql_where">
+
+        <if test="null!=userid  and ''!= userid">
+            and a.userid = #{userid}
+        </if>
+        <if test="null!=tokenid  and ''!= tokenid">
+            and a.tokenid = #{tokenid}
+        </if>
+        <if test="null!=id  and ''!= id">
+            and a.id = #{id}
+        </if>
+    </sql>
+
+    <!-- 查询 -->
+    <select id="queryList" parameterType="map" resultType="dto">
+        SELECT
+        a.*
+        from
+        sys_user_token a
+        WHERE
+        1 = 1
+        AND a.is_delete = 'N'
+        <include refid="sql_where"/>
+        ORDER BY id
+    </select>
+
+
+    <!-- 查询 -->
+    <select id="queryPage" parameterType="map" resultType="dto">
+        SELECT a.id,a.dept_name as text,a.pid
+        FROM sys_user_token a
+        WHERE 1=1 and a.is_delete = 'N'
+        and pid = 0
+        <if test="null!=dept_name  and ''!= dept_name">
+            and a.dept_name = #{dept_name}
+        </if>
+        ORDER BY id
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
+    <!-- 查询 -->
+    <select id="queryPageCount" parameterType="map" resultType="dto">
+        SELECT
+        count(a.id) as total
+        FROM sys_user_token a
+        WHERE 1=1 and a.is_delete = 'N'
+        and pid = 0
+        <if test="null!=dept_name  and ''!= dept_name">
+            and a.dept_name = #{dept_name}
+        </if>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="saveInfo" parameterType="dto">
+        insert into sys_user_token (userid, tokenid, token, create_time,is_delete)
+        values (#{userid}, #{tokenid},
+        #{token}, now(),'N')
+        <selectKey resultType="java.lang.String" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteInfo" parameterType="map">
+        delete from sys_user_token  WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteInfoByUserId" parameterType="map">
+        delete from sys_user_token  WHERE userid = #{userid}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="updateInfo" parameterType="dto">
+        update sys_user_token
+        set
+        <if test="null!=userid  and ''!= userid">
+            userid = #{userid},
+        </if>
+        <if test="null!=tokenid  and ''!= tokenid">
+            tokenid = #{tokenid},
+        </if>
+        <if test="null!=token  and ''!= token">
+            token = #{token},
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 查询 -->
+    <select id="getInfo" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM sys_user_token a
+        WHERE 1=1 and a.is_delete = 'N'
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+</mapper>

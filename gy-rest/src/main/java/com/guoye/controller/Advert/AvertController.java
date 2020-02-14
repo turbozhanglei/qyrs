@@ -40,6 +40,11 @@ public class AvertController extends BizAction {
             dto.put("tableName", "adCode");
             //id 不为空则修改
             if (StringUtils.isNotEmpty(dto.getAsString("id"))){
+                String type = dto.getAsString("type");
+                if (StringUtils.isNotEmpty(type) && type.indexOf("1") < 0){
+                    dto.put("width",null);
+                    dto.put("height",null);
+                }
                 dto.put("update_time",new Date());
                 dto.put("updator", member == null ? "" : member.get("id"));
                 bizService.updateInfo(dto);

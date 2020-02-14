@@ -79,18 +79,15 @@
         <if test="null!=type  and ''!= type">
             type = #{type},
         </if>
-        <if test="null!=width  and ''!= width">
-            width = #{width},
-        </if>
-        <if test="null!=height  and ''!= height">
-            height = #{height},
-        </if>
+
         <if test="null!=num  and ''!= num">
             num = #{num},
         </if>
         <if test="updator!=null  and ''!= updator">
             updator = #{updator},
         </if>
+        width = #{width},
+        height = #{height},
         update_time = now()
         where id = #{id}
     </update>

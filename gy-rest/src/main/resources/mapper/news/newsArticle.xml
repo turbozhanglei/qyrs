@@ -11,10 +11,19 @@
         <if test="null!=articleId ">
             and a.id = #{articleId}
         </if>
-        <if test="null!=categoryId  and ''!= categoryId">
-            and a.categoryId = #{categoryId}
+        <if test="isFirstLevel==0">
+            and a.category_id in (SELECT
+              a.id
+            FROM
+            g_news_category a
+            WHERE
+            a.ref_id =#{categoryId}
+            )
         </if>
-        <if test="null!=platform  and ''!= platform">
+        <if test="isFirstLevel==1">
+            and a.category_id = #{categoryId}
+        </if>
+        <if test="null!=platform">
             and a.platform = #{platform}
         </if>
         <if test="status != null">
@@ -28,7 +37,7 @@
                 AND a.end_date &lt; NOW()
             </if>
         </if>
-        <if test="null!=id  and ''!= id">
+        <if test="null!=id">
             and a.id = #{id}
         </if>
 
@@ -189,5 +198,24 @@
         1 = 1
         <include refid="sql_where"/>
         limit 0,1
+    </select>
+
+    <!-- 查询咨询分类 -->
+    <select id="queryCategoryList" parameterType="map" resultType="dto">
+            SELECT
+              a.id,
+              a.name as label,
+              if(a.level=1,0,1) as isFirstLevel
+            FROM
+                g_news_category a
+            WHERE
+        a.delete_flag = 0
+        <if test="null!=level and ''!=level">
+           and  a.level = #{level}
+        </if>
+        <if test="null!=refId and ''!=refId">
+          and  a.ref_id = #{refId}
+        </if>
+
     </select>
 </mapper>

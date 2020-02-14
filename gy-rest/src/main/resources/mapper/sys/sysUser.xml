@@ -6,18 +6,27 @@
 
 
     <sql id="sql_where">
+        <if test="null!=status  and ''!= status">
+            and a.status = #{status}
+        </if>
+        <if test="null!=real_name  and ''!= real_name">
+            and a.real_name LIKE CONCAT('%', #{real_name}, '%')
+        </if>
         <if test="null!=nickname  and ''!= nickname">
             and a.nickname LIKE CONCAT('%', #{nickname}, '%')
         </if>
         <if test="null!=username  and ''!= username">
-            and a.username LIKE CONCAT('%', #{username}, '%')
+            and a.username = #{username}
         </if>
         <if test="null!=targetToken  and ''!= targetToken">
             and a.token = #{targetToken}
         </if>
-        <!--<if test="null!=account  and ''!= account">-->
-            <!--and a.account = #{account}-->
-        <!--</if>-->
+        <if test="null!=startTime  and ''!= startTime">
+            and DATE(a.create_time) &gt;= #{startTime}
+        </if>
+        <if test="null!=endTime  and ''!= endTime">
+            and DATE(a.create_time) &lt;= #{endTime}
+        </if>
         <if test="null!=pid  and ''!= pid">
             and a.pid = #{pid}
         </if>
@@ -238,6 +247,9 @@
         </if>
         <if test="null!=real_name  and ''!= real_name">
             real_name = #{real_name},
+        </if>
+        <if test="null!=remark  and ''!= remark">
+            remark = #{remark},
         </if>
         <if test="null!=desc  and ''!= desc">
             desc = #{desc},

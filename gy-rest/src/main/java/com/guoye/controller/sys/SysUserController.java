@@ -81,6 +81,7 @@ public class SysUserController extends BizAction {
                 Dto sysConfig = CommonUtil.getSysConfig();
                 redisService.setValue(token, JSONArray.toJSONString(member),
                         sysConfig.getAsLong(loginChannel));
+                System.out.println(redisService.getValue(token));
 
                 Dto chatMap = new BaseDto();
                 chatMap.put("userId", member.get("id"));
@@ -95,6 +96,13 @@ public class SysUserController extends BizAction {
                 }
                 member.put("isAuth", true);
                 member.put("result", "图形验证码正确");
+
+                //保存token
+                Dto utoken =new BaseDto();
+                utoken.put("userid",member.get("id"));
+                utoken.put("tokenid",token);
+                utoken.put("tableName","userToken");
+                bizService.saveInfo(utoken);
 
                 result.setData(member);
             } else {
@@ -819,12 +827,24 @@ public class SysUserController extends BizAction {
         try {
             Dto member = redisService.getObject(inDto.getAsString("token"), BaseDto.class);
             String []ids = inDto.getAsString("ids").split(",");
+            Dto user=new BaseDto();
+            user.put("tableName","userToken");
+            user.put("method","deleteInfoByUserId");
             if (inDto.getAsLong("ids") != null) {
                 // 修改
                 inDto.put("updator", member == null ? "" : member.get("id"));
                 for(int i=0;i<ids.length;i++){
                     inDto.put("id",ids[i]);
                     bizService.updateInfo(inDto);
+                    //查询token
+                    List<Dto> tlist= bizService.queryForList("userToken.queryList",new BaseDto("userid",ids[i]));
+
+                    for(Dto token : tlist){
+                        redisService.delete(token.getAsString("tokenid"));
+                        user.put("userid",token.getAsString("userid"));
+                        bizService.delete(user);
+                    }
+
                 }
             }
             result.setData(new BaseDto("msg", "数据操作成功"));

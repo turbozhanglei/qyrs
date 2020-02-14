@@ -76,13 +76,12 @@ public class SysUserController extends BizAction {
 //                }
 
 
-                String token = UUID.randomUUID().toString();
+                String token = "pc_login_token:"+UUID.randomUUID().toString();
                 String loginChannel = dto.getAsString("loginChannel");
                 Dto sysConfig = CommonUtil.getSysConfig();
                 redisService.setValue(token, JSONArray.toJSONString(member),
                         sysConfig.getAsLong(loginChannel));
                 System.out.println(redisService.getValue(token));
-
                 Dto chatMap = new BaseDto();
                 chatMap.put("userId", member.get("id"));
                 chatMap.put("username", member.get("username"));

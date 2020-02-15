@@ -63,6 +63,7 @@ public class NewsCategoryController extends BizAction {
               if (StringUtils.isNotEmpty(dto.getAsString("id"))){
                   dto.put("update_time",new Date());
                   dto.put("updator", member == null ? "" : member.get("id"));
+
                   bizService.updateInfo(dto);
               }else {
                   //插入
@@ -199,6 +200,85 @@ public class NewsCategoryController extends BizAction {
         }else {
             result.setCode("0000");
             result.setData(catrgoryList);
+        }
+        return  result;
+    }
+
+    //添加子类按钮
+    @ResponseBody
+    @RequestMapping(value = "/saveChildrenCategory")
+    public BaseResult saveChildrenCategory(HttpServletRequest request) {
+        BaseResult result = new BaseResult();
+        Dto dto = WebUtils.getParamAsDto(request);
+
+        try {
+            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+
+            if (null == member) {
+                result.setCode(StatusConstant.CODE_4000);
+                result.setMsg("请登录");
+                return result;
+            }
+            dto.put("tableName", "gNewsCategory");
+            dto.put("method","saveChildrenCategory");
+
+                //插入
+                dto.put("creator", member == null ? "" : member.get("id"));
+                dto.put("updator", member == null ? "" : member.get("id"));
+                dto.put("level", 2);
+                dto.put("refId", dto.getAsString("firstId"));
+
+                bizService.save(dto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    //资讯列表接口
+    @ResponseBody
+    @RequestMapping(value = "/newsCategoryList")
+    public BaseResult getNewCategoryList(HttpServletRequest request){
+        BaseResult result = new BaseResult();
+
+        Dto dto =WebUtils.getParamAsDto(request);
+        dto.put("id",dto.getAsLong("refId"));//根据一级分类id查询对应对象
+        dto.put("tableName","gNewsCategory");
+        Dto obj = (Dto)bizService.queryForDto("gNewsCategory.getNewsCategoryDto",dto);
+
+        obj.put("refId",obj.getAsLong("id"));//根据返回id查询二级分类list
+        List<Dto> newsCategoryList = bizService.queryList("gNewsCategory.getNewsCategoryList",obj);
+        if(newsCategoryList==null){
+            result.setMsg("调用失败");
+        }else{
+        result.setData(newsCategoryList);
+        result.setCode("0000");
+        result.setMsg("调用成功");
+        }
+        return  result;
+    }
+    //前端首页咨询列表接口文档
+    @ResponseBody
+    @RequestMapping(value = "/newsCategory")
+    public  BaseResult queryNewsCategory(HttpServletRequest request){
+        BaseResult result = new BaseResult();
+
+        Dto dto =WebUtils.getParamAsDto(request);
+        dto.put("id",dto.getAsLong("refId"));//根据一级分类id查询对应对象
+        dto.put("tableName","gNewsCategory");
+        Dto obj = (Dto)bizService.queryForDto("gNewsCategory.getNewsCategoryDto",dto);
+
+        obj.put("refId",obj.getAsLong("id"));//根据返回id查询二级分类对应文章
+        List<Dto> newsCategory = bizService.queryList("gNewsCategory.queryNewsCategory",obj);
+        if(newsCategory==null){
+            result.setMsg("调用失败");
+        }else{
+            result.setData(newsCategory);
+            result.setCode("0000");
+            result.setMsg("调用成功");
         }
         return  result;
     }

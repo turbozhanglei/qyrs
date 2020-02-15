@@ -79,18 +79,15 @@
         <if test="null!=type  and ''!= type">
             type = #{type},
         </if>
-        <if test="null!=width  and ''!= width">
-            width = #{width},
-        </if>
-        <if test="null!=height  and ''!= height">
-            height = #{height},
-        </if>
+
         <if test="null!=num  and ''!= num">
             num = #{num},
         </if>
         <if test="updator!=null  and ''!= updator">
             updator = #{updator},
         </if>
+        width = #{width},
+        height = #{height},
         update_time = now()
         where id = #{id}
     </update>
@@ -103,5 +100,24 @@
         <include refid="sql_where"/>
         limit 0,1
     </select>
+    <select id="queryAdList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM g_ad_code a
+        WHERE
+        status = 0 and delete_flag = 0
+        <if test="adCodes!=null and adCodes.size > 0">
+            and code in (
+            <foreach collection="adCodes" item="item" index="index" open="" close="" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="pageType != null and pageType != ''">
+            and page_type = #{pageType}
+        </if>
+        <if test="platform != null and platform != ''">
+            and platform = #{platform}
+        </if>
 
+    </select>
 </mapper>

@@ -3,7 +3,42 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
 <!-- 参数管理手工映射SQL语句 -->
 <mapper namespace="gNewsCategory">
+    <!-- 根据一级分类id查询对应对象-->
+    <select id="getNewsCategoryDto" parameterType="map" resultType="dto">
+        SELECT a.id
+        FROM g_news_category a
+        WHERE
+        a.id=#{id}
+        and a.delete_flag = 0
+        and a.level =1
+    </select>
 
+    <!-- 根据返回id查询二级分类对应文章-->
+    <select id="queryNewsCategory" parameterType="map" resultType="dto">
+       SELECT
+	a.id as articleId,a.title as articleTitle
+FROM
+	g_news_article a
+WHERE
+	1 = 1
+	AND a.category_id IN ( SELECT gnc.id FROM g_news_category gnc WHERE gnc.ref_id = #{refId} AND gnc.delete_flag = 0 )
+	AND a.delete_flag = 0
+ORDER BY
+	a.create_time DESC
+	LIMIT 3
+    </select>
+
+    <!-- 根据返回id查询二级分类list-->
+    <select id="getNewsCategoryList" parameterType="map" resultType="dto">
+        SELECT a.id ,a.name
+        FROM g_news_category a
+        WHERE
+        a.ref_id=#{refId}
+        and a.delete_flag = 0
+        and a.level =2
+        ORDER BY
+	a.create_time DESC
+    </select>
 
     <!-- 分类类型初始化-->
     <select id="queryTypeList" parameterType="map" resultType="dto">
@@ -12,6 +47,10 @@
         WHERE 1=1
         and a.delete_flag = 0
         and a.level!=2
+        <if test="null!=level">
+            and a.level=#{level}
+        </if>
+
     </select>
 
     <!-- 分类列表初始化-->
@@ -23,6 +62,18 @@
 
         <if test="null!=level">
             and a.level=#{level}
+        </if>
+        <if test="null!=categoryId">
+            and a.id=#{categoryId}
+        </if>
+        <if test="null!=name">
+            and a.name like  CONCAT('%',#{name},'%')
+        </if>
+        <if test="null!=status">
+            and a.status=#{status}
+        </if>
+        <if test="null!=platform">
+            and a.platform=#{platform}
         </if>
         order by a.sort
     </select>
@@ -67,7 +118,7 @@
         )
     </insert>
 
- <!--启用禁用-->
+    <!--启用禁用-->
     <update id="updateSecondCateGoryStatus" parameterType="dto">
         update g_news_category
         set
@@ -79,7 +130,7 @@
         </if>
         update_time = now()
         where
-         ref_id = #{refId}
+        ref_id = #{refId}
     </update>
 
 
@@ -87,8 +138,20 @@
     <update id="updateInfo" parameterType="dto">
         update g_news_category
         set
+        <if test="name!=null  and ''!= name">
+            name = #{name},
+        </if>
+        <if test="platform!=null  and ''!= platform">
+            platform = #{platform},
+        </if>
+        <if test="sort!=null  and ''!= sort">
+            sort = #{sort},
+        </if>
         <if test="status!=null  and ''!= status">
             status = #{status},
+        </if>
+        <if test="refId!=null  and ''!= refId">
+            ref_id = #{refId},
         </if>
         <if test="updator!=null  and ''!= updator">
             updator = #{updator},
@@ -125,4 +188,29 @@
         category_id=#{refId}
         and a.delete_flag=0
     </select>
+
+
+    <!-- 新增子类 -->
+    <insert id="saveChildrenCategory" parameterType="dto">
+        insert into g_news_category
+        (code,name,platform,
+        sort, level,ref_id,status,
+        `creator`,
+        `updator`,
+        create_time,
+        update_time
+        )
+        values (111,#{name},#{platform},
+        #{sort},#{level},#{refId},
+        #{status},
+        <if test="null!=creator  and ''!= creator">
+            #{creator},
+        </if>
+        <if test="null!=updator  and ''!= updator">
+            #{updator},
+        </if>
+        now(),
+        now()
+        )
+    </insert>
 </mapper>

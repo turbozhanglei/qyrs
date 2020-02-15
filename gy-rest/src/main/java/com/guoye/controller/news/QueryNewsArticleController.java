@@ -2,10 +2,12 @@ package com.guoye.controller.news;
 
 import com.guoye.base.BizAction;
 import com.guoye.util.BaseResult;
+import com.guoye.util.JSONUtil;
 import com.guoye.util.StatusConstant;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
+import org.g4studio.core.util.G4Constants;
 import org.g4studio.core.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,8 +49,15 @@ public class QueryNewsArticleController extends BizAction {
     @ResponseBody
     @RequestMapping(value = "/queryArticleDetail")
     public BaseResult queryArticleDetail(HttpServletRequest request){
-        Dto dto = WebUtils.getParamAsDto(request);
         BaseResult result =new BaseResult();
+        Dto dto = WebUtils.getParamAsDto(request);
+        Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+        if (null == member) {
+            result.setCode(StatusConstant.CODE_4000);
+            result.setMsg("请登录");
+            return result;
+        }
+        dto.put("userId",member.get("id"));
          Dto aDto=(Dto)bizService.queryForDto("newsArticle.queryArticleDetail", dto);
         result.setData(aDto);
         result.setMsg("调用成功");
@@ -59,12 +68,21 @@ public class QueryNewsArticleController extends BizAction {
      * 前台二级分类Id查询咨询文章*/
     @ResponseBody
     @RequestMapping(value = "/queryArticleListByCategoryId")
-    public BaseResult queryArticleListByCategoryId(HttpServletRequest request){
+    public Dto queryArticleListByCategoryId(HttpServletRequest request){
         Dto dto = WebUtils.getParamAsDto(request);
-        BaseResult result =new BaseResult();
+        Dto retDto = new BaseDto();
+        dto.put("start",dto.getAsLong("start"));
+        dto.put("end",dto.getAsLong("limit"));
         List<Dto> articleList=bizService.queryForList("newsArticle.queryArticleListByCategoryId", dto);
-        result.setData(articleList);
-        result.setMsg("调用成功");
-        return  result;
+       if(!articleList.isEmpty()){
+           retDto.put("articleList", JSONUtil.formatDateList(articleList, G4Constants.FORMAT_DateTime));
+           retDto.put("total",articleList.size() );
+           retDto.put("msg","调用成功");
+       }else{
+           retDto.put("total",0);
+           retDto.put("articleList",articleList);
+           retDto.put("msg","暂无咨询");
+       }
+        return  retDto;
     }
 }

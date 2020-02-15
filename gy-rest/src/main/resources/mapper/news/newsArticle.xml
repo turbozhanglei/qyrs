@@ -105,7 +105,7 @@
         group by a.id
         ORDER BY a.id desc
         <if test="null!=start">
-            limit #{start},#{end}
+            limit ${start},${end}
         </if>
     </select>
 
@@ -279,6 +279,8 @@
         1 = 1
         and a.delete_flag=0
         and  a.category_id=#{categoryId}
-
+        <if test="null!=start and null!=limit">
+            limit ${start},${limit}
+        </if>
     </select>
 </mapper>

@@ -1,5 +1,5 @@
 server:
-  port: 8092
+  port: 8087
 
 logging:
   level:
@@ -17,7 +17,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8090/eureka
+      defaultZone: http://localhost:8081/eureka
 zuul:
   retryable: true #是否开启重试功能
   host:

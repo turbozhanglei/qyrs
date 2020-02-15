@@ -7,7 +7,6 @@ import com.guoye.bean.Wxpoid;
 import com.guoye.util.*;
 import com.ning.http.util.Base64;
 import net.sf.json.JSONObject;
-import com.sun.deploy.net.HttpUtils;
 import org.apache.logging.log4j.core.util.JsonUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.g4studio.core.metatype.Dto;

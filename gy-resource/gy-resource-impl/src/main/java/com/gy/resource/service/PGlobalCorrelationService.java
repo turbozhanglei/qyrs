@@ -46,6 +46,12 @@ public interface PGlobalCorrelationService {
     PageResult<GlobalCorrelationModel> globalCorrelationQueryPageList(GlobalCorrelationModel modelEntity, Page pageQuery);
 
     /**
+     * 全局关联信息表 数量
+     * @param
+     */
+    Integer globalCorrelationQueryCount(GlobalCorrelationModel modelEntity);
+
+    /**
     *  全局关联信息表 修改单据状态
     *  @param \
     */

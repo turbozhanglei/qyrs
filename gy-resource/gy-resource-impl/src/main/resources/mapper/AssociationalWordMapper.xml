@@ -174,7 +174,7 @@
     </update>
 
     <!--资源标签联想词 查询详情-->
-    <select id="associationalWordQuery" parameterType="map" resultType="com.gy.resource.entity.AssociationalWordModel">
+    <select id="associationalWordQuery" parameterType="map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from  g_associational_word
@@ -182,11 +182,20 @@
     </select>
 
     <!--资源标签联想词 查询分页-->
-    <select id="associationalWordQueryPageList" parameterType="com.gy.resource.entity.AssociationalWordModel" resultType="com.gy.resource.entity.AssociationalWordModel">
+    <select id="associationalWordQueryPageList" parameterType="com.gy.resource.entity.AssociationalWordModel" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from g_associational_word
         <include refid="Example_Where_Clause" />
+        limit #{startIndex},#{limit}
+    </select>
+
+    <!--资源标签联想词 模糊查询-->
+    <select id="associationalWordFuzzyQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from g_associational_word
+        where word like concat("%",#{fuzzyWord},"%")
         limit #{startIndex},#{limit}
     </select>
 
@@ -212,8 +221,5 @@
         update_time = #{updateTime}
         where id = #{id}
     </update>
-
-
-
 
 </mapper>

@@ -21,6 +21,8 @@ import java.util.Map;
 @Service
 public class AssociationalWordServiceImpl implements PAssociationalWordService{
 
+
+
     @Autowired
     private AssociationalWordMapper modelMapper;
 
@@ -75,6 +77,13 @@ public class AssociationalWordServiceImpl implements PAssociationalWordService{
         pageResult.setRows(list);
         pageResult.setTotal(count);
         return pageResult;
+    }
+
+    @Override
+    public List<AssociationalWordModel> associationalWordFuzzyWordQuery(String fuzzyWord) {
+        int startIndex =1;
+        int limit =10;
+        return modelMapper.associationalWordFuzzyQuery(startIndex, limit, fuzzyWord);
     }
 
     /**

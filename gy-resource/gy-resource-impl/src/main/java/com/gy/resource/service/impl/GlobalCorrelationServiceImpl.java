@@ -77,6 +77,12 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
         return pageResult;
     }
 
+    @Override
+    public Integer globalCorrelationQueryCount(GlobalCorrelationModel modelEntity) {
+        Integer count = modelMapper.globalCorrelationQueryPageCount(modelEntity);
+        return count;
+    }
+
     /**
     *  全局关联信息表 修改单据状态
     *  @param \

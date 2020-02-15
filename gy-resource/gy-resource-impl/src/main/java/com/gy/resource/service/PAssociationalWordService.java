@@ -3,6 +3,7 @@ import com.gy.resource.entity.AssociationalWordModel;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +45,12 @@ public interface PAssociationalWordService {
      * @param
      */
     PageResult<AssociationalWordModel> associationalWordQueryPageList(AssociationalWordModel modelEntity, Page pageQuery);
+
+    /**
+     * 资源标签联想词 分页查询模糊
+     * @param
+     */
+    List<AssociationalWordModel> associationalWordFuzzyWordQuery(String fuzzyWord);
 
     /**
     *  资源标签联想词 修改单据状态

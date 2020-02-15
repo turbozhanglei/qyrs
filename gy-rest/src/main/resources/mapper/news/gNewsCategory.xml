@@ -3,7 +3,42 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
 <!-- 参数管理手工映射SQL语句 -->
 <mapper namespace="gNewsCategory">
+    <!-- 根据一级分类id查询对应对象-->
+    <select id="getNewsCategoryDto" parameterType="map" resultType="dto">
+        SELECT a.id
+        FROM g_news_category a
+        WHERE
+        a.id=#{id}
+        and a.delete_flag = 0
+        and a.level =1
+    </select>
 
+    <!-- 根据返回id查询二级分类对应文章-->
+    <select id="queryNewsCategory" parameterType="map" resultType="dto">
+       SELECT
+	a.id as articleId,a.title as articleTitle
+FROM
+	g_news_article a
+WHERE
+	1 = 1
+	AND a.category_id IN ( SELECT gnc.id FROM g_news_category gnc WHERE gnc.ref_id = #{refId} AND gnc.delete_flag = 0 )
+	AND a.delete_flag = 0
+ORDER BY
+	a.create_time DESC
+	LIMIT 3
+    </select>
+
+    <!-- 根据返回id查询二级分类list-->
+    <select id="getNewsCategoryList" parameterType="map" resultType="dto">
+        SELECT a.id ,a.name
+        FROM g_news_category a
+        WHERE
+        a.ref_id=#{refId}
+        and a.delete_flag = 0
+        and a.level =2
+        ORDER BY
+	a.create_time DESC
+    </select>
 
     <!-- 分类类型初始化-->
     <select id="queryTypeList" parameterType="map" resultType="dto">

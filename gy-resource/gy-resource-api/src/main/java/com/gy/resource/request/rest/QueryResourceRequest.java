@@ -34,6 +34,6 @@ public class QueryResourceRequest extends TokenRequest {
     @ApiModelProperty(notes = "查看资源人Id,后台管理页面不传，时间不够为了复用，后期再说")
     private String loginUserId;
 
-    @ApiModelProperty(notes = "查询条件,0审核通过 1审核不通过 2全部")
-    private String condition;
+//    @ApiModelProperty(notes = "查询条件,0审核通过 1审核不通过 2全部")
+//    private String condition;
 }

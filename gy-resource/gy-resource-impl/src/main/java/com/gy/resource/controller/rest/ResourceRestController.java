@@ -9,9 +9,11 @@ import com.gy.resource.response.rest.QueryResourceByConditionResponse;
 import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
 import com.gy.resource.response.rest.RecommendResourceResponse;
+import com.gy.resource.service.ResourceInfoService;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,33 +35,37 @@ import lombok.extern.slf4j.Slf4j;
 @Api(tags = {"资源小程序接口"})
 @Slf4j
 public class ResourceRestController implements ResourceApi {
+
+    @Autowired
+    ResourceInfoService resourceInfoService;
+
     @ApiOperation(value = "发布资源api，返回资源id")
     @PostMapping(value = "/issure-resource")
     public RestResult<String> issureResourceApi(@RequestBody IssureResourceRequest resourceRequest) {
-        return null;
+        return resourceInfoService.issureResourceApi(resourceRequest);
     }
 
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
-        return null;
+        return resourceInfoService.queryResource(resourceRequest);
     }
 
     @ApiOperation(value = "首页推荐资源")
     @PostMapping(value = "/recommend-resource")
     public RestResult<List<RecommendResourceResponse>> recommendResource() {
-        return null;
+        return resourceInfoService.recommendResource();
     }
 
     @ApiOperation(value = "根据筛选条件查询资源列表")
     @PostMapping(value = "/query-resource-condition")
     public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(@RequestBody QueryResourceByConditionRequest resourceByConditionRequest) {
-        return null;
+        return resourceInfoService.queryResourceByCondition(resourceByConditionRequest);
     }
 
     @ApiOperation(value = "查询用户发布的资源列表")
     @PostMapping(value = "/query-resource-user")
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(@RequestBody UserRequest request) {
-        return null;
+        return resourceInfoService.queryResourceByUserId(request);
     }
 }

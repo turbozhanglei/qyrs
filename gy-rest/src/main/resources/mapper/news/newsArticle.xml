@@ -238,7 +238,7 @@
         ) AS likes,
         (
         SELECT
-        if(COUNT(ggc.id)>0,0,1)
+        if(COUNT(ggc.id)>0,1,0)
         FROM
         g_news_article b
         LEFT JOIN g_global_correlation ggc ON ggc.ref_id = b.id

@@ -95,6 +95,8 @@ public class SysMenuController extends BizAction {
                 }
 
                 dto.put("updator", member == null ? "" : member.get("id"));
+                String mob=dto.getAsString("mobile");
+                dto.put("mobile",Des.encrypt(mob,password));//加密后手机号
                 bizService.updateInfo(dto);
             } else {
                 if (null !=mobile){
@@ -105,9 +107,9 @@ public class SysMenuController extends BizAction {
                 //插入
                 dto.put("creator", member == null ? "" : member.get("id"));
                 dto.put("updator", member == null ? "" : member.get("id"));
-
+                String mob=dto.getAsString("mobile");
                 //Des.encrypt(mob,password);
-                dto.put("mobile",Des.encrypt(dto.getAsString("mobile"),password));//加密后手机号
+                dto.put("mobile",Des.encrypt(mob,password));//加密后手机号
 
                 bizService.saveInfo(dto);
             }

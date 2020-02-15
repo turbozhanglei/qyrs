@@ -45,7 +45,7 @@
         WHERE 1=1
         and a.delete_flag = 0
         <include refid="sql_where"/>
-        ORDER BY create_time
+        ORDER BY a.sort ASC
         <if test="null!=start">
             limit #{start},#{end}
         </if>
@@ -87,18 +87,6 @@
         <if test="null!=type  and ''!= type">
             type = #{type},
         </if>
-        <if test="null!=content  and ''!= content">
-            content = #{content},
-        </if>
-        <if test="null!=linkUrl  and ''!= linkUrl">
-            link_url = #{linkUrl},
-        </if>
-        <if test="null!=imageUrl  and ''!= imageUrl">
-            image_url = #{imageUrl},
-        </if>
-        <if test="null!=sort  and ''!= sort">
-            sort = #{sort},
-        </if>
         <if test="null!=startDate  and ''!= startDate">
             start_date = #{startDate},
         </if>
@@ -111,10 +99,29 @@
         <if test="updator!=null  and ''!= updator">
             updator = #{updator},
         </if>
+        content = #{content},
+        link_url = #{linkUrl},
+        image_url = #{imageUrl},
         update_time = now()
         where id = #{id}
     </update>
 
+
+    <!-- 修改排序 -->
+    <update id="updateSortUp" parameterType="dto">
+        update g_ad_source
+        set
+        sort = #{oldSort},
+        update_time = now()
+        where id = #{newId}
+    </update>
+    <update id="updateSortDow" parameterType="dto">
+        update g_ad_source
+        set
+        sort = #{newSort},
+        update_time = now()
+        where id = #{oldId}
+    </update>
     <!-- 查询 -->
     <select id="getInfo" parameterType="map" resultType="dto">
         SELECT a.*
@@ -122,6 +129,15 @@
         WHERE 1=1
         <include refid="sql_where"/>
         limit 0,1
+    </select>
+
+    <select id="queryAdSourceList" parameterType="map" resultType="dto">
+        SELECT a.*
+        FROM g_ad_source a
+        WHERE 1=1
+        <include refid="sql_where"/>
+        ORDER BY a.sort ASC
+        limit 0,#{limit}
     </select>
 
 </mapper>

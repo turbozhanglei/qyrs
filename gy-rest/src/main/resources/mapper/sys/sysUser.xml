@@ -6,6 +6,9 @@
 
 
     <sql id="sql_where">
+        <if test="null!=unionid  and ''!= unionid">
+            and a.unionid = #{unionid}
+        </if>
         <if test="null!=status  and ''!= status">
             and a.status = #{status}
         </if>
@@ -60,20 +63,8 @@
             and or a.deptid in (select id from sys_dept where pid in
             and (select id from sys_dept where pid = #{deptid})))
         </if>
-        <if test="null!=q_status">
-            and a.status = 1
-        </if>
-        <if test="null!=q_status  and ''!= q_status">
-            and a.status = #{q_status}
-        </if>
-        <if test="null!=checkFlag  and ''!= checkFlag">
-            and a.check_flag = #{checkFlag}
-        </if>
         <if test="null!=roleid  and ''!= roleid">
             and a.roleid = #{roleid}
-        </if>
-        <if test="null!=agentid  and ''!= agentid">
-            and a.id = #{agentid}
         </if>
         <if test="null!=selfFlag  and ''!= selfFlag">
             and a.id != #{userid}
@@ -95,12 +86,6 @@
         <if test="null!=id  and ''!= id">
             and a.id = #{id}
         </if>
-        <if test="''!=wopenid and null!=wopenid">
-            and a.wopenid= #{wopenid}
-        </if>
-        <if test="''!=zopenid and null!=zopenid">
-            and a.zopenid= #{zopenid}
-        </if>
     </sql>
 
     <!-- 删除 -->
@@ -119,6 +104,28 @@
         SELECT
         a.*,case a.sex when '0' then '无' when '1' then '男' when '2' then '女' end as sec,
         case a.source when '1' then '小程序' else '后台' end as sources
+        FROM
+        g_user a
+        WHERE
+        1 = 1
+        AND a.delete_flag = 0
+        <include refid="sql_where"/>
+        limit 0,1
+    </select>
+
+    <!-- 查询 -->
+    <select id="getUserInfo" parameterType="map" resultType="dto">
+        SELECT
+        a.*,case a.sex when '0' then '无' when '1' then '男' when '2' then '女' end as sec,
+        case a.source when '1' then '小程序' else '后台' end as sources,
+        (SELECT
+           COUNT(ggc.id)
+         FROM
+            g_global_correlation ggc
+         WHERE
+            ggc.ref_id = #{id}
+        AND ggc.delete_flag = 0 and ggc.ref_type=0
+        ) as fens
         FROM
         g_user a
         WHERE
@@ -190,11 +197,11 @@
         insert into g_user (nickname, username,mobile, head_pic, sex,
         company_name, company_adress, status,
         source, identity_type, real_name,roleid,password,remark,
-        create_time,creator,delete_flag
+        create_time,creator,delete_flag,editSum,unionid
         )
         values (#{nickname}, #{username}, #{mobile}, #{head_pic}, #{sex},
         #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid}, password(#{password}), #{remark},
-        now(),#{creator},'0')
+        now(),#{creator},'0',#{editSum},#{unionid})
         <selectKey resultType="string" keyProperty="id">
             select last_insert_id() as ID from g_user limit 1
         </selectKey>

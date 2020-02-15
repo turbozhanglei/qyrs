@@ -63,6 +63,7 @@ public class NewsCategoryController extends BizAction {
               if (StringUtils.isNotEmpty(dto.getAsString("id"))){
                   dto.put("update_time",new Date());
                   dto.put("updator", member == null ? "" : member.get("id"));
+
                   bizService.updateInfo(dto);
               }else {
                   //插入
@@ -201,5 +202,39 @@ public class NewsCategoryController extends BizAction {
             result.setData(catrgoryList);
         }
         return  result;
+    }
+
+    //添加子类按钮
+    @ResponseBody
+    @RequestMapping(value = "/saveChildrenCategory")
+    public BaseResult saveChildrenCategory(HttpServletRequest request) {
+        BaseResult result = new BaseResult();
+        Dto dto = WebUtils.getParamAsDto(request);
+
+        try {
+            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+
+            if (null == member) {
+                result.setCode(StatusConstant.CODE_4000);
+                result.setMsg("请登录");
+                return result;
+            }
+            dto.put("tableName", "gNewsCategory");
+            dto.put("method","saveChildrenCategory");
+
+                //插入
+                dto.put("creator", member == null ? "" : member.get("id"));
+                dto.put("updator", member == null ? "" : member.get("id"));
+                dto.put("level", 2);
+                dto.put("refId", dto.getAsString("firstId"));
+
+                bizService.save(dto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+
+        return result;
     }
 }

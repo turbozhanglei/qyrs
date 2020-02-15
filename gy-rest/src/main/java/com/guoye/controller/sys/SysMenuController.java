@@ -1,8 +1,8 @@
 package com.guoye.controller.sys;
 
 import com.guoye.base.BizAction;
-import com.guoye.util.BaseResult;
-import com.guoye.util.StatusConstant;
+import com.guoye.util.*;
+import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
@@ -62,6 +62,8 @@ public class SysMenuController extends BizAction {
 
             Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
 
+            DESWrapper Des = new DESWrapper();
+            String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
             if (null == member) {
                 result.setCode(StatusConstant.CODE_4000);
                 result.setMsg("请登录");
@@ -93,6 +95,8 @@ public class SysMenuController extends BizAction {
                 }
 
                 dto.put("updator", member == null ? "" : member.get("id"));
+                String mob=dto.getAsString("mobile");
+                dto.put("mobile",Des.encrypt(mob,password));//加密后手机号
                 bizService.updateInfo(dto);
             } else {
                 if (null !=mobile){
@@ -103,6 +107,9 @@ public class SysMenuController extends BizAction {
                 //插入
                 dto.put("creator", member == null ? "" : member.get("id"));
                 dto.put("updator", member == null ? "" : member.get("id"));
+                String mob=dto.getAsString("mobile");
+                //Des.encrypt(mob,password);
+                dto.put("mobile",Des.encrypt(mob,password));//加密后手机号
 
                 bizService.saveInfo(dto);
             }
@@ -392,4 +399,21 @@ public class SysMenuController extends BizAction {
         }
         return result;
     }
+
+//    public static void main(String[] args) {
+//        //待加密内容
+//     String str = "66666666";
+//     //密码，长度要是8的倍数
+//     String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+//     DESWrapper Des = new DESWrapper();
+//     String result = Des.encrypt(str,password);
+//     System.out.println("加密后："+result);
+//     //直接将如上内容解密
+//     try {
+//         String decryResult = Des.decrypt(result, password);
+//             System.out.println("解密后："+new String(decryResult));
+//     } catch (Exception e1) {
+//             e1.printStackTrace();
+//     }
+//    }
 }

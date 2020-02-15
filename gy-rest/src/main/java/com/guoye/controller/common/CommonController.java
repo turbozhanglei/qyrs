@@ -192,6 +192,9 @@ public class CommonController extends BizAction {
         Dto retDto = new BaseDto();
         try {
             Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            DESWrapper Des = new DESWrapper();
+            String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+
             if (null == member) {
                 retDto.put("code", StatusConstant.CODE_4000);
                 retDto.setMsg("请登录");
@@ -207,6 +210,11 @@ public class CommonController extends BizAction {
                 retDto.put("rows", paramList);
             } else {
                 if (!paramList.isEmpty()) {
+                    for(Dto param:paramList){
+                        if(param.getAsString("mobile") !=null){
+                            param.put("mobile",Des.decrypt(param.getAsString("mobile"),password));
+                        }
+                    }
                     retDto.put("rows", JSONUtil.formatDateList(paramList, G4Constants.FORMAT_DateTime));
                 }
             }

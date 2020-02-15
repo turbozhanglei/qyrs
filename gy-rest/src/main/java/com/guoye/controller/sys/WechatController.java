@@ -1,12 +1,10 @@
 package com.guoye.controller.sys;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.guoye.base.BizAction;
 import com.guoye.bean.Wxpoid;
-import com.guoye.util.BaseResult;
-import com.guoye.util.DESWrapper;
-import com.guoye.util.HttpClientUtil;
-import com.guoye.util.StatusConstant;
+import com.guoye.util.*;
 import com.ning.http.util.Base64;
 import net.sf.json.JSONObject;
 import com.sun.deploy.net.HttpUtils;
@@ -17,6 +15,7 @@ import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.Cipher;
@@ -30,6 +29,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 微信用户业务处理
@@ -45,7 +45,7 @@ public class WechatController extends BizAction {
 
     //获取openid and session_key
     @RequestMapping(value = "/getOpenid")
-    public BaseResult wechatLogin(HttpServletRequest request, HttpServletResponse response) {
+    public BaseResult getOpenid(HttpServletRequest request, HttpServletResponse response) {
         Dto dto = WebUtils.getParamAsDto(request);
         BaseResult result = new BaseResult();
 
@@ -74,9 +74,13 @@ public class WechatController extends BizAction {
                 //获取session_key
                 String session_key=jsonObject.getString("session_key");
                 redisService.setValue("session_key",session_key);
+                //获取unionId
+                String unionid=jsonObject.getString("unionId");
+                redisService.setValue("unionId",unionid);
                 Dto udto=new BaseDto();
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);
+                udto.put("unionid",unionid);
                 result.setData(udto);
             }
 
@@ -86,6 +90,104 @@ public class WechatController extends BizAction {
         }
         return result;
     }
+
+
+
+    //获取用户信息 保存到数据库 ---- 授权登录
+    @RequestMapping(value = "/wechatLogin")
+    public BaseResult wechatLogin(HttpServletRequest request, HttpServletResponse response) {
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result = new BaseResult();
+        DESWrapper Des = new DESWrapper();
+        String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+
+        try {
+
+//            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+//            if (null == member) {
+//                result.setCode(StatusConstant.CODE_4000);
+//                result.setMsg("请登录");
+//                return result;
+//            }
+            if(dto.getAsString("unionid") !=null &&  dto.getAsString("unionid")!=""){
+                Dto member=(Dto) bizService.queryForDto("sysUser.getInfo",new BaseDto("unionid",dto.getAsString("unionid")));
+                //判断用户是否存在
+                if(null !=member){
+                    Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",member.getAsString("id")));
+                    userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));//解密手机号
+                    result.setData(userdto);
+                }
+            }else if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
+                    //保存用户信息
+                    String token = UUID.randomUUID().toString();
+                    Dto udto=new BaseDto();
+                    udto.put("tableName","sysUser");
+                    udto.put("nickname",dto.getAsString("nickName"));
+                    udto.put("head_pic",dto.getAsString("avatarUrl"));
+                    udto.put("sex",dto.getAsString("gender"));//性别
+                    udto.put("status",0);
+                    udto.put("source",1);//来源
+                    udto.put("identity_type",0);//前台用户
+                    udto.put("openid",dto.getAsString("openid"));
+                    udto.put("unionid",dto.getAsString("unionid"));
+                    bizService.saveInfo(udto);
+                    udto.put("id",udto.getAsString("id"));//返回当前用户登录的id
+                    udto.put("token",token);
+                    redisService.setValue(token, JSONArray.toJSONString(udto), 7200l);
+                    result.setData(udto);
+
+            }else {
+                result.setCode("9999");
+                result.setMsg("暂无用户信息，请先授权登录！");
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+        return result;
+    }
+
+
+    /**
+     * 解密微信手机号 并更新到数据库
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/decryptWxMobile")
+    public BaseResult decryptWxMobile(HttpServletRequest request, HttpServletResponse response) {
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result=new BaseResult();
+        Dto resultParam = new BaseDto();
+        DESWrapper Des = new DESWrapper();
+        String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+
+        try {
+            String clt=dto.getAsString("clt");
+            String mobileData=CommonUtil.decryptS5(dto.getAsString("encryptedData"),"UTF-8",dto.getAsString("key"),dto.getAsString("iv"));
+            String mobile="";
+            if(StringUtils.isNotEmpty(mobileData)){
+                mobile= JSONUtil.parseJSON2Map(mobileData).get("phoneNumber").toString();
+            }
+            Dto mobDto=new BaseDto();
+            mobDto.put("tableName","sysUser");
+            mobDto.put("method","updateInfo");
+            mobDto.put("id",dto.getAsString("id"));
+            mobDto.put("mobile",Des.encrypt(mobile,password));//加密手机号
+            bizService.update(mobDto);
+            result.setData(resultParam);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+        return result;
+    }
+
+
+
+
 
 
     //返回个人信息

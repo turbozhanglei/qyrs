@@ -49,7 +49,7 @@
     <!-- 插入 -->
     <insert id="saveInfo" parameterType="dto">
         INSERT INTO
-        `g_ad_code` (`page_type`, `status`,`name`,`code`,`type`,`width`,`height`,`sizeLimit`,``num`,`creator`, `updator`)
+        `g_ad_code` (`page_type`, `status`,`name`,`code`,`type`,`width`,`height`,`sizeLimit`,`num`,`creator`, `updator`)
         VALUES (#{pageType},#{status},#{name},#{code}, #{type}, #{width},#{height},#{source_size_limit},#{num},#{creator},#{updator})
 
     </insert>

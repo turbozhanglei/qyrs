@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Autor:zhaosen
@@ -76,8 +78,10 @@ public class QueryNewsArticleController extends BizAction {
         dto.put("start",dto.getAsLong("start"));
         dto.put("end",dto.getAsLong("limit"));
         List<Dto> articleList=bizService.queryForList("newsArticle.queryArticleListByCategoryId", dto);
+        Map<String,List<Dto>> data=new HashMap<String,List<Dto>>();
        if(!articleList.isEmpty()){
-           retDto.put("articleList", JSONUtil.formatDateList(articleList, G4Constants.FORMAT_DateTime));
+           data.put("articleList",JSONUtil.formatDateList(articleList, G4Constants.FORMAT_DateTime));
+           retDto.put("data",data );
            retDto.put("total",articleList.size() );
            retDto.put("msg","调用成功");
        }else{

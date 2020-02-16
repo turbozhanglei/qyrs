@@ -225,7 +225,7 @@ public class WechatController extends BizAction {
         BaseResult result = new BaseResult();
 
         try {
-            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            //Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
             String id = dto.getAsString("id");
             dto.put("tableName", "sysUser");
             Dto udto=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("id",dto.getAsString("id")));

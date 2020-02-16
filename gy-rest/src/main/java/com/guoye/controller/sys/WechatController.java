@@ -50,13 +50,6 @@ public class WechatController extends BizAction {
 
         try {
 
-//            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
-//
-//            if (null == member) {
-//                result.setCode(StatusConstant.CODE_4000);
-//                result.setMsg("请登录");
-//                return result;
-//            }
             Map<String, String> param = new HashMap<>();
             param.put("appid", "wx8638e80c7186b393");
             param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
@@ -106,12 +99,7 @@ public class WechatController extends BizAction {
 
         try {
               String token = UUID.randomUUID().toString();
-//            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
-//            if (null == member) {
-//                result.setCode(StatusConstant.CODE_4000);
-//                result.setMsg("请登录");
-//                return result;
-//            }
+
             if(dto.getAsString("unionid") !=null &&  dto.getAsString("unionid")!=""){
                 Dto member=(Dto) bizService.queryForDto("sysUser.getInfo",new BaseDto("unionid",dto.getAsString("unionid")));
                 //判断用户是否存在

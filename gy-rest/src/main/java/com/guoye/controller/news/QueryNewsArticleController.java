@@ -52,12 +52,14 @@ public class QueryNewsArticleController extends BizAction {
         BaseResult result =new BaseResult();
         Dto dto = WebUtils.getParamAsDto(request);
         Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
-        if (null == member) {
-            result.setCode(StatusConstant.CODE_4000);
-            result.setMsg("请登录");
-            return result;
+//        if (null == member) {
+//            result.setCode(StatusConstant.CODE_4000);
+//            result.setMsg("请登录");
+//            return result;
+//        }
+        if(member!=null){
+            dto.put("userId",member.get("id"));
         }
-        dto.put("userId",member.get("id"));
          Dto aDto=(Dto)bizService.queryForDto("newsArticle.queryArticleDetail", dto);
         result.setData(aDto);
         result.setMsg("调用成功");

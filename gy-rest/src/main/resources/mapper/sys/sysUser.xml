@@ -199,11 +199,19 @@
     <insert id="saveInfo" parameterType="dto">
         insert into g_user (nickname, username,mobile, head_pic, sex,
         company_name, company_adress, status,
-        source, identity_type, real_name,roleid,password,remark,
+        source, identity_type, real_name,roleid,
+        <if test="null!=password  and ''!= password">
+          password,
+        </if>
+        remark,
         create_time,creator,delete_flag,editSum,unionid,openid
         )
         values (#{nickname}, #{username}, #{mobile}, #{head_pic}, #{sex},
-        #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid}, password(#{password}), #{remark},
+        #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid},
+        <if test="null!=password  and ''!= password">
+         password(#{password}),
+        </if>
+        #{remark},
         now(),#{creator},'0',#{editSum},#{unionid},#{openid})
         <selectKey resultType="java.lang.Long" keyProperty="id">
             SELECT LAST_INSERT_ID() as id limit 1

@@ -50,13 +50,13 @@ public class WechatController extends BizAction {
 
         try {
 
-            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
-            redisService.delete("512");
-            if (null == member) {
-                result.setCode(StatusConstant.CODE_4000);
-                result.setMsg("请登录");
-                return result;
-            }
+//            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+//
+//            if (null == member) {
+//                result.setCode(StatusConstant.CODE_4000);
+//                result.setMsg("请登录");
+//                return result;
+//            }
             Map<String, String> param = new HashMap<>();
             param.put("appid", "wx8638e80c7186b393");
             param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
@@ -105,7 +105,7 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-
+              String token = UUID.randomUUID().toString();
 //            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
 //            if (null == member) {
 //                result.setCode(StatusConstant.CODE_4000);
@@ -118,11 +118,12 @@ public class WechatController extends BizAction {
                 if(null !=member){
                     Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",member.getAsString("id")));
                     userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));//解密手机号
+                    userdto.put("token",token);
                     result.setData(userdto);
                 }
             }else if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
                     //保存用户信息
-                    String token = UUID.randomUUID().toString();
+
                     Dto udto=new BaseDto();
                     udto.put("tableName","sysUser");
                     udto.put("nickname",dto.getAsString("nickName"));

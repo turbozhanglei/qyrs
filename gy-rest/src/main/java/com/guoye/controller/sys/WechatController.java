@@ -161,7 +161,8 @@ public class WechatController extends BizAction {
                 mobDto.put("id",dto.getAsString("id"));
                 mobDto.put("mobile",Des.encrypt(mobile,password));//加密手机号
                 bizService.update(mobDto);
-                result.setData(resultParam);
+                result.setData(mobDto);
+                result.setMsg("操作成功");
             }
 
         } catch (Exception e) {
@@ -236,8 +237,9 @@ public class WechatController extends BizAction {
                 if (udto.getAsString("sex")!=null && udto.getAsString("sex")!=""){
                     dto.put("editSum",1);
                 }
-                dto.put("updator", member == null ? "" : member.get("id"));
+                dto.put("updator",dto.getAsString("id"));
                 bizService.updateInfo(dto);
+                result.setMsg("操作成功");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -270,8 +270,8 @@
         <if test="null!=remark  and ''!= remark">
             remark = #{remark},
         </if>
-        <if test="null!=desc  and ''!= desc">
-            desc = #{desc},
+        <if test="null!=editSum  and ''!= editSum">
+            editSum = #{editSum},
         </if>
         update_time = now(),
         updator = #{updator}

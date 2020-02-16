@@ -12,7 +12,7 @@ ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://47.94.238.185:8097/
+img_url: http://40.73.65.243:8087/
 
 eureka:
   client:

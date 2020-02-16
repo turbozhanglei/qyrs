@@ -67,6 +67,7 @@ public class WechatController extends BizAction {
             String s = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
             if (StringUtils.isNotEmpty(s)) {
                 JSONObject jsonObject = JSONObject.fromObject(s);
+                Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");
                 redisService.setValue("openid",openid);
@@ -74,12 +75,15 @@ public class WechatController extends BizAction {
                 String session_key=jsonObject.getString("session_key");
                 redisService.setValue("session_key",session_key);
                 //获取unionId
-                String unionid=jsonObject.getString("unionId");
-                redisService.setValue("unionId",unionid);
-                Dto udto=new BaseDto();
+//                if(jsonObject.getString("unionId") !=null){
+//                    String unionid=jsonObject.getString("unionId");
+//                    redisService.setValue("unionId",unionid);
+//                    udto.put("unionid",unionid);
+//                }
+
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);
-                udto.put("unionid",unionid);
+
                 result.setData(udto);
             }
 

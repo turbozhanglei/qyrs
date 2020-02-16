@@ -51,6 +51,7 @@
         <if test="updator!=null  and ''!= updator">
             updator = #{updator},
         </if>
+        update_time = now()
         where id = #{id}
     </update>
 

@@ -54,10 +54,10 @@ public class WechatController extends BizAction {
             param.put("grant_type", "authorization_code");
             Map<String, String> head = new HashMap<>();
             head.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            String s = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
-            JSONObject jsonObject = JSONObject.fromObject(s);
-            if (StringUtils.isNotEmpty(s) && jsonObject.getString("errcode").equals("40163")==false) {
+            String info = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
 
+            if (StringUtils.isNotEmpty(info) && info!="") {
+                JSONObject jsonObject = JSONObject.fromObject(info);
                 Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");
@@ -192,7 +192,7 @@ public class WechatController extends BizAction {
             String unionid = dto.getAsString("unionid");
             dto.put("tableName", "sysUser");
 
-            if (StringUtils.isNotEmpty(unionid)) {
+            if (StringUtils.isNotEmpty(unionid) && unionid !="") {
                 Dto udto=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("unionid",dto.getAsString("unionid")));
                 if(udto !=null){
                     Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",udto.getAsString("id")));
@@ -202,8 +202,11 @@ public class WechatController extends BizAction {
 
             }else if(dto.getAsString("id") !="" && dto.getAsString("id") != "Undefined"){
                 Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",dto.getAsString("id")));
-                userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));
-                result.setData(userdto);
+                if(userdto !=null){
+                    userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));
+                    result.setData(userdto);
+                }
+
             }
 
         } catch (Exception e) {

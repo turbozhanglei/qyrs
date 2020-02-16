@@ -1,18 +1,18 @@
 server:
-  port: 8093
+  port: 8089
  # servlet:
  #   context-path: /wms-rest
   #logging:
   #  level:
   #    root: INFO
   config: classpath:logback.xml
-white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,/wms-rest/suser/login,/wms-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess,
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess,
 
 ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://39.107.86.181:8096/
+img_url: http://40.73.65.243:8096/
 
 eureka:
   client:
@@ -27,9 +27,9 @@ spring:
     readSize: 1
     type: com.alibaba.druid.pool.DruidDataSource
     master:
-      url: jdbc:mysql://39.107.86.181:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
       username: root
-      password: Chenguo21
+      password: 2wsgsda%lptP!3sd5rti
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -47,9 +47,9 @@ spring:
       useGlobalDataSourceStat: true
       validationQuery: SELECT 1 FROM DUAL
     slave:
-      url: jdbc:mysql://39.107.86.181:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
       username: root
-      password: Chenguo21
+      password: 2wsgsda%lptP!3sd5rti
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -87,7 +87,7 @@ mapper:
 ---
 spring:
   redis:
-    host: 39.107.86.181
+    host: 40.73.65.243
     port: 6379
     password: 123456
     pool:

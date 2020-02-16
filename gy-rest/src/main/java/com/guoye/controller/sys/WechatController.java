@@ -7,7 +7,6 @@ import com.guoye.bean.Wxpoid;
 import com.guoye.util.*;
 import com.ning.http.util.Base64;
 import net.sf.json.JSONObject;
-import com.sun.deploy.net.HttpUtils;
 import org.apache.logging.log4j.core.util.JsonUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.g4studio.core.metatype.Dto;
@@ -60,7 +59,7 @@ public class WechatController extends BizAction {
             }
             Map<String, String> param = new HashMap<>();
             param.put("appid", "wx8638e80c7186b393");
-            param.put("secret", "f2b40a6cb42b71deb901e8ef180697a4");
+            param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
             param.put("js_code", dto.getAsString("code"));
             param.put("grant_type", "authorization_code");
             Map<String, String> head = new HashMap<>();
@@ -68,6 +67,7 @@ public class WechatController extends BizAction {
             String s = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
             if (StringUtils.isNotEmpty(s)) {
                 JSONObject jsonObject = JSONObject.fromObject(s);
+                Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");
                 redisService.setValue("openid",openid);
@@ -75,12 +75,15 @@ public class WechatController extends BizAction {
                 String session_key=jsonObject.getString("session_key");
                 redisService.setValue("session_key",session_key);
                 //获取unionId
-                String unionid=jsonObject.getString("unionId");
-                redisService.setValue("unionId",unionid);
-                Dto udto=new BaseDto();
+//                if(jsonObject.getString("unionId") !=null){
+//                    String unionid=jsonObject.getString("unionId");
+//                    redisService.setValue("unionId",unionid);
+//                    udto.put("unionid",unionid);
+//                }
+
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);
-                udto.put("unionid",unionid);
+
                 result.setData(udto);
             }
 
@@ -203,11 +206,11 @@ public class WechatController extends BizAction {
             String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
 
-            if (null == member) {
-                result.setCode(StatusConstant.CODE_4000);
-                result.setMsg("请登录");
-                return result;
-            }
+//            if (null == member) {
+//                result.setCode(StatusConstant.CODE_4000);
+//                result.setMsg("请登录");
+//                return result;
+//            }
             //小程序端唯一标识
             String unionid = dto.getAsString("unionid");
             dto.put("tableName", "sysUser");

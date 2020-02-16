@@ -48,6 +48,7 @@ public class AvertController extends BizAction {
                 if (StringUtils.isNotEmpty(type) && type.indexOf("1") < 0){
                     dto.put("width",null);
                     dto.put("height",null);
+                    dto.put("sizeLimit",null);
                 }
                 dto.put("update_time",new Date());
                 dto.put("updator", member == null ? "" : member.get("id"));

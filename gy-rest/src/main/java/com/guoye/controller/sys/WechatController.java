@@ -59,7 +59,7 @@ public class WechatController extends BizAction {
             }
             Map<String, String> param = new HashMap<>();
             param.put("appid", "wx8638e80c7186b393");
-            param.put("secret", "f2b40a6cb42b71deb901e8ef180697a4");
+            param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
             param.put("js_code", dto.getAsString("code"));
             param.put("grant_type", "authorization_code");
             Map<String, String> head = new HashMap<>();
@@ -202,11 +202,11 @@ public class WechatController extends BizAction {
             String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
 
-            if (null == member) {
-                result.setCode(StatusConstant.CODE_4000);
-                result.setMsg("请登录");
-                return result;
-            }
+//            if (null == member) {
+//                result.setCode(StatusConstant.CODE_4000);
+//                result.setMsg("请登录");
+//                return result;
+//            }
             //小程序端唯一标识
             String unionid = dto.getAsString("unionid");
             dto.put("tableName", "sysUser");

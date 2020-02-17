@@ -60,6 +60,17 @@ public interface AssociationalWordMapper{
             @Param("example") AssociationalWordModel example);
 
     /**
+     *  资源标签联想词 模糊查询
+     * @param startIndex
+     * @param limit
+     * @param fuzzyWord
+     */
+    List<AssociationalWordModel> associationalWordFuzzyQuery(
+            @Param("startIndex") int startIndex,
+            @Param("limit") int limit,
+            @Param("fuzzyWord")  String fuzzyWord);
+
+    /**
     *  资源标签联想词 修改单据状态
     * @param map 可修改的参数列表 status 查询参数 id
     */

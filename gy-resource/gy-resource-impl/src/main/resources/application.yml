@@ -1,5 +1,5 @@
 server:
-  port: 8066
+  port: 8094
 
 
 logging:
@@ -17,11 +17,11 @@ spring:
   application:
     name: gy-resource
   datasource:
-#    url: jdbc:mysql://47.98.108.230:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-    url: jdbc:mysql://127.0.0.1:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://127.0.0.1:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-#    password: 1a6XzyruFj;!32
-    password: 123456
+    password: 2wsgsda%lptP!3sd5rti
+#    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initialSize: 8

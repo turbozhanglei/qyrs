@@ -27,6 +27,6 @@ public class CheckBatchRequest extends TokenRequest {
     @ApiModelProperty(notes = "资源id集合")
     private List<String> resourceIdList;
 
-    @ApiModelProperty(notes = "检查状态 0审核通过 1审核不通过")
+    @ApiModelProperty(notes = "检查状态 3人工审核通过，4人工审核不通过")
     private String checkStatus;
 }

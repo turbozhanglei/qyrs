@@ -186,8 +186,8 @@
     </update>
 
     <!--搜索历史 删除-->
-    <update id="searchHistoryDelete" parameterType="map">
-        delete  from g_search_history where id = #{id}
+    <update id="searchHistoryDelete" parameterType="java.lang.Long">
+        update  g_search_history set delete_flag=1 where user_id = #{userId}
     </update>
 
     <!--搜索历史 查询详情-->
@@ -230,6 +230,20 @@
         where id = #{id}
     </update>
 
+
+    <!--前台查询搜索历史记录-->
+    <select id="querySearchHistoryByUserId" resultType="com.gy.resource.response.rest.SearchHistoryResponse" parameterType="java.lang.Long">
+                     SELECT
+                        a.word
+                    FROM
+                        g_search_history a
+                    WHERE
+                        a.delete_flag = 0
+                    AND a.valid_time>= NOW()
+                    AND a.user_id =#{userId}
+                    ORDER BY a.valid_time DESC
+                    LIMIT 10
+    </select>
 
 
 

@@ -84,10 +84,12 @@ public class QueryNewsArticleController extends BizAction {
            retDto.put("data",data );
            retDto.put("total",articleList.size() );
            retDto.put("msg","调用成功");
+           retDto.put("code","0000");
        }else{
            retDto.put("total",0);
            retDto.put("articleList",articleList);
            retDto.put("msg","暂无咨询");
+           retDto.put("code","0000");
        }
         return  retDto;
     }

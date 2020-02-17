@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.resource.mapper.MyFollowMapper">
+
+    <!--查询我的关注列表-->
+    <select id="queryMyFollowByUserId" resultType="com.gy.resource.response.rest.MyFollowUserInfoResponse" parameterType="java.lang.Long">
+                     SELECT
+                        a.word
+                    FROM
+                        g_search_history a
+                    WHERE
+                        a.delete_flag = 0
+                    AND a.valid_time>= NOW()
+                    AND a.user_id =#{userId}
+                    ORDER BY a.valid_time DESC
+                    LIMIT 10
+    </select>
+
+    <!--查询我的关注列表-->
+    <select id="queryMyFollowTotal" resultType="java.lang.Long" parameterType="java.lang.Long">
+                     SELECT
+                        a.word
+                    FROM
+                        g_search_history a
+                    WHERE
+                        a.delete_flag = 0
+                    AND a.valid_time>= NOW()
+                    AND a.user_id =#{userId}
+                    ORDER BY a.valid_time DESC
+                    LIMIT 10
+    </select>
+
+</mapper>

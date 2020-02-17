@@ -66,11 +66,11 @@ public class WechatController extends BizAction {
                 String session_key=jsonObject.getString("session_key");
                 redisService.setValue("session_key",session_key);
                 //获取unionId
-                if(jsonObject.getString("unionId") != null && jsonObject.getString("unionId") != ""){
-                    String unionid=jsonObject.getString("unionId");
-                    redisService.setValue("unionId",unionid);
-                    udto.put("unionid",unionid);
-                }
+//                if(jsonObject.getString("unionId") != null && jsonObject.getString("unionId") != ""){
+//                    String unionid=jsonObject.getString("unionId");
+//                    redisService.setValue("unionId",unionid);
+//                    udto.put("unionid",unionid);
+//                }
 
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);

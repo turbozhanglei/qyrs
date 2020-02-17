@@ -61,5 +61,9 @@ public class ResourceInfo implements Serializable {
     private long creator;
     //更新用户
     private long updator;
+
+    private Date createStartTime;
+    private Date createEndTime;
+
     
 }

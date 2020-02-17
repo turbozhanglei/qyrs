@@ -46,30 +46,36 @@ public class ResourceManagerController implements ResourceManagerApi {
     @ApiOperation(value = "批量审核")
     @PostMapping(value = "/batch-check")
     public RestResult<Boolean> checkBatch(@RequestBody CheckBatchRequest request) {
-        return null;
+        return resourceManagerService.checkBatch(request);
     }
 
     @ApiOperation(value = "单个审核")
     @PostMapping(value = "/check")
     public RestResult<Boolean> check(@RequestBody CheckRequest request) {
-        return null;
+        return resourceManagerService.check(request);
     }
 
     @ApiOperation(value = "置顶")
     @PostMapping(value = "/top")
     public RestResult<Boolean> top(@RequestBody TopRequest request) {
-        return null;
+        return resourceManagerService.top(request);
     }
 
-    @ApiOperation(value = "导出")
-    @PostMapping(value = "/download")
-    public void download(@RequestBody DownloadRequest downloadRequest) {
+    @ApiOperation(value = "资源信息列表页导出")
+    @PostMapping(value = "/download-resource")
+    public void resourceInfoListDownLoad(@RequestBody  QueryResourceManagerRequest resourceManagerRequest) {
+
+    }
+
+    @ApiOperation(value = "资源信息汇总报表页导出")
+    @PostMapping(value = "/download-report")
+    public void reportDownLoad(@RequestBody  QueryResourceManagerRequest resourceManagerRequest) {
 
     }
 
     @ApiOperation(value = "资源信息汇总报表")
     @PostMapping(value = "/resource-report")
-    public RestResult<ReportResponse> resourceReport(@RequestBody ReportRequest reportRequest) {
-        return null;
+    public RestResult<PageResult<ReportResponse>> resourceReport(@RequestBody ReportRequest reportRequest) {
+        return resourceManagerService.resourceReport(reportRequest);
     }
 }

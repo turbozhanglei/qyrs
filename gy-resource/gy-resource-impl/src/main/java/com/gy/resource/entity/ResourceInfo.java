@@ -20,9 +20,9 @@ public class ResourceInfo implements Serializable {
 
     private static final long serialVersionUID = 5699318323159663984L;
     //id
-    private long id;
+    private Long id;
 //发布用户id
-    private long userId;
+    private Long userId;
     //手机号，加密后
     private String mobile;
     //资源标题
@@ -58,9 +58,9 @@ public class ResourceInfo implements Serializable {
     //更新时间
     private Date updateTime;
     //创建用户
-    private long creator;
+    private Long creator;
     //更新用户
-    private long updator;
+    private Long updator;
 
     private Date createStartTime;
     private Date createEndTime;

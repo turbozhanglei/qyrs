@@ -3,6 +3,7 @@ package com.gy.resource.mapper;
 import com.gy.resource.entity.ResourceInfo;
 
 import java.lang.Long;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Select;
@@ -30,9 +31,15 @@ public interface  ResourceInfoMapper {
 
     List<ResourceInfo> query(ResourceInfo resourceInfo);
 
-    List<ResourceInfo> queryPage(@Param("startIndex") int startIndex, @Param("limit") int limit, @Param("resourceInfo") ResourceInfo resourceInfo);
+    List<ResourceInfo> queryPageOrderByAuditTime(@Param("startIndex") int startIndex,
+                                                 @Param("limit") int limit,
+                                                 @Param("resourceInfo") ResourceInfo resourceInfo,
+                                                 @Param("createStartTime")Date createStartTime,
+                                                 @Param("createEndTime")Date createEndTime);
 
-    long queryPageCount(ResourceInfo resourceInfo);
+    long queryPageCount(@Param("resourceInfo") ResourceInfo resourceInfo,
+                        @Param("createStartTime")Date createStartTime,
+                        @Param("createEndTime")Date createEndTime);
 
     //TODO 暂时写这 懒得生成了
     @Select("select mobile from g_user where id=#{id} and delete_flag='0'")

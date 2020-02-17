@@ -13,7 +13,7 @@ public class UserUtil {
     public static String getopenid(String code) {
             BufferedReader in = null;
             String appid="wx8638e80c7186b393";
-            String secret="f33760ada7515747f55ef211eb457e16";
+            String secret="09ba7c8d17933848e5788a6c64de9c57";
             //appid和secret是开发者分别是小程序ID和小程序密钥，开发者通过微信公众平台-》设置-》开发设置就可以直接获取，
             String url="https://api.weixin.qq.com/sns/jscode2session?appid="
                     +appid+"&secret="+secret+"&js_code="+code+"&grant_type=authorization_code";

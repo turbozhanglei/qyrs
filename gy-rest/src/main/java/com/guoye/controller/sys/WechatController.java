@@ -13,7 +13,6 @@ import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -47,17 +46,9 @@ public class WechatController extends BizAction {
 
         try {
 
-            Map<String, String> param = new HashMap<>();
-            param.put("appid", "wx8638e80c7186b393");
-            param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
-            param.put("js_code", dto.getAsString("code"));
-            param.put("grant_type", "authorization_code");
-            Map<String, String> head = new HashMap<>();
-            head.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            String info = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
-
-            if (StringUtils.isNotEmpty(info) && info!="") {
-                JSONObject jsonObject = JSONObject.fromObject(info);
+            String openids = UserUtil.getopenid(dto.getAsString("code"));
+            JSONObject jsonObject = JSONObject.fromObject(openids);
+            if (StringUtils.isNotEmpty(openids) && openids!="") {
                 Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");

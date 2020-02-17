@@ -241,7 +241,10 @@
         where
         <trim suffixOverrides="and" >
             1=1 and
-            <if test="resourceInfo.userId">
+            <if test="resourceInfo.id !=null">
+                id = #{resourceInfo.id} and
+            </if>
+            <if test="resourceInfo.userId !=null">
                 user_id = #{resourceInfo.userId} and
             </if>
             <if test="resourceInfo.mobile">
@@ -250,19 +253,19 @@
             <if test="resourceInfo.title">
                 title = #{resourceInfo.title} and
             </if>
-            <if test="resourceInfo.platform">
+            <if test="resourceInfo.platform !=null">
                 platform = #{resourceInfo.platform} and
             </if>
-            <if test="resourceInfo.releaseType">
+            <if test="resourceInfo.releaseType !=null">
                 release_type = #{resourceInfo.releaseType} and
             </if>
-            <if test="resourceInfo.resourceLabel">
+            <if test="resourceInfo.resourceLabel !=null">
                 resource_label = #{resourceInfo.resourceLabel} and
             </if>
-            <if test="resourceInfo.resourceArea">
+            <if test="resourceInfo.resourceArea !=null">
                 resource_area = #{resourceInfo.resourceArea} and
             </if>
-            <if test="resourceInfo.resourceTrade">
+            <if test="resourceInfo.resourceTrade !=null">
                 resource_trade = #{resourceInfo.resourceTrade} and
             </if>
             <if test="resourceInfo.status !=null">
@@ -289,10 +292,10 @@
             <if test="resourceInfo.createEndTime !=null">
                 create_time &lt;= #{createEndTime} and
             </if>
-            <if test="resourceInfo.creator">
+            <if test="resourceInfo.creator !=null">
                 creator = #{resourceInfo.creator} and
             </if>
-            <if test="resourceInfo.updator">
+            <if test="resourceInfo.updator !=null">
                 updator = #{resourceInfo.updator} and
             </if>
             </trim>
@@ -314,25 +317,25 @@
             <if test="title">
                 title = #{title} and
             </if>
-            <if test="platform">
+            <if test="platform !=null">
                 platform = #{platform} and
             </if>
-            <if test="releaseType">
+            <if test="releaseType !=null">
                 release_type = #{releaseType} and
             </if>
-            <if test="resourceLabel">
+            <if test="resourceLabel !=null">
                 resource_label = #{resourceLabel} and
             </if>
-            <if test="resourceArea">
+            <if test="resourceArea !=null">
                 resource_area = #{resourceArea} and
             </if>
-            <if test="resourceTrade">
+            <if test="resourceTrade !=null">
                 resource_trade = #{resourceTrade} and
             </if>
-            <if test="status">
+            <if test="status !=null">
                 status = #{status} and
             </if>
-            <if test="sticky">
+            <if test="sticky !=null">
                 sticky = #{sticky} and
             </if>
             <if test="sensitiveFlag !=null">
@@ -341,7 +344,7 @@
             <if test="imageFlag !=null">
                 image_flag = #{imageFlag} and
             </if>
-            <if test="auditor">
+            <if test="auditor !=null">
                 auditor = #{auditor} and
             </if>
             <if test="auditTime">

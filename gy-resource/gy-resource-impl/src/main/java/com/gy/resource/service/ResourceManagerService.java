@@ -27,6 +27,6 @@ public interface ResourceManagerService {
 
     public void download(DownloadRequest downloadRequest);
 
-    public RestResult<ReportResponse> resourceReport(ReportRequest reportRequest);
+    public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest);
 
 }

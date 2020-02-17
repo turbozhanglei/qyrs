@@ -6,6 +6,7 @@ import java.lang.Long;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 import org.apache.ibatis.annotations.Param;
 
@@ -49,8 +50,16 @@ public interface  ResourceInfoMapper {
     @Select("select * from g_resource_info where status='3' and sticky='1' and delete_flag='0' limit 10")
     List<ResourceInfo> queryTopResourceTen();
 
-    @Select("select * from g_resource_info where status='3' and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
+    @Select("select * from g_resource_info where (status ='3' or status='1') and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
     List<ResourceInfo> queryResourceCheckSuccess(@Param("limit")int limit);
 
+    @Update("update g_resource_info set status=#{status},auditor=#{auditor},auditTime=now() where id=#{id} and delete_flag='0'")
+    long check(@Param("status")Integer status,@Param("auditor")String auditor,@Param("id")long id);
+
+    @Update("update g_resource_info set status=#{status},auditor=#{auditor},auditTime=now() where id in #{idList} and delete_flag='0'")
+    long checkBatch(@Param("status")Integer status,@Param("auditor")String auditor,@Param("idList")List<Long> idList);
+
+    @Update("update g_resource_info set sticky=#{sticky},auditor=#{auditor} where id=#{id} and delete_flag ='0'")
+    long top(@Param("sticky")Integer sticky,@Param("auditor")String auditor,@Param("id")long id);
 
 }

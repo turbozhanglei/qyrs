@@ -231,7 +231,7 @@ public class WechatController extends BizAction {
             Dto udto=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("id",dto.getAsString("id")));
             // 修改
             if (StringUtils.isNotEmpty(id) && udto !=null) {
-                if(udto.getAsInteger("editSum")==1){
+                if(udto.getAsInteger("editSum")==1 && dto.getAsString("sex")!=""){
                     throw new Exception("性别只可修改一次");
                 }
                 if (udto.getAsString("sex")!=null && udto.getAsString("sex")!=""){

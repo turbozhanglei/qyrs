@@ -52,10 +52,8 @@ public class WechatController extends BizAction {
                 Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");
-                redisService.setValue("openid",openid);
                 //获取session_key
                 String session_key=jsonObject.getString("session_key");
-                redisService.setValue("session_key",session_key);
                 //获取unionId
 //                if(jsonObject.getString("unionId") != null && jsonObject.getString("unionId") != ""){
 //                    String unionid=jsonObject.getString("unionId");

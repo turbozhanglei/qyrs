@@ -1,8 +1,10 @@
 package com.gy.resource.service;
 import com.gy.resource.entity.SearchHistoryModel;
+import com.gy.resource.response.rest.SearchHistoryResponse;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +33,7 @@ public interface PSearchHistoryService {
      * 搜索历史 删除
      * @param \
      */
-    Integer searchHistoryDelete(Map map);
+    Integer searchHistoryDelete(Long userId);
 
     /**
      * 搜索历史 查询详情
@@ -57,4 +59,10 @@ public interface PSearchHistoryService {
      */
     Integer searchHistoryChangeApproveStatus(Map map);
 
+
+    /**
+     *  根据用户id查询用户搜索历史
+     * @param \
+     */
+    List<SearchHistoryResponse> querySearchHistoryByUserId(Long userId);
 }

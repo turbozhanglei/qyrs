@@ -1,11 +1,12 @@
-package com.gy.resource.entity;
-import java.io.Serializable;
-import java.util.Date;
+package com.gy.resource.request.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 搜索历史
@@ -17,16 +18,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchHistoryModel implements Serializable{
+public class SearchHistoryAddRequest implements Serializable{
 
     /**
-     * id
+     * token
      */
-    private Long id;
-    /**
-     * 用户id
-     */
-    private Long userId;
+    private String token;
+
     /**
      * 搜索词
      */
@@ -34,7 +32,7 @@ public class SearchHistoryModel implements Serializable{
     /**
      * 有效时间
      */
-    private String validTime;
+    private Date validTime;
     /**
      * 是否删除：0不删除， 1删除 
      */

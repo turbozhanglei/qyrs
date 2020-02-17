@@ -4,7 +4,7 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
   config: classpath:logback.xml
 
 eureka:
@@ -17,9 +17,9 @@ spring:
   application:
     name: gy-resource
   datasource:
-    url: jdbc:mysql://47.98.108.230:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: 1a6XzyruFj;!32
+    password: 2wsgsda%lptP!3sd5rti
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initialSize: 8

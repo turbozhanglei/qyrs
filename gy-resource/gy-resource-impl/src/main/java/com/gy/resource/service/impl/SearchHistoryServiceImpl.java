@@ -3,6 +3,7 @@ package com.gy.resource.service.impl;
 
 import com.gy.resource.entity.SearchHistoryModel;
 import com.gy.resource.mapper.SearchHistoryMapper;
+import com.gy.resource.response.rest.SearchHistoryResponse;
 import com.gy.resource.service.PSearchHistoryService;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
@@ -48,8 +49,8 @@ public class SearchHistoryServiceImpl implements PSearchHistoryService{
      * @param \
      */
     @Override
-    public Integer searchHistoryDelete(Map map){
-        return modelMapper.searchHistoryDelete(map);
+    public Integer searchHistoryDelete(Long userId){
+        return modelMapper.searchHistoryDelete(userId);
     }
 
     /**
@@ -95,4 +96,13 @@ public class SearchHistoryServiceImpl implements PSearchHistoryService{
         return modelMapper.searchHistoryChangeApproveStatus(map);
     }
 
+
+    /**
+     * 根据用户id查询用户搜索历史
+     * @param \
+     */
+    @Override
+    public List<SearchHistoryResponse> querySearchHistoryByUserId(Long userId){
+        return modelMapper.querySearchHistoryByUserId(userId);
+    }
 }

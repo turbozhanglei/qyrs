@@ -45,5 +45,4 @@ public interface ResourceInfoService {
     List<ResourceInfo> query(ResourceInfo resourceInfo);
 
     PageResult<ResourceInfo> queryPageOrderByAuditTime(ResourceInfo resourceInfo, Page pageQuery);
-
 }

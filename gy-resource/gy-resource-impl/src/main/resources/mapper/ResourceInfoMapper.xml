@@ -178,79 +178,9 @@
         order by audit_time desc
     </select>
 
-    <!-- 分页查询 -->
-    <select id="queryPageOrderByAuditTime" resultMap="resourceInfoMap">
-        select * from g_resource_info
-        where
-        <trim suffixOverrides="and" >
-            1=1 and
-            <if test="resourceInfo.userId">
-                user_id = #{resourceInfo.userId} and
-            </if>
-            <if test="resourceInfo.mobile">
-                mobile = #{resourceInfo.mobile} and
-            </if>
-            <if test="resourceInfo.title">
-                title = #{resourceInfo.title} and
-            </if>
-            <if test="resourceInfo.platform">
-                platform = #{resourceInfo.platform} and
-            </if>
-            <if test="resourceInfo.releaseType">
-                release_type = #{resourceInfo.releaseType} and
-            </if>
-            <if test="resourceInfo.resourceLabel">
-                resource_label = #{resourceInfo.resourceLabel} and
-            </if>
-            <if test="resourceInfo.resourceArea">
-                resource_area = #{resourceInfo.resourceArea} and
-            </if>
-            <if test="resourceInfo.resourceTrade">
-                resource_trade = #{resourceInfo.resourceTrade} and
-            </if>
-            <if test="resourceInfo.status">
-                status = #{resourceInfo.status} and
-            </if>
-            <if test="resourceInfo.sticky">
-                sticky = #{resourceInfo.sticky} and
-            </if>
-            <if test="resourceInfo.sensitiveFlag">
-                sensitive_flag = #{resourceInfo.sensitiveFlag} and
-            </if>
-            <if test="resourceInfo.imageFlag">
-                image_flag = #{resourceInfo.imageFlag} and
-            </if>
-            <if test="resourceInfo.content">
-                content = #{resourceInfo.content} and
-            </if>
-            <if test="resourceInfo.auditor">
-                auditor = #{resourceInfo.auditor} and
-            </if>
-            <if test="resourceInfo.auditTime">
-                audit_time = #{resourceInfo.auditTime} and
-            </if>
-            <if test="resourceInfo.deleteFlag">
-                delete_flag = #{resourceInfo.deleteFlag} and
-            </if>
-            <if test="resourceInfo.createTime">
-                create_time = #{resourceInfo.createTime} and
-            </if>
-            <if test="resourceInfo.updateTime">
-                update_time = #{resourceInfo.updateTime} and
-            </if>
-            <if test="resourceInfo.creator">
-                creator = #{resourceInfo.creator} and
-            </if>
-            <if test="resourceInfo.updator">
-                updator = #{resourceInfo.updator} and
-            </if>
-            </trim>
-        order by audit_time desc limit #{startIndex},#{limit}
-    </select>
 
-    <select id="queryPageCount" resultType="java.lang.Long">
-        select count(*) from g_resource_info
-        where
+    <select id="queryOfManager" resultMap="resourceInfoMap">
+        select * from g_resource_info where
         <trim suffixOverrides="and" >
             1=1 and
             <if test="userId">
@@ -289,8 +219,127 @@
             <if test="imageFlag">
                 image_flag = #{imageFlag} and
             </if>
-            <if test="content">
-                content = #{content} and
+            <if test="auditor">
+                auditor = #{auditor} and
+            </if>
+            <if test="auditTime">
+                audit_time = #{auditTime} and
+            </if>
+            <if test="createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
+            </if>
+            <if test="createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
+            </if>
+            and delete_flag !='1'
+        </trim>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="queryPageOrderByAuditTime" resultMap="resourceInfoMap">
+        select * from g_resource_info
+        where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="resourceInfo.userId">
+                user_id = #{resourceInfo.userId} and
+            </if>
+            <if test="resourceInfo.mobile">
+                mobile = #{resourceInfo.mobile} and
+            </if>
+            <if test="resourceInfo.title">
+                title = #{resourceInfo.title} and
+            </if>
+            <if test="resourceInfo.platform">
+                platform = #{resourceInfo.platform} and
+            </if>
+            <if test="resourceInfo.releaseType">
+                release_type = #{resourceInfo.releaseType} and
+            </if>
+            <if test="resourceInfo.resourceLabel">
+                resource_label = #{resourceInfo.resourceLabel} and
+            </if>
+            <if test="resourceInfo.resourceArea">
+                resource_area = #{resourceInfo.resourceArea} and
+            </if>
+            <if test="resourceInfo.resourceTrade">
+                resource_trade = #{resourceInfo.resourceTrade} and
+            </if>
+            <if test="resourceInfo.status !=null">
+                status = #{resourceInfo.status} and
+            </if>
+            <if test="resourceInfo.sticky !=null">
+                sticky = #{resourceInfo.sticky} and
+            </if>
+            <if test="resourceInfo.sensitiveFlag !=null">
+                sensitive_flag = #{resourceInfo.sensitiveFlag} and
+            </if>
+            <if test="resourceInfo.imageFlag !=null">
+                image_flag = #{resourceInfo.imageFlag} and
+            </if>
+            <if test="resourceInfo.auditor">
+                auditor = #{resourceInfo.auditor} and
+            </if>
+            <if test="resourceInfo.auditTime">
+                audit_time = #{resourceInfo.auditTime} and
+            </if>
+            <if test="resourceInfo.createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
+            </if>
+            <if test="resourceInfo.createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
+            </if>
+            <if test="resourceInfo.creator">
+                creator = #{resourceInfo.creator} and
+            </if>
+            <if test="resourceInfo.updator">
+                updator = #{resourceInfo.updator} and
+            </if>
+            </trim>
+        and delete_flag != '1'
+        order by audit_time desc limit #{startIndex},#{limit}
+    </select>
+
+    <select id="queryPageCount" resultType="java.lang.Long">
+        select count(*) from g_resource_info
+        where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="userId">
+                user_id = #{userId} and
+            </if>
+            <if test="mobile">
+                mobile = #{mobile} and
+            </if>
+            <if test="title">
+                title = #{title} and
+            </if>
+            <if test="platform">
+                platform = #{platform} and
+            </if>
+            <if test="releaseType">
+                release_type = #{releaseType} and
+            </if>
+            <if test="resourceLabel">
+                resource_label = #{resourceLabel} and
+            </if>
+            <if test="resourceArea">
+                resource_area = #{resourceArea} and
+            </if>
+            <if test="resourceTrade">
+                resource_trade = #{resourceTrade} and
+            </if>
+            <if test="status">
+                status = #{status} and
+            </if>
+            <if test="sticky">
+                sticky = #{sticky} and
+            </if>
+            <if test="sensitiveFlag !=null">
+                sensitive_flag = #{sensitiveFlag} and
+            </if>
+            <if test="imageFlag !=null">
+                image_flag = #{imageFlag} and
             </if>
             <if test="auditor">
                 auditor = #{auditor} and
@@ -298,22 +347,20 @@
             <if test="auditTime">
                 audit_time = #{auditTime} and
             </if>
-            <if test="deleteFlag">
-                delete_flag = #{deleteFlag} and
+            <if test="createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
             </if>
-            <if test="createTime">
-                create_time = #{createTime} and
+            <if test="createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
             </if>
-            <if test="updateTime">
-                update_time = #{updateTime} and
-            </if>
-            <if test="creator">
+            <if test="creator != null">
                 creator = #{creator} and
             </if>
-            <if test="updator">
+            <if test="updator !=null">
                 updator = #{updator} and
             </if>
             </trim>
+            and delete_flag !='1'
     </select>
 
 </mapper>

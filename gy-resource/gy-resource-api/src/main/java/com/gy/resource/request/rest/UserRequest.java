@@ -2,8 +2,6 @@ package com.gy.resource.request.rest;
 
 import com.gy.resource.request.TokenRequest;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,4 +21,7 @@ public class UserRequest extends TokenRequest {
 
     @ApiModelProperty(notes = "登录的用户id")
     private String loginUserId;
+
+    private int start = 1;
+    private int limit = 10;
 }

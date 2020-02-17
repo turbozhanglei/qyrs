@@ -9,10 +9,10 @@ spring:
 
 ---
 
-spring: 
-  datasource: 
-    initialize: false 
----
+#spring:
+#  datasource:
+#    initialize: false
+#---
 
 feign:
   hystrix:

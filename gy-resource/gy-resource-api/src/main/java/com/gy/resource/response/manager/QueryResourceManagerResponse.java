@@ -69,7 +69,7 @@ public class QueryResourceManagerResponse implements Serializable {
     @ApiModelProperty(notes = "分享数")
     private String shareNum;
 
-    @ApiModelProperty(notes = "资源标签 0乙二醇 1PTA 2成品油 3PVC 4甲醇 5塑料 6其他")
+    @ApiModelProperty(notes = "资源标签 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他", required = true)
     private String resourceLabel;
 
     @ApiModelProperty(notes = "资源区域 0东北 1华东 2华北 3华中 4华南 5西南 6西北 7境外")

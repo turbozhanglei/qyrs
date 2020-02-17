@@ -21,32 +21,32 @@ import lombok.NoArgsConstructor;
 public class QueryResourceByConditionRequest implements Serializable {
     private static final long serialVersionUID = 5349641787908107232L;
 
-    @ApiModelProperty(notes = "资源发布类型 0求购 1出售")
+    @ApiModelProperty(notes = "资源发布类型 -1全部 0出售 1求购")
     private String resourceType;
 
-    @ApiModelProperty(notes = "资源标签 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 7其他")
+    @ApiModelProperty(notes = "资源标签 -1全部 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他", required = true)
     private String resourceLabel;
 
-    @ApiModelProperty(notes = "资源区域 1东北 2华东 3华北 4华中 5华南 6西南 7西北 8境外")
+    @ApiModelProperty(notes = "资源区域 -1全部 1东北 2华东 3华北 4华中 5华南 6西南 7西北 8境外")
     private String resourceArea;
 
-    @ApiModelProperty(notes = "内贸外贸 1内贸 2进口 3出口")
+    @ApiModelProperty(notes = "内贸外贸 -1全部 1内贸 2进口 3出口")
     private String tradeType;
 
     @ApiModelProperty(notes = "资源标题模糊搜索")
     private String resourceTitle;
 
-    @ApiModelProperty(notes = "浏览量升序")
+    @ApiModelProperty(notes = "浏览量排序 0升序 1降序 不需要排序不传")
     private String browseUpNum;
 
-    @ApiModelProperty(notes = "浏览量降序")
-    private String browseDownNum;
+//    @ApiModelProperty(notes = "浏览量降序 是降序则传1 否则不传")
+//    private String browseDownNum;
 
-    @ApiModelProperty(notes = "分享数升序")
+    @ApiModelProperty(notes = "分享数排序 0升序 1降序 不需要排序不传")
     private String shareUpNum;
 
-    @ApiModelProperty(notes = "分享数降序")
-    private String shareDownNum;
+//    @ApiModelProperty(notes = "分享数降序")
+//    private String shareDownNum;
 
     @ApiModelProperty(notes = "发布人用户Id")
     private String issureUserId;

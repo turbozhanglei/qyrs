@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://Mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gy.resource.mapper.ResourceInfoMapper">
+    <resultMap id="resourceInfoMap" type="com.gy.resource.entity.ResourceInfo">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="mobile" column="mobile"/>
+        <result property="title" column="title"/>
+        <result property="platform" column="platform"/>
+        <result property="releaseType" column="release_type"/>
+        <result property="resourceLabel" column="resource_label"/>
+        <result property="resourceArea" column="resource_area"/>
+        <result property="resourceTrade" column="resource_trade"/>
+        <result property="status" column="status"/>
+        <result property="sticky" column="sticky"/>
+        <result property="sensitiveFlag" column="sensitive_flag"/>
+        <result property="imageFlag" column="image_flag"/>
+        <result property="content" column="content"/>
+        <result property="auditor" column="auditor"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="creator" column="creator"/>
+        <result property="updator" column="updator"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.gy.resource.entity.ResourceInfo">
+        insert into g_resource_info
+        (user_id,mobile,title,platform,release_type,resource_label,resource_area,resource_trade,status,sticky,sensitive_flag,image_flag,content,auditor,audit_time,delete_flag,create_time,update_time,creator,updator)
+        values
+        (#{userId},#{mobile},#{title},#{platform},#{releaseType},#{resourceLabel},#{resourceArea},#{resourceTrade},#{status},#{sticky},#{sensitiveFlag},#{imageFlag},#{content},#{auditor},#{auditTime},#{deleteFlag},#{createTime},#{updateTime},#{creator},#{updator})
+    </insert>
+
+    <update id="delete" parameterType="java.lang.Long">
+        update g_resource_info set delete_flag = '1' where id = #{id}
+    </update>
+
+    <update id="update" parameterType="com.gy.resource.entity.ResourceInfo">
+        update g_resource_info set
+        <trim suffixOverrides="," >
+            <if test="userId">
+                user_id = #{userId},
+            </if>
+            <if test="mobile">
+                mobile = #{mobile},
+            </if>
+            <if test="title">
+                title = #{title},
+            </if>
+            <if test="platform">
+                platform = #{platform},
+            </if>
+            <if test="releaseType">
+                release_type = #{releaseType},
+            </if>
+            <if test="resourceLabel">
+                resource_label = #{resourceLabel},
+            </if>
+            <if test="resourceArea">
+                resource_area = #{resourceArea},
+            </if>
+            <if test="resourceTrade">
+                resource_trade = #{resourceTrade},
+            </if>
+            <if test="status">
+                status = #{status},
+            </if>
+            <if test="sticky">
+                sticky = #{sticky},
+            </if>
+            <if test="sensitiveFlag">
+                sensitive_flag = #{sensitiveFlag},
+            </if>
+            <if test="imageFlag">
+                image_flag = #{imageFlag},
+            </if>
+            <if test="content">
+                content = #{content},
+            </if>
+            <if test="auditor">
+                auditor = #{auditor},
+            </if>
+            <if test="auditTime">
+                audit_time = #{auditTime},
+            </if>
+            <if test="deleteFlag">
+                delete_flag = #{deleteFlag},
+            </if>
+            <if test="createTime">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime">
+                update_time = #{updateTime},
+            </if>
+            <if test="creator">
+                creator = #{creator},
+            </if>
+            <if test="updator">
+                updator = #{updator},
+            </if>
+            </trim>
+        where
+        id = #{id} and delete_flag='0'
+    </update>
+
+    <select id="queryByPrimaryKey" resultMap="resourceInfoMap">
+        select * from g_resource_info where id = #{id} and delete_flag='0'
+    </select>
+
+    <select id="query" resultMap="resourceInfoMap">
+        select * from g_resource_info where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="userId">
+                user_id = #{userId} and
+            </if>
+            <if test="mobile">
+                mobile = #{mobile} and
+            </if>
+            <if test="title">
+                title = #{title} and
+            </if>
+            <if test="platform">
+                platform = #{platform} and
+            </if>
+            <if test="releaseType">
+                release_type = #{releaseType} and
+            </if>
+            <if test="resourceLabel">
+                resource_label = #{resourceLabel} and
+            </if>
+            <if test="resourceArea">
+                resource_area = #{resourceArea} and
+            </if>
+            <if test="resourceTrade">
+                resource_trade = #{resourceTrade} and
+            </if>
+            <if test="status">
+                status = #{status} and
+            </if>
+            <if test="sticky">
+                sticky = #{sticky} and
+            </if>
+            <if test="sensitiveFlag">
+                sensitive_flag = #{sensitiveFlag} and
+            </if>
+            <if test="imageFlag">
+                image_flag = #{imageFlag} and
+            </if>
+            <if test="content">
+                content = #{content} and
+            </if>
+            <if test="auditor">
+                auditor = #{auditor} and
+            </if>
+            <if test="auditTime">
+                audit_time = #{auditTime} and
+            </if>
+            <if test="deleteFlag">
+                delete_flag = #{deleteFlag} and
+            </if>
+            <if test="createTime">
+                create_time = #{createTime} and
+            </if>
+            <if test="updateTime">
+                update_time = #{updateTime} and
+            </if>
+            <if test="creator">
+                creator = #{creator} and
+            </if>
+            <if test="updator">
+                updator = #{updator} and
+            </if>
+            </trim>
+
+        order by audit_time desc
+    </select>
+
+
+    <select id="queryOfManager" resultMap="resourceInfoMap">
+        select * from g_resource_info where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="userId">
+                user_id = #{userId} and
+            </if>
+            <if test="mobile">
+                mobile = #{mobile} and
+            </if>
+            <if test="title">
+                title = #{title} and
+            </if>
+            <if test="platform">
+                platform = #{platform} and
+            </if>
+            <if test="releaseType">
+                release_type = #{releaseType} and
+            </if>
+            <if test="resourceLabel">
+                resource_label = #{resourceLabel} and
+            </if>
+            <if test="resourceArea">
+                resource_area = #{resourceArea} and
+            </if>
+            <if test="resourceTrade">
+                resource_trade = #{resourceTrade} and
+            </if>
+            <if test="status">
+                status = #{status} and
+            </if>
+            <if test="sticky">
+                sticky = #{sticky} and
+            </if>
+            <if test="sensitiveFlag">
+                sensitive_flag = #{sensitiveFlag} and
+            </if>
+            <if test="imageFlag">
+                image_flag = #{imageFlag} and
+            </if>
+            <if test="auditor">
+                auditor = #{auditor} and
+            </if>
+            <if test="auditTime">
+                audit_time = #{auditTime} and
+            </if>
+            <if test="createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
+            </if>
+            <if test="createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
+            </if>
+            and delete_flag !='1'
+        </trim>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="queryPageOrderByAuditTime" resultMap="resourceInfoMap">
+        select * from g_resource_info
+        where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="resourceInfo.userId">
+                user_id = #{resourceInfo.userId} and
+            </if>
+            <if test="resourceInfo.mobile">
+                mobile = #{resourceInfo.mobile} and
+            </if>
+            <if test="resourceInfo.title">
+                title = #{resourceInfo.title} and
+            </if>
+            <if test="resourceInfo.platform">
+                platform = #{resourceInfo.platform} and
+            </if>
+            <if test="resourceInfo.releaseType">
+                release_type = #{resourceInfo.releaseType} and
+            </if>
+            <if test="resourceInfo.resourceLabel">
+                resource_label = #{resourceInfo.resourceLabel} and
+            </if>
+            <if test="resourceInfo.resourceArea">
+                resource_area = #{resourceInfo.resourceArea} and
+            </if>
+            <if test="resourceInfo.resourceTrade">
+                resource_trade = #{resourceInfo.resourceTrade} and
+            </if>
+            <if test="resourceInfo.status !=null">
+                status = #{resourceInfo.status} and
+            </if>
+            <if test="resourceInfo.sticky !=null">
+                sticky = #{resourceInfo.sticky} and
+            </if>
+            <if test="resourceInfo.sensitiveFlag !=null">
+                sensitive_flag = #{resourceInfo.sensitiveFlag} and
+            </if>
+            <if test="resourceInfo.imageFlag !=null">
+                image_flag = #{resourceInfo.imageFlag} and
+            </if>
+            <if test="resourceInfo.auditor">
+                auditor = #{resourceInfo.auditor} and
+            </if>
+            <if test="resourceInfo.auditTime">
+                audit_time = #{resourceInfo.auditTime} and
+            </if>
+            <if test="resourceInfo.createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
+            </if>
+            <if test="resourceInfo.createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
+            </if>
+            <if test="resourceInfo.creator">
+                creator = #{resourceInfo.creator} and
+            </if>
+            <if test="resourceInfo.updator">
+                updator = #{resourceInfo.updator} and
+            </if>
+            </trim>
+        and delete_flag != '1'
+        order by audit_time desc limit #{startIndex},#{limit}
+    </select>
+
+    <select id="queryPageCount" resultType="java.lang.Long">
+        select count(*) from g_resource_info
+        where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="userId">
+                user_id = #{userId} and
+            </if>
+            <if test="mobile">
+                mobile = #{mobile} and
+            </if>
+            <if test="title">
+                title = #{title} and
+            </if>
+            <if test="platform">
+                platform = #{platform} and
+            </if>
+            <if test="releaseType">
+                release_type = #{releaseType} and
+            </if>
+            <if test="resourceLabel">
+                resource_label = #{resourceLabel} and
+            </if>
+            <if test="resourceArea">
+                resource_area = #{resourceArea} and
+            </if>
+            <if test="resourceTrade">
+                resource_trade = #{resourceTrade} and
+            </if>
+            <if test="status">
+                status = #{status} and
+            </if>
+            <if test="sticky">
+                sticky = #{sticky} and
+            </if>
+            <if test="sensitiveFlag !=null">
+                sensitive_flag = #{sensitiveFlag} and
+            </if>
+            <if test="imageFlag !=null">
+                image_flag = #{imageFlag} and
+            </if>
+            <if test="auditor">
+                auditor = #{auditor} and
+            </if>
+            <if test="auditTime">
+                audit_time = #{auditTime} and
+            </if>
+            <if test="createStartTime !=null">
+                create_time &gt;= #{createStartTime} and
+            </if>
+            <if test="createEndTime !=null">
+                create_time &lt;= #{createEndTime} and
+            </if>
+            <if test="creator != null">
+                creator = #{creator} and
+            </if>
+            <if test="updator !=null">
+                updator = #{updator} and
+            </if>
+            </trim>
+            and delete_flag !='1'
+    </select>
+
+</mapper>

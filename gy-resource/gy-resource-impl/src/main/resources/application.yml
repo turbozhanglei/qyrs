@@ -1,5 +1,5 @@
 server:
-  port: 8066
+  port: 8094
 
 
 logging:
@@ -40,7 +40,7 @@ spring:
     useGlobalDataSourceStat: true
 
   redis:
-    database: 0
+    database: 1
     host: 40.73.65.243
     port: 6379
     password: adminjic123456

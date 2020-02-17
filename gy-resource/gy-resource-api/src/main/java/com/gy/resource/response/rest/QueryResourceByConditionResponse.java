@@ -45,4 +45,7 @@ public class QueryResourceByConditionResponse implements Serializable {
 
     @ApiModelProperty(notes = "资源Id")
     private String resourceId;
+
+    @ApiModelProperty(notes = "分享量")
+    private String shareNum;
 }

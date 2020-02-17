@@ -88,11 +88,9 @@ public class WechatController extends BizAction {
               String token = "mp_login_token:"+UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
               if(null !=member){
-                  Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",member.getAsString("id")));
-                  userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));//解密手机号
-                  userdto.put("token",token);
-                  redisService.setValue(token, JSONArray.toJSONString(userdto), 7200l);
-                  result.setData(userdto);
+                  member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
+                  redisService.setValue(token, JSONArray.toJSONString(member), 7200l);
+                  result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
                       //保存用户信息

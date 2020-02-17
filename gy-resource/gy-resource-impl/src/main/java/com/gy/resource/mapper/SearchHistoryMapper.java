@@ -1,5 +1,6 @@
 package com.gy.resource.mapper;
 
+import com.gy.resource.response.rest.SearchHistoryResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.gy.resource.entity.SearchHistoryModel;
@@ -33,7 +34,7 @@ public interface SearchHistoryMapper{
      *  搜索历史 删除
      * @param map
      */
-    Integer searchHistoryDelete(Map map);
+    Integer searchHistoryDelete(@Param("userId")Long userId);
 
     /**
      *  搜索历史 查询详情
@@ -70,4 +71,11 @@ public interface SearchHistoryMapper{
      * @param map 可修改的参数列表 updator，updateName，updateTime  查询参数 id
      */
     Integer searchHistoryChangeApproveStatus(Map map);
+
+    /**
+     *根据用户id查询用户搜索历史
+     *@Param Long
+     */
+    List<SearchHistoryResponse> querySearchHistoryByUserId(@Param("userId")Long userId);
+
 }

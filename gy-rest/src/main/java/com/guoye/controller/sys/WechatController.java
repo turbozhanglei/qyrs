@@ -13,7 +13,6 @@ import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -47,24 +46,14 @@ public class WechatController extends BizAction {
 
         try {
 
-            Map<String, String> param = new HashMap<>();
-            param.put("appid", "wx8638e80c7186b393");
-            param.put("secret", "09ba7c8d17933848e5788a6c64de9c57");
-            param.put("js_code", dto.getAsString("code"));
-            param.put("grant_type", "authorization_code");
-            Map<String, String> head = new HashMap<>();
-            head.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            String info = HttpClientUtil.doRequestGet("https://api.weixin.qq.com/sns/jscode2session", param, head);
-
-            if (StringUtils.isNotEmpty(info) && info!="") {
-                JSONObject jsonObject = JSONObject.fromObject(info);
+            String openids = UserUtil.getopenid(dto.getAsString("code"));
+            JSONObject jsonObject = JSONObject.fromObject(openids);
+            if (StringUtils.isNotEmpty(openids) && openids!="") {
                 Dto udto=new BaseDto();
                   //获取openid
                 String openid = jsonObject.getString("openid");
-                redisService.setValue("openid",openid);
                 //获取session_key
                 String session_key=jsonObject.getString("session_key");
-                redisService.setValue("session_key",session_key);
                 //获取unionId
 //                if(jsonObject.getString("unionId") != null && jsonObject.getString("unionId") != ""){
 //                    String unionid=jsonObject.getString("unionId");
@@ -96,14 +85,12 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-              String token = UUID.randomUUID().toString();
+              String token = "mp_login_token:"+UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
               if(null !=member){
-                  Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",member.getAsString("id")));
-                  userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));//解密手机号
-                  userdto.put("token",token);
-                  redisService.setValue(token, JSONArray.toJSONString(userdto), 7200l);
-                  result.setData(userdto);
+                  member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
+                  redisService.setValue(token, JSONArray.toJSONString(member), 7200l);
+                  result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
                       //保存用户信息

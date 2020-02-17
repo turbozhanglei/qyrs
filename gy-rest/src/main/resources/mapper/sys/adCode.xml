@@ -49,8 +49,8 @@
     <!-- 插入 -->
     <insert id="saveInfo" parameterType="dto">
         INSERT INTO
-        `g_ad_code` (`page_type`, `status`,`name`,`code`,`type`,`width`,`height`,`num`,`creator`, `updator`)
-        VALUES (#{pageType},#{status},#{name},#{code}, #{type}, #{width},#{height},#{num},#{creator},#{updator})
+        `g_ad_code` (`page_type`, `status`,`name`,`code`,`type`,`width`,`height`,`source_size_limit`,`num`,`creator`, `updator`)
+        VALUES (#{pageType},#{status},#{name},#{code}, #{type}, #{width},#{height},#{sizeLimit},#{num},#{creator},#{updator})
 
     </insert>
 
@@ -79,7 +79,9 @@
         <if test="null!=type  and ''!= type">
             type = #{type},
         </if>
-
+        <if test="null != sizeLimit and '' != sizeLimit">
+            source_size_limit = #{sizeLimit},
+        </if>
         <if test="null!=num  and ''!= num">
             num = #{num},
         </if>

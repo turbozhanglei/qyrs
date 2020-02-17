@@ -248,15 +248,21 @@ public class NewsCategoryController extends BizAction {
         dto.put("id",dto.getAsLong("refId"));//根据一级分类id查询对应对象
         dto.put("tableName","gNewsCategory");
         Dto obj = (Dto)bizService.queryForDto("gNewsCategory.getNewsCategoryDto",dto);
+        if(obj==null){
+            result.setCode("9999");
+            result.setMsg("暂无此一级分类");
+        }else {
 
         obj.put("refId",obj.getAsLong("id"));//根据返回id查询二级分类list
         List<Dto> newsCategoryList = bizService.queryList("gNewsCategory.getNewsCategoryList",obj);
         if(newsCategoryList==null){
-            result.setMsg("调用失败");
+            result.setCode("9999");
+            result.setMsg("暂无此二级分类");
         }else{
         result.setData(newsCategoryList);
         result.setCode("0000");
         result.setMsg("调用成功");
+        }
         }
         return  result;
     }
@@ -270,15 +276,21 @@ public class NewsCategoryController extends BizAction {
         dto.put("id",dto.getAsLong("refId"));//根据一级分类id查询对应对象
         dto.put("tableName","gNewsCategory");
         Dto obj = (Dto)bizService.queryForDto("gNewsCategory.getNewsCategoryDto",dto);
+        if(obj==null){
+            result.setCode("9999");
+            result.setMsg("暂无此一级分类");
+        }else{
 
         obj.put("refId",obj.getAsLong("id"));//根据返回id查询二级分类对应文章
         List<Dto> newsCategory = bizService.queryList("gNewsCategory.queryNewsCategory",obj);
         if(newsCategory==null){
-            result.setMsg("调用失败");
+            result.setCode("9999");
+            result.setMsg("暂无对应文章");
         }else{
             result.setData(newsCategory);
             result.setCode("0000");
             result.setMsg("调用成功");
+        }
         }
         return  result;
     }

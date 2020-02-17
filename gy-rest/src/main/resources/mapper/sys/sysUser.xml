@@ -6,6 +6,9 @@
 
 
     <sql id="sql_where">
+        <if test="null!=openid  and ''!= openid">
+            and a.openid = #{openid}
+        </if>
         <if test="null!=unionid  and ''!= unionid">
             and a.unionid = #{unionid}
         </if>
@@ -196,15 +199,24 @@
     <insert id="saveInfo" parameterType="dto">
         insert into g_user (nickname, username,mobile, head_pic, sex,
         company_name, company_adress, status,
-        source, identity_type, real_name,roleid,password,remark,
-        create_time,creator,delete_flag,editSum,unionid
+        source, identity_type, real_name,roleid,
+        <if test="null!=password  and ''!= password">
+          password,
+        </if>
+        remark,
+        create_time,creator,delete_flag,editSum,unionid,openid
         )
         values (#{nickname}, #{username}, #{mobile}, #{head_pic}, #{sex},
-        #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid}, password(#{password}), #{remark},
-        now(),#{creator},'0',#{editSum},#{unionid})
-        <selectKey resultType="string" keyProperty="id">
-            select last_insert_id() as ID from g_user limit 1
+        #{company_name}, #{company_adress}, #{status}, #{source},#{identity_type},#{real_name},#{roleid},
+        <if test="null!=password  and ''!= password">
+         password(#{password}),
+        </if>
+        #{remark},
+        now(),#{creator},'0',#{editSum},#{unionid},#{openid})
+        <selectKey resultType="java.lang.Long" keyProperty="id">
+            SELECT LAST_INSERT_ID() as id limit 1
         </selectKey>
+
     </insert>
 
     <!-- 离职  -->
@@ -258,8 +270,8 @@
         <if test="null!=remark  and ''!= remark">
             remark = #{remark},
         </if>
-        <if test="null!=desc  and ''!= desc">
-            desc = #{desc},
+        <if test="null!=editSum  and ''!= editSum">
+            editSum = #{editSum},
         </if>
         update_time = now(),
         updator = #{updator}

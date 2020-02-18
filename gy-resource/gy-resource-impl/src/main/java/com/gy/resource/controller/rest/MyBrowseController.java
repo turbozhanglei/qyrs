@@ -95,12 +95,13 @@ public class MyBrowseController {
     public RestResult deleteSearchHistoryByUserId(@RequestBody MyBrowseRequest myBrowseRequest) {
         log.info("------删除浏览记录,req{}-----", myBrowseRequest);
         RestResult restResult = new RestResult<>();
-        String userId = tokenService.getUserIdByToken(myBrowseRequest.getToken(),channel_WX);
-        if (StringUtils.isEmpty(userId)){
-            return RestResult.error("1000","请重新登录");
-        };
+        // 获取用户id
+//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
+//        if (StringUtils.isEmpty(userId)){
+//            return RestResult.error("4000","非法请求");
+//        };
         try {
-            myBrowesService.myBrowesDelete(Long.valueOf(userId));
+            myBrowesService.myBrowesDelete(Long.valueOf(2));
             return RestResult.success(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,6 +110,7 @@ public class MyBrowseController {
         return restResult;
 
     }
+
 
 
 }

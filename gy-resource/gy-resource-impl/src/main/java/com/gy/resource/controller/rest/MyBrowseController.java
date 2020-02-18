@@ -49,7 +49,7 @@ public class MyBrowseController {
 //        };
         try {
             List<MyBrowseResponse> reseult=myBrowesService.queryMyBrowesByUserId(Long.valueOf(2));
-            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new HashMap<String,List<MyBrowseResponse>>();
+            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new HashMap<>();
             MyBrowseGroupByDateResponse myBrowseGroupByDateResponse=new MyBrowseGroupByDateResponse();
             //数据组装
           if(reseult.size()!=0){

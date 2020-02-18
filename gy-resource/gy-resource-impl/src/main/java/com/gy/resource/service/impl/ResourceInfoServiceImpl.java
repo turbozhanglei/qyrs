@@ -163,8 +163,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             return RestResult.success(responseList);
         }
 
-        int browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
-        int shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
+        Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
+        Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag==ResourceConstant.brownSort.up){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag==ResourceConstant.brownSort.down){

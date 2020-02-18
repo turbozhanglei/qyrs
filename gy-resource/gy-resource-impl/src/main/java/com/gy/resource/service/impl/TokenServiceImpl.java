@@ -35,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
         if(ResourceConstant.channel.WX.equals(channel)){
             userStr=redisClientTemplate.get("mp_login_token:" + token);
         }else if(ResourceConstant.channel.Manager.equals(channel)){
-            userStr=redisClientTemplate.get("pc_login_token:"+token);
+            userStr=redisClientTemplate.get(token);
         }
         if (org.apache.commons.lang.StringUtils.isEmpty(userStr)) {
             return "";

@@ -1,23 +1,24 @@
 server:
-  port: 8084
-  servlet:
-    context-path: /gy-rest
+  port: 9903
+ # servlet:
+ #   context-path: /wms-rest
   #logging:
   #  level:
   #    root: INFO
   config: classpath:logback.xml
-white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,/wms-rest/suser/login,/wms-rest/wuser/isLogin,/wms-rest/wuser/login,/wms-rest/weixin/getPaySuccess,/wms-rest/order/orderPaySuccess,/wms-rest/cmn/sendMsgInfo,/wms-rest/orderPay/orderPaySuccess,/wms-rest/orderPay/getMyPaySuccess,
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess,
 
 ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://47.94.238.185:8097/
-img_path: /home/jiantou/data/imgs
+img_url: https://gymp25.chinayie.com/image/
+img_path: /home/gymp25/gy-mp/imgs
+
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.1.254:8081//eureka
+      defaultZone: http://localhost:9901/eureka
 spring:
   application:
     name: gy-rest #服务名称--调用的时候根据名称来调用该服务的方法
@@ -27,9 +28,9 @@ spring:
     readSize: 1
     type: com.alibaba.druid.pool.DruidDataSource
     master:
-      url: jdbc:mysql://192.168.1.254:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      username: root
-      password: 123456
+      url: jdbc:mysql://rm-uf6p1936n154wl8gmo.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp7
+      password: P@$$w0rd2020
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -47,9 +48,9 @@ spring:
       useGlobalDataSourceStat: true
       validationQuery: SELECT 1 FROM DUAL
     slave:
-      url: jdbc:mysql://192.168.1.254:3306/guoye-wms?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      username: root
-      password: 123456
+      url: jdbc:mysql://rm-uf6p1936n154wl8gmo.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp7
+      password: P@$$w0rd2020
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -87,14 +88,14 @@ mapper:
 ---
 spring:
   redis:
-    host: 192.168.1.254
+    host: 47.100.214.25
     port: 6379
-    password: 123456
+    password: asdf@123
     pool:
-      max-active: 200
-      max-idle: 100
-      min-idle: 20
-      max-wait: -1
+        max-active: 200
+        max-idle: 100
+        min-idle: 20
+        max-wait: -1
     timeout: 6000
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

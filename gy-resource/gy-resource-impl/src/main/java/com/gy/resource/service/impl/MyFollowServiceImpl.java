@@ -4,6 +4,8 @@ package com.gy.resource.service.impl;
 import com.gy.resource.entity.SearchHistoryModel;
 import com.gy.resource.mapper.MyFollowMapper;
 import com.gy.resource.mapper.SearchHistoryMapper;
+import com.gy.resource.request.rest.MyFollowRequest;
+import com.gy.resource.response.rest.MyFollowPeopleResourceResponse;
 import com.gy.resource.response.rest.MyFollowUserInfoResponse;
 import com.gy.resource.response.rest.SearchHistoryResponse;
 import com.gy.resource.service.MyFollowService;
@@ -33,8 +35,8 @@ public class MyFollowServiceImpl implements MyFollowService {
      * @param \
      */
     @Override
-    public  List<MyFollowUserInfoResponse> queryMyFollowByUserId(Long userId){
-        return myFollowMapper.queryMyFollowByUserId(userId);
+    public  List<MyFollowUserInfoResponse> queryMyFollowByUserId(MyFollowRequest myFollowRequest){
+        return myFollowMapper.queryMyFollowByUserId(myFollowRequest);
     }
 
     /**
@@ -44,5 +46,15 @@ public class MyFollowServiceImpl implements MyFollowService {
     @Override
     public  Integer queryMyFollowTotal(Long userId){
         return myFollowMapper.queryMyFollowTotal(userId);
+    }
+
+
+    /**
+     * 查询我的关注人的最新发布的一篇文章
+     * @param \
+     */
+    @Override
+    public MyFollowPeopleResourceResponse queryMyFollowResourceByUserId(Long userId){
+        return myFollowMapper.queryMyFollowResourceByUserId(userId);
     }
 }

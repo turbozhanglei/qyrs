@@ -12,7 +12,9 @@ ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://40.73.65.243:8087/
+img_url: http://40.73.65.243:8086/
+img_path: /home/jiantou/data/imgs
+#img_path: /Users/gaolanyu/Desktopn
 
 eureka:
   client:

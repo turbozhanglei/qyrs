@@ -56,7 +56,7 @@ public interface ResourceApi {
      * @param req
      * @return true 关注or false 没有关注
      */
-    RestResult<Boolean> addCorrelation(QueryFollowCountRequest req);
+    RestResult<Boolean> addCorrelation(AddCorrelationRequest req);
 
 
 }

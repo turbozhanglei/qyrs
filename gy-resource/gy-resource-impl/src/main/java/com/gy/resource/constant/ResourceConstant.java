@@ -10,6 +10,10 @@ package com.gy.resource.constant;
  * //是否有图 0：否、1：是
  */
 public interface ResourceConstant {
+    interface channel{
+        String WX="wx";
+        String Manager="manager";
+    }
     interface platform{
         int weixin=1;
     }
@@ -19,6 +23,9 @@ public interface ResourceConstant {
         int person_check_need=2;
         int person_check_success=3;
         int person_check_fail=4;
+    }
+    interface check_person{
+        String system="system";
     }
     interface top{
         int down=0;

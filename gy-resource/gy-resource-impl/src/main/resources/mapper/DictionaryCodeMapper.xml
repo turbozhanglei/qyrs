@@ -21,7 +21,7 @@
               id,
               category,
               code,
-              'desc',
+              `desc`,
               delete_flag,
               create_time,
               update_time,
@@ -44,7 +44,7 @@
                         AND code = #{code}
                     </if>
                     <if test="desc != null">
-                        AND 'desc' = #{desc}
+                        AND `desc` = #{desc}
                     </if>
                     <if test="deleteFlag != null">
                         AND delete_flag = #{deleteFlag}
@@ -75,7 +75,7 @@
                             AND code = #{example.code}
                         </if>
                         <if test="example.desc != null">
-                            AND 'desc' = #{example.desc}
+                            AND `desc` = #{example.desc}
                         </if>
                         <if test="example.deleteFlag != null">
                             AND delete_flag = #{example.deleteFlag}
@@ -106,7 +106,7 @@
                 code,
             </if>
             <if test="desc != null">
-                'desc',
+                `desc`,
             </if>
             <if test="deleteFlag != null">
                 delete_flag,
@@ -164,7 +164,7 @@
                 code = #{record.code},
             </if>
             <if test="record.desc != null">
-                'desc' = #{record.desc},
+                `desc` = #{record.desc},
             </if>
             <if test="record.deleteFlag != null">
                 delete_flag = #{record.deleteFlag},

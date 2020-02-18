@@ -22,6 +22,6 @@ public class UserRequest extends TokenRequest {
     @ApiModelProperty(notes = "登录的用户id")
     private String loginUserId;
 
-    private int start = 1;
-    private int limit = 10;
+    private Integer start = 1;
+    private Integer limit = 10;
 }

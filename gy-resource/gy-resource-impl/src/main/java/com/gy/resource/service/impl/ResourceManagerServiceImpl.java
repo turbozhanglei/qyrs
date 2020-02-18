@@ -119,14 +119,20 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
 
     public ResourceInfo setResourceInfo(QueryResourceManagerRequest request) {
         ResourceInfo resourceInfo = new ResourceInfo();
-        resourceInfo.setId(getLongValue(request.getResourceId()));
+        Long id=getLongValue(request.getResourceId());
+        if(id!=null){
+            resourceInfo.setId(getLongValue(request.getResourceId()));
+        }
         resourceInfo.setTitle(request.getResourceTitle());
         resourceInfo.setReleaseType(getValueByParam(request.getResourceType()));
         resourceInfo.setStatus(getValueByParam(request.getIssureStatus()));
         resourceInfo.setSticky(getValueByParam(request.getTopStatus()));
         resourceInfo.setCreateStartTime(request.getCreateStartTime());
         resourceInfo.setCreateEndTime(request.getCreateEndTime());
-        resourceInfo.setUserId(getLongValue(request.getIssureId()));
+        Long userId=getLongValue(request.getIssureId());
+        if(userId!=null){
+            resourceInfo.setUserId(getLongValue(request.getIssureId()));
+        }
         resourceInfo.setMobile(request.getIssurePhone());
         resourceInfo.setImageFlag(getValueByParam(request.getIssureImage()));
         resourceInfo.setSensitiveFlag(getValueByParam(request.getSensitiveCode()));

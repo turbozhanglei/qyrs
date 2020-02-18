@@ -4,30 +4,70 @@
 
     <!--查询我的关注列表-->
     <select id="queryMyFollowByUserId" resultType="com.gy.resource.response.rest.MyFollowUserInfoResponse" parameterType="java.lang.Long">
-                     SELECT
-                        a.word
-                    FROM
-                        g_search_history a
-                    WHERE
-                        a.delete_flag = 0
-                    AND a.valid_time>= NOW()
-                    AND a.user_id =#{userId}
-                    ORDER BY a.valid_time DESC
-                    LIMIT 10
+                        SELECT
+                            a.id AS userId,
+                            a.head_pic AS headpic,
+                            a.nickname
+                        FROM
+                            g_user AS a
+                        WHERE
+                            a.id IN (
+                                SELECT
+                              ggc.ref_id
+                                FROM
+                                    g_global_correlation ggc
+                                WHERE
+                              ggc.delete_flag=0
+                                    and ggc.ref_type=0
+                              and ggc.user_id=#{userId}
+                            )
+                        LIMIT ${start},${limit}
     </select>
 
-    <!--查询我的关注列表-->
-    <select id="queryMyFollowTotal" resultType="java.lang.Long" parameterType="java.lang.Long">
-                     SELECT
-                        a.word
-                    FROM
-                        g_search_history a
-                    WHERE
-                        a.delete_flag = 0
-                    AND a.valid_time>= NOW()
-                    AND a.user_id =#{userId}
-                    ORDER BY a.valid_time DESC
-                    LIMIT 10
+    <!--查询我的关注列表条数-->
+    <select id="queryMyFollowTotal" resultType="java.lang.Integer" parameterType="java.lang.Long">
+                       SELECT
+                         count(*)
+                        FROM
+                            g_user AS a
+                        WHERE
+                            a.id IN (
+                                SELECT
+                              ggc.ref_id
+                                FROM
+                                   g_global_correlation ggc
+                                WHERE
+                                    ggc.delete_flag=0
+                                    and ggc.ref_type=0
+                                    and ggc.user_id=#{userId}
+                            )
     </select>
 
+    <!--查询我的关注人的最新一篇资源-->
+    <select id="queryMyFollowResourceByUserId" resultType="com.gy.resource.response.rest.MyFollowPeopleResourceResponse" parameterType="java.lang.Long">
+                  SELECT
+                    a.user_id as userId,
+                    a.mobile,
+                    a.title,
+                    a.content,
+                    a.create_time as createTime,
+                    gdc1.`desc` as releaseType,
+                    gdc2.`desc` as resourceLabel,
+                    gdc3.`desc` as resourceArea,
+                    gdc4.`desc` as resourceTrade
+                    FROM
+                    g_resource_info a
+                    LEFT JOIN g_dictionary_code gdc1 on gdc1.id=a.release_type
+                    LEFT JOIN g_dictionary_code gdc2 on gdc2.id=a.resource_label
+                    LEFT JOIN g_dictionary_code gdc3 on gdc3.id=a.resource_area
+                    LEFT JOIN g_dictionary_code gdc4 on gdc4.id=a.resource_trade
+                    WHERE
+                    1=1
+                    AND a.delete_flag=0
+                    and (a.`status`=1 or a.`status`=3)
+                    and a.user_id=#{userId}
+                    ORDER BY a.create_time DESC
+LIMIT 1
+
+    </select>
 </mapper>

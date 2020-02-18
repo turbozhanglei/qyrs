@@ -2,7 +2,6 @@ package com.gy.resource.api.manager;
 
 import com.gy.resource.request.manager.CheckBatchRequest;
 import com.gy.resource.request.manager.CheckRequest;
-import com.gy.resource.request.manager.DownloadRequest;
 import com.gy.resource.request.manager.QueryResourceManagerRequest;
 import com.gy.resource.request.manager.ReportRequest;
 import com.gy.resource.request.manager.TopRequest;
@@ -27,7 +26,7 @@ public interface ResourceManagerApi {
 
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest);
 
-    public void reportDownLoad(QueryResourceManagerRequest resourceManagerRequest);
+    public void reportDownLoad(ReportRequest reportRequest);
 
     public void resourceInfoListDownLoad(QueryResourceManagerRequest resourceManagerRequest);
 }

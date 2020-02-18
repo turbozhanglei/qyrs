@@ -302,7 +302,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public String getHeadImage(ResourceInfo resourceInfo) {
         String headImage = resourceInfoMapper.getHeadImage(resourceInfo.getUserId());
         if (StringUtils.isEmpty(headImage)) {
-            //默认头像
+            //默认头像 TODO
             headImage = "";
         }
         return headImage;

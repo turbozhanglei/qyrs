@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**n
  * @author zhuxiankun
@@ -22,11 +23,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class MyBrowseResponse implements Serializable{
     @ApiModelProperty(notes = "当前资源id")
-    private Long id;
+    private Long resourceId;
     @ApiModelProperty(notes = "发布用户id")
     private Long userId;
-    @ApiModelProperty(notes = "手机号")
-    private String mobile;
     @ApiModelProperty(notes = "文章标题")
     private String title;
     @ApiModelProperty(notes = "发布时间")

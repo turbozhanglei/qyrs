@@ -179,6 +179,35 @@
     </select>
 
 
+    <select id="queryByCondition" resultMap="resourceInfoMap">
+        select * from g_resource_info where
+        <trim suffixOverrides="and" >
+            1=1 and
+            <if test="resourceInfo.userId !=null">
+                user_id = #{resourceInfo.userId} and
+            </if>
+            <if test="resourceInfo.title !=null">
+                title = #{resourceInfo.title} and
+            </if>
+            <if test="releaseTypeList !=null">
+                release_type in #{releaseTypeList} and
+            </if>
+            <if test="resourceLabelList !=null">
+                resource_label in #{resourceLabelList} and
+            </if>
+            <if test="resourceAreaList !=null">
+                resource_area in #{resourceAreaList} and
+            </if>
+            <if test="resourceTradeList !=null">
+                resource_trade in #{resourceTradeList} and
+            </if>
+            and status in ('1','3')
+            and delete_flag !='1'
+        </trim>
+        order by audit_time desc
+    </select>
+
+
     <select id="queryOfManager" resultMap="resourceInfoMap">
         select * from g_resource_info where
         <trim suffixOverrides="and" >

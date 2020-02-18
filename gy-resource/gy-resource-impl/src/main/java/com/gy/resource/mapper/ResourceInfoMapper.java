@@ -31,6 +31,12 @@ public interface  ResourceInfoMapper {
 
     List<ResourceInfo> query(ResourceInfo resourceInfo);
 
+    List<ResourceInfo> queryByCondition(@Param("resourceInfo")ResourceInfo resourceInfo,
+                                        @Param("releaseTypeList")List<Integer>releaseTypeList,
+                                        @Param("resourceLabelList")List<Integer> resourceLabelList,
+                                        @Param("resourceAreaList")List<Integer> resourceAreaList,
+                                        @Param("resourceTradeList")List<Integer> resourceTradeList);
+
     List<ResourceInfo> queryPageOrderByAuditTime(@Param("startIndex") int startIndex,
                                                  @Param("limit") int limit,
                                                  @Param("resourceInfo") ResourceInfo resourceInfo,

@@ -20,6 +20,9 @@ public interface ResourceConstant {
         int person_check_success=3;
         int person_check_fail=4;
     }
+    interface check_person{
+        String system="system";
+    }
     interface top{
         int down=0;
         int top=1;

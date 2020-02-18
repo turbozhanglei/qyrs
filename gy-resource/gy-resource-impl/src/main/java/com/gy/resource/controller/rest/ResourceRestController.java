@@ -1,15 +1,21 @@
 package com.gy.resource.controller.rest;
 
-import com.alibaba.fastjson.JSONArray;
 import com.gy.resource.api.rest.ResourceApi;
-import com.gy.resource.constant.UserLoginTokenPrefix;
 import com.gy.resource.entity.AssociationalWordModel;
 import com.gy.resource.entity.DictionaryCodeModel;
 import com.gy.resource.entity.GlobalCorrelationModel;
 import com.gy.resource.enums.DeleteFlagEnum;
 import com.gy.resource.enums.FollowTypeEnum;
 import com.gy.resource.enums.RefTypeEnum;
-import com.gy.resource.request.rest.*;
+import com.gy.resource.request.rest.AddCorrelationRequest;
+import com.gy.resource.request.rest.FollowRefRequest;
+import com.gy.resource.request.rest.IssureResourceRequest;
+import com.gy.resource.request.rest.QueryFollowCountRequest;
+import com.gy.resource.request.rest.QueryFollowStatusRequest;
+import com.gy.resource.request.rest.QueryResourceByConditionRequest;
+import com.gy.resource.request.rest.QueryResourceRequest;
+import com.gy.resource.request.rest.QueryWordsRequest;
+import com.gy.resource.request.rest.UserRequest;
 import com.gy.resource.response.rest.QueryResourceByConditionResponse;
 import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
@@ -75,9 +81,9 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "发布资源api，返回资源id")
     @PostMapping(value = "/issure-resource")
     public RestResult<String> issureResourceApi(@RequestBody IssureResourceRequest resourceRequest) {
-        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
-        if(StringUtils.isBlank(userId)){
-            return RestResult.error("1000","请重新登录");
+        String userId = tokenService.getUserIdByToken(resourceRequest.getToken());
+        if (StringUtils.isBlank(userId)) {
+            return RestResult.error("1000", "请重新登录");
         }
         resourceRequest.setIssureId(userId);
         return resourceInfoService.issureResourceApi(resourceRequest);
@@ -86,9 +92,9 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
-        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
-        if(StringUtils.isBlank(userId)){
-            return RestResult.error("1000","请重新登录");
+        String userId = tokenService.getUserIdByToken(resourceRequest.getToken());
+        if (StringUtils.isBlank(userId)) {
+            return RestResult.error("1000", "请重新登录");
         }
         resourceRequest.setLoginUserId(userId);
         return resourceInfoService.queryResource(resourceRequest);
@@ -109,9 +115,9 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询用户发布的资源列表")
     @PostMapping(value = "/query-resource-user")
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(@RequestBody UserRequest request) {
-        String userId=tokenService.getUserIdByToken(request.getToken());
-        if(StringUtils.isBlank(userId)){
-            return RestResult.error("1000","请重新登录");
+        String userId = tokenService.getUserIdByToken(request.getToken());
+        if (StringUtils.isBlank(userId)) {
+            return RestResult.error("1000", "请重新登录");
         }
         request.setLoginUserId(userId);
         return resourceInfoService.queryResourceByUserId(request);
@@ -152,7 +158,7 @@ public class ResourceRestController implements ResourceApi {
 
         Long userId = 20L;
         Map map = new HashMap(8);
-        map.put("userId",userId);
+        map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
 
@@ -177,7 +183,7 @@ public class ResourceRestController implements ResourceApi {
             // 如果存在记录，判断此记录是否是 delete 状态，即取消关注或者取消点赞状态。
             // 此时需要修改deleteFlag状态从1改为0
             else if (globalCorrelationModel != null &&
-                    DeleteFlagEnum.DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())){
+                    DeleteFlagEnum.DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())) {
                 GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
                 // 设置删除状态 为未删除状态
                 modelValue.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
@@ -203,7 +209,7 @@ public class ResourceRestController implements ResourceApi {
             // 如果存在记录，判断此记录是否是 un_delete 状态，即关注或者点赞状态。
             // 此时需要修改deleteFlag状态从0改为1
             else if (globalCorrelationModel != null &&
-                    DeleteFlagEnum.UN_DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())){
+                    DeleteFlagEnum.UN_DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())) {
                 GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
                 // 设置删除状态 为删除状态
                 modelValue.setDeleteFlag(DeleteFlagEnum.DELETE.getCode());
@@ -246,11 +252,11 @@ public class ResourceRestController implements ResourceApi {
 
         Long userId = 20L;
         //如果是关注用户类型，则refId 为用户 id，是用 token 转成的
-        if (RefTypeEnum.FOLLOW_USER.getCode().equals(req.getRefType())){
+        if (RefTypeEnum.FOLLOW_USER.getCode().equals(req.getRefType())) {
             model.setRefId(userId);
         }
         //如果是资讯点赞类型，则refId 为资讯 id，是取自 refType 的
-        else if (RefTypeEnum.INFO_FOLLOW.getCode().equals(req.getRefType())){
+        else if (RefTypeEnum.INFO_FOLLOW.getCode().equals(req.getRefType())) {
             model.setRefId(req.getRefId());
         }
 
@@ -261,12 +267,8 @@ public class ResourceRestController implements ResourceApi {
     }
 
     /**
-     * 页面逻辑：点击页面右下角清空按钮可直接清空浏览记录；
-     * 浏览记录根据浏览日期分组排序，根据用户浏览的时间倒序排序，
-     * 数据记录采用更新模式，例如用户10-01浏览了A信息，10-03又浏览了A信息，
+     * 页面逻辑：点击页面右下角清空按钮可直接清空浏览记录； 浏览记录根据浏览日期分组排序，根据用户浏览的时间倒序排序， 数据记录采用更新模式，例如用户10-01浏览了A信息，10-03又浏览了A信息，
      * 则浏览记录中A信息排在10-03下面，页面初始为10条记录，向下滑动加载下一页，每页10条
-     * @param req
-     * @return
      */
     @ApiOperation(value = "记录浏览记录(单独处理)、分享记录、拨打电话记录")
     @PostMapping(value = "/add-correlation")
@@ -288,11 +290,11 @@ public class ResourceRestController implements ResourceApi {
             pGlobalCorrelationService.globalCorrelationAdd(model);
         }
         // 记录浏览记录的逻辑需要 单拎出来
-        if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(req.getRefType())){
-            if(dbModel != null){
-                GlobalCorrelationModel modifyEntity =new GlobalCorrelationModel();
+        if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(req.getRefType())) {
+            if (dbModel != null) {
+                GlobalCorrelationModel modifyEntity = new GlobalCorrelationModel();
                 modifyEntity.setUpdateTime(new Date());
-                GlobalCorrelationModel whereCondition =new GlobalCorrelationModel();
+                GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
                 whereCondition.setUserId(userId);
                 whereCondition.setRefId(req.getRefId());
                 whereCondition.setRefType(req.getRefType());

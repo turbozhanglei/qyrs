@@ -69,6 +69,11 @@ public class NewsCategoryController extends BizAction {
                   //插入
                   dto.put("creator", member == null ? "" : member.get("id"));
                   dto.put("updator", member == null ? "" : member.get("id"));
+                  if(""==dto.getAsString("status")&&dto.getAsString("status")==null){
+                      dto.put("status",0);
+                  }else {
+                      dto.put("status",dto.getAsString("status"));
+                  }
                   if(dto.getAsLong("refId")==1){//判断是否为顶级分类
                       dto.put("level",1);
                       dto.put("refId",dto.getAsLong("refId"));
@@ -221,6 +226,11 @@ public class NewsCategoryController extends BizAction {
             }
             dto.put("tableName", "gNewsCategory");
             dto.put("method","saveChildrenCategory");
+            if(""==dto.getAsString("status")&&dto.getAsString("status")==null){
+                dto.put("status",0);
+            }else {
+                dto.put("status",dto.getAsString("status"));
+            }
 
                 //插入
                 dto.put("creator", member == null ? "" : member.get("id"));

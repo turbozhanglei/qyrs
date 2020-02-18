@@ -5,6 +5,8 @@ import com.gy.resource.request.TokenRequest;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +30,6 @@ public class CheckBatchRequest extends TokenRequest {
     private List<String> resourceIdList;
 
     @ApiModelProperty(notes = "检查状态 3人工审核通过，4人工审核不通过")
+    @NotBlank(message = "检查状态不能传空")
     private String checkStatus;
 }

@@ -44,6 +44,12 @@ public class AccessFilter extends ZuulFilter {
         ctx.getResponse().setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         ctx.getResponse().setHeader("Access-Control-Max-Age", "3600");
         ctx.getResponse().setHeader("Access-Control-Allow-Headers", "x-requested-with");
+
+        if(request.getRequestURI().contains("gy-resource")){
+            ctx.addZuulRequestHeader("Content-type","application/json;charset=UTF-8");
+            ctx.addZuulResponseHeader("Content-type", "application/json;charset=UTF-8");
+        }
+
         //打印日志
         log.info("请求方式：{},地址：{}"+ request.getMethod()+request.getRequestURI());
         String token = request.getParameter("token");

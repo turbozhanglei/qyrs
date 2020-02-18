@@ -50,5 +50,8 @@ public class ReportRequest implements Serializable {
     @ApiModelProperty(notes = "发布人手机号")
     private String issurePhone;
 
+    private Integer start=1;
+    private Integer limit=10;
+
 
 }

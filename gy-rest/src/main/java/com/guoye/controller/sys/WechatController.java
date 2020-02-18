@@ -12,6 +12,7 @@ import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -39,6 +40,7 @@ public class WechatController extends BizAction {
 
 
     //获取openid and session_key
+    @ResponseBody
     @RequestMapping(value = "/getOpenid")
     public BaseResult getOpenid(HttpServletRequest request, HttpServletResponse response) {
         Dto dto = WebUtils.getParamAsDto(request);
@@ -77,6 +79,7 @@ public class WechatController extends BizAction {
 
 
     //获取用户信息 保存到数据库 ---- 授权登录
+    @ResponseBody
     @RequestMapping(value = "/wechatLogin")
     public BaseResult wechatLogin(HttpServletRequest request, HttpServletResponse response) {
         Dto dto = WebUtils.getParamAsDto(request);
@@ -85,14 +88,12 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-              String token = UUID.randomUUID().toString();
+              String token = "mp_login_token:"+UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
               if(null !=member){
-                  Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",member.getAsString("id")));
-                  userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));//解密手机号
-                  userdto.put("token",token);
-                  redisService.setValue(token, JSONArray.toJSONString(userdto), 7200l);
-                  result.setData(userdto);
+                  member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
+                  redisService.setValue(token, JSONArray.toJSONString(member), 7200l);
+                  result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
                       //保存用户信息
@@ -130,6 +131,7 @@ public class WechatController extends BizAction {
      * @param response
      * @throws Exception
      */
+    @ResponseBody
     @RequestMapping(value = "/decryptWxMobile")
     public BaseResult decryptWxMobile(HttpServletRequest request, HttpServletResponse response) {
         Dto dto = WebUtils.getParamAsDto(request);
@@ -167,6 +169,7 @@ public class WechatController extends BizAction {
 
 
     //返回个人信息
+    @ResponseBody
     @RequestMapping(value = "/userInformation")
     public BaseResult userInformation(HttpServletRequest request) {
         Dto dto = WebUtils.getParamAsDto(request);
@@ -208,6 +211,7 @@ public class WechatController extends BizAction {
 
 
     //个人信息修改
+    @ResponseBody
     @RequestMapping(value = "/editWeUser")
     public BaseResult editUser(HttpServletRequest request) {
         Dto dto = WebUtils.getParamAsDto(request);
@@ -238,8 +242,32 @@ public class WechatController extends BizAction {
     }
 
 
-
-
+    /**
+     * 退出登录
+     *
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/loginOut")
+    public BaseResult outLogin(HttpServletRequest request, HttpServletResponse response) {
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result = new BaseResult();
+        try {
+            //防止重复提交操作(根据redis的key30秒来防止重复提交)
+            String repeatToken = redisService.getValue("repeatToken_outLogin_" + dto.getAsString("token"));
+            if (repeatToken != "") {
+                return null;
+            }
+            redisService.delete(dto.getAsString("token"));
+            redisService.delete("repeatToken_outLogin_" + dto.getAsString("token"));
+        } catch (Exception e) {
+            redisService.delete("repeatToken_outLogin_" + dto.getAsString("token"));
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+        return result;
+    }
 
     /**
      * 解密获取微信用户信息
@@ -286,6 +314,8 @@ public class WechatController extends BizAction {
         throw new RuntimeException("获取联合登陆用户信息失败");
 
     }
+
+
 
 
 }

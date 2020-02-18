@@ -11,7 +11,8 @@ import java.net.URL;
 public class FileUtils {
     private static String img_url;
     //绝对路径修改 start
-    public static String IMG_PATH = "/usr/local/static/imgs/";
+//    public static String IMG_PATH = "/usr/local/static/imgs/";
+    public static String IMG_PATH;
     public static String FILE_PATH = "/usr/local/static/file/";
 
     public static String getImg_url() {
@@ -23,6 +24,11 @@ public class FileUtils {
         FileUtils.img_url = img_url;
     }
 
+    @Value("${img_path}")
+    public void setImgPath(String imgPath){
+        FileUtils.IMG_PATH=imgPath;
+    }
+
     /**
      * @param input
      * @author
@@ -30,12 +36,12 @@ public class FileUtils {
     public static String storeImg(InputStream input, String fileName, String filePath) {
         String wholeFilePath = "";
         try {
-            String newPath = IMG_PATH + "/" + filePath;
+            String newPath = IMG_PATH + File.separator + filePath;
             createFolder(newPath);
-            wholeFilePath = newPath + "/" + fileName;
+            wholeFilePath = newPath + File.separator + fileName;
             File file = new File(wholeFilePath);
             if (file.exists()) {
-                file.createNewFile();
+                file.delete();
             }
             FileOutputStream fos = new FileOutputStream(wholeFilePath);
             byte[] readByte = new byte[1024];
@@ -49,7 +55,7 @@ public class FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return img_url + filePath + "/" + fileName;
+        return img_url + filePath + File.separator + fileName;
     }
 
 
@@ -257,6 +263,10 @@ public class FileUtils {
 
     public static void createFolder(String folderPath) {
         File file = new File(folderPath);
+
+        if(!file.exists()){
+            file.mkdirs();
+        }
         //如果文件夹不存在则创建
         if (!file.exists() && !file.isDirectory()) {
             System.out.println("---------create folder-------------" + folderPath);

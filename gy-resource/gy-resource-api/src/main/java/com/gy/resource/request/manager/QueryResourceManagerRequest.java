@@ -88,11 +88,12 @@ public class QueryResourceManagerRequest extends TokenRequest {
     @ApiModelProperty(notes = "内贸外贸 -1全部 0内贸 1进口 2出口")
     private String tradeType;
 
-    @ApiModelProperty(notes = "操作人ID")
-    private String operateId;
+//    @ApiModelProperty(notes = "操作人ID")
+//    private String operateId;
+//
+//    @ApiModelProperty(notes = "操作人名字")
+//    private String operateName;
 
-    @ApiModelProperty(notes = "操作人名字")
-    private String operateName;
-
-
+    private Integer start = 1;
+    private Integer limit = 10;
 }

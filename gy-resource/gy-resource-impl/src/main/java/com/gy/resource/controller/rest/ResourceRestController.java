@@ -1,11 +1,14 @@
 package com.gy.resource.controller.rest;
 
+import com.alibaba.fastjson.JSONArray;
 import com.gy.resource.api.rest.ResourceApi;
+import com.gy.resource.constant.UserLoginTokenPrefix;
 import com.gy.resource.entity.AssociationalWordModel;
 import com.gy.resource.entity.DictionaryCodeModel;
 import com.gy.resource.entity.GlobalCorrelationModel;
 import com.gy.resource.enums.DeleteFlagEnum;
 import com.gy.resource.enums.FollowTypeEnum;
+import com.gy.resource.enums.RefTypeEnum;
 import com.gy.resource.request.rest.FollowRefRequest;
 import com.gy.resource.request.rest.IssureResourceRequest;
 import com.gy.resource.request.rest.QueryFollowCountRequest;
@@ -23,6 +26,7 @@ import com.gy.resource.service.PAssociationalWordService;
 import com.gy.resource.service.PDictionaryCodeService;
 import com.gy.resource.service.PGlobalCorrelationService;
 import com.gy.resource.service.ResourceInfoService;
+import com.gy.resource.service.TokenService;
 import com.gy.resource.utils.ListUtils;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,19 +73,31 @@ public class ResourceRestController implements ResourceApi {
     @Autowired
     RedisClientTemplate redisClientTemplate;
 
-
     @Autowired
     ResourceInfoService resourceInfoService;
+
+    @Autowired
+    TokenService tokenService;
 
     @ApiOperation(value = "发布资源api，返回资源id")
     @PostMapping(value = "/issure-resource")
     public RestResult<String> issureResourceApi(@RequestBody IssureResourceRequest resourceRequest) {
+        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        resourceRequest.setIssureId(userId);
         return resourceInfoService.issureResourceApi(resourceRequest);
     }
 
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
+        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        resourceRequest.setLoginUserId(userId);
         return resourceInfoService.queryResource(resourceRequest);
     }
 
@@ -99,13 +116,18 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询用户发布的资源列表")
     @PostMapping(value = "/query-resource-user")
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(@RequestBody UserRequest request) {
+        String userId=tokenService.getUserIdByToken(request.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        request.setLoginUserId(userId);
         return resourceInfoService.queryResourceByUserId(request);
     }
 
     @ApiOperation(value = "查询搜索模糊匹配列表")
     @PostMapping(value = "/query-words")
     @Override
-    public RestResult<List<QueryWordsResponse>> queryWords(QueryWordsRequest req) {
+    public RestResult<List<QueryWordsResponse>> queryWords(@RequestBody QueryWordsRequest req) {
         log.info("------进入查询搜索模糊匹配列表,req{}-----", req);
         List<AssociationalWordModel> associationalWordModels =
                 pAssociationalWordService.associationalWordFuzzyWordQuery(req.getTitle());
@@ -124,68 +146,99 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "关注 取消关注 发布资源的用户 (点赞)")
     @PostMapping(value = "/follow-ref")
     @Override
-    public RestResult<Boolean> followRef(FollowRefRequest req) {
+    public RestResult<Boolean> followRef(@RequestBody FollowRefRequest req) {
         log.info("-----关注 取消关注 发布资源的用户 (点赞){}-----", req);
 
         // 获取用户id
-        String userStr = redisClientTemplate.get("H5_LOGIN_TOKEN_" + req.getToken());
-        if (StringUtils.isEmpty(userStr)) {
-            return RestResult.error("4000", "非法请求");
-        }
-        ;
+//        String userStr = redisClientTemplate.get(UserLoginTokenPrefix.LOGIN_H5 + req.getToken());
+//        if (StringUtils.isEmpty(userStr)) {
+//            return RestResult.error("4000", "非法请求");
+//        }
+//        Map<String,Object> userMap = JSONArray.parseObject(userStr, HashMap.class);
+//        Long userId = Long.valueOf(userMap.get("id").toString());
 
+        Long userId = 20L;
         Map map = new HashMap(8);
-//        map.put("userId",);
+        map.put("userId",userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
+
+
+        // 通过用户id，资源id，与资源类型，查询该实例是否存在，
+        // ps: 这里不指定deleteFlag，是因为其充当了业务逻辑，
+        // 且表中存在唯一键uq_userId_refId_refType_delete
+        // 在关注或者点赞的时候，很容易赞成唯一键冲突。
         GlobalCorrelationModel globalCorrelationModel =
                 pGlobalCorrelationService.globalCorrelationQuery(map);
-        //如果是关注
+        //如果是关注  或者  点赞   类型
         if (FollowTypeEnum.FOLLOW.getCode().equals(req.getFollowType())) {
-            // 如果是存在记录
-            if (globalCorrelationModel != null) {
+            // 如果是不存在记录，则直接添加此记录
+            if (globalCorrelationModel == null) {
                 GlobalCorrelationModel model = new GlobalCorrelationModel();
-//                model.setUserId();
+                model.setUserId(userId);
                 model.setRefId(req.getRefId());
                 model.setRefType(req.getRefType());
                 pGlobalCorrelationService.globalCorrelationAdd(model);
 
-            } else {
-
+            }
+            // 如果存在记录，判断此记录是否是 delete 状态，即取消关注或者取消点赞状态。
+            // 此时需要修改deleteFlag状态从1改为0
+            else if (globalCorrelationModel != null &&
+                    DeleteFlagEnum.DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())){
                 GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
-                modelValue.setDeleteFlag(0);
+                // 设置删除状态 为未删除状态
+                modelValue.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
                 GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
-                //model.setUserId();
+                whereCondition.setUserId(userId);
                 whereCondition.setRefId(req.getRefId());
                 whereCondition.setRefType(req.getRefType());
                 pGlobalCorrelationService.globalCorrelationEdit(modelValue, whereCondition);
             }
-        } else {
-            GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
-            modelValue.setDeleteFlag(1);
-            GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
-            //model.setUserId();
-            whereCondition.setRefId(req.getRefId());
-            whereCondition.setRefType(req.getRefType());
-            pGlobalCorrelationService.globalCorrelationEdit(modelValue, whereCondition);
         }
+        //如果是取消关注  或者  取消点赞   类型
+        else {
+            // 如果是不存在记录，则直接添加此记录，并且指定deleteFlag删除状态为 删除
+            if (globalCorrelationModel == null) {
+                GlobalCorrelationModel model = new GlobalCorrelationModel();
+                model.setUserId(userId);
+                model.setRefId(req.getRefId());
+                model.setRefType(req.getRefType());
+                model.setDeleteFlag(DeleteFlagEnum.DELETE.getCode());
+                pGlobalCorrelationService.globalCorrelationAdd(model);
 
+            }
+            // 如果存在记录，判断此记录是否是 un_delete 状态，即关注或者点赞状态。
+            // 此时需要修改deleteFlag状态从0改为1
+            else if (globalCorrelationModel != null &&
+                    DeleteFlagEnum.UN_DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())){
+                GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
+                // 设置删除状态 为删除状态
+                modelValue.setDeleteFlag(DeleteFlagEnum.DELETE.getCode());
+                GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
+                whereCondition.setUserId(userId);
+                whereCondition.setRefId(req.getRefId());
+                whereCondition.setRefType(req.getRefType());
+                pGlobalCorrelationService.globalCorrelationEdit(modelValue, whereCondition);
+            }
+        }
         return RestResult.success(Boolean.TRUE);
     }
 
     @ApiOperation(value = "查询当前用户是否关注了发布资源用户(资源)")
     @PostMapping(value = "/query-follow-status")
     @Override
-    public RestResult<Boolean> queryFollowStatus(QueryFollowStatusRequest req) {
+    public RestResult<Boolean> queryFollowStatus(@RequestBody QueryFollowStatusRequest req) {
         log.info("------进入查询搜索模糊匹配列表,req{}-----", req);
         Map map = new HashMap(8);
-//        map.put("userId",);
+
+        Long userId = 20L;
+        map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
         map.put("deleteFlag", DeleteFlagEnum.UN_DELETE.getCode());
         GlobalCorrelationModel model = pGlobalCorrelationService.globalCorrelationQuery(map);
         if (model != null) {
-            RestResult.success(Boolean.TRUE);
+            return RestResult.success(Boolean.TRUE);
         }
         return RestResult.success(Boolean.FALSE);
     }
@@ -196,28 +249,53 @@ public class ResourceRestController implements ResourceApi {
     public RestResult<Integer> queryFollowCount(QueryFollowCountRequest req) {
         log.info("------进入查询关注我的(资源)人数量,req{}-----", req);
         GlobalCorrelationModel model = new GlobalCorrelationModel();
-//        model.setUserId();
+
+        Long userId = 20L;
+        model.setUserId(userId);
         model.setRefType(req.getRefType());
         model.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
         Integer count = pGlobalCorrelationService.globalCorrelationQueryCount(model);
         return RestResult.success(count);
     }
 
+    /**
+     * 页面逻辑：点击页面右下角清空按钮可直接清空浏览记录；
+     * 浏览记录根据浏览日期分组排序，根据用户浏览的时间倒序排序，
+     * 数据记录采用更新模式，例如用户10-01浏览了A信息，10-03又浏览了A信息，
+     * 则浏览记录中A信息排在10-03下面，页面初始为10条记录，向下滑动加载下一页，每页10条
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "记录浏览记录(单独处理)、分享成功记录、拨打电话记录、点赞")
+    @PostMapping(value = "/add-correlation")
     @Override
-    public RestResult<Boolean> addCorrelation(QueryFollowCountRequest req) {
-
+    public RestResult<Boolean> addCorrelation(@RequestBody QueryFollowCountRequest req) {
+        log.info("------记录浏览记录(单独处理)、分享成功记录、拨打电话记录、点赞, req{}-----", req);
+        Long userId = 20L;
         Map map = new HashMap(8);
-//        map.put("userId",);
+        map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
         GlobalCorrelationModel dbModel =
                 pGlobalCorrelationService.globalCorrelationQuery(map);
         if (dbModel == null) {
             GlobalCorrelationModel model = new GlobalCorrelationModel();
-//            model.setUserId();
+            model.setUserId(userId);
             model.setRefId(req.getRefId());
             model.setRefType(req.getRefType());
             pGlobalCorrelationService.globalCorrelationAdd(model);
+        }
+        // 记录浏览记录的逻辑需要 单拎出来
+        if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(req.getRefType())){
+            if(dbModel != null){
+                GlobalCorrelationModel modifyEntity =new GlobalCorrelationModel();
+                modifyEntity.setUpdateTime(new Date());
+                GlobalCorrelationModel whereCondition =new GlobalCorrelationModel();
+                whereCondition.setUserId(userId);
+                whereCondition.setRefId(req.getRefId());
+                whereCondition.setRefType(req.getRefType());
+                pGlobalCorrelationService.globalCorrelationEdit(modifyEntity, whereCondition);
+            }
         }
         return RestResult.success(Boolean.TRUE);
     }

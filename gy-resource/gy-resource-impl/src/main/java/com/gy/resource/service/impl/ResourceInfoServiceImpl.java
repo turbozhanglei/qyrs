@@ -163,8 +163,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             return RestResult.success(responseList);
         }
 
-        int browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
-        int shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
+        Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
+        Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag==ResourceConstant.brownSort.up){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag==ResourceConstant.brownSort.down){
@@ -302,7 +302,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public String getHeadImage(ResourceInfo resourceInfo) {
         String headImage = resourceInfoMapper.getHeadImage(resourceInfo.getUserId());
         if (StringUtils.isEmpty(headImage)) {
-            //默认头像
+            //默认头像 TODO
             headImage = "";
         }
         return headImage;
@@ -370,8 +370,14 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public PageResult<ResourceInfo> queryPageOrderByAuditTime(ResourceInfo resourceInfo, Page pageQuery) {
         //计算下标
         int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
-        List<ResourceInfo> list = resourceInfoMapper.queryPage(startIndex, pageQuery.getLimit(), resourceInfo);
-        long count = resourceInfoMapper.queryPageCount(resourceInfo);
+        List<ResourceInfo> list = resourceInfoMapper.queryPageOrderByAuditTime(startIndex,
+                pageQuery.getLimit(),
+                resourceInfo,
+                resourceInfo.getCreateStartTime(),
+                resourceInfo.getCreateEndTime());
+        long count = resourceInfoMapper.queryPageCount(resourceInfo,
+                resourceInfo.getCreateStartTime(),
+                resourceInfo.getCreateEndTime());
         PageResult pageResult = new PageResult();
         pageResult.setRows(list);
         pageResult.setTotal(count);

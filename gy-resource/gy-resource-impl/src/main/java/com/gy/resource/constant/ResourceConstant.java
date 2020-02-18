@@ -48,4 +48,10 @@ public interface ResourceConstant {
         int up=0;
         int down=1;
     }
+
+    interface sortType{
+        String brownUp="0";
+        String shareUp="1";
+        String phoneUp="2";
+    }
 }

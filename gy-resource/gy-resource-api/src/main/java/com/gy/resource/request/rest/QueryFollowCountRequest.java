@@ -28,9 +28,9 @@ public class QueryFollowCountRequest implements Serializable{
     @ApiModelProperty(notes = "用户 token")
     private String token;
 
-    @ApiModelProperty(notes = "资源id、文章id、用户id ")
+    @ApiModelProperty(notes = "资讯id, 当refType为5时资讯文章点赞时，则取这个值不可为空。此值在数据库的含义资讯id、资源id、文章id、用户id ")
     private Long refId;
 
-    @ApiModelProperty(notes = "关联类型，0、关注用户，1、资源浏览数，2、资源分享数，3、资源拨打电话数，4、资讯文章分享数，5、资讯文章点赞数，6、资讯文章浏览数 ")
+    @ApiModelProperty(notes = "关联类型，只需要关注类型0与类型5。0、关注用户，1、资源浏览数，2、资源分享数，3、资源拨打电话数，4、资讯文章分享数，5、资讯文章点赞数，6、资讯文章浏览数 ")
     private Integer refType;
 }

@@ -94,6 +94,6 @@ public class QueryResourceManagerRequest extends TokenRequest {
 //    @ApiModelProperty(notes = "操作人名字")
 //    private String operateName;
 
-    private int start = 1;
-    private int limit = 10;
+    private Integer start = 1;
+    private Integer limit = 10;
 }

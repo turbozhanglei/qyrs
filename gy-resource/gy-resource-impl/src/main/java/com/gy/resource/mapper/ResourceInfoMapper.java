@@ -69,4 +69,9 @@ public interface  ResourceInfoMapper {
     @Update("update g_resource_info set sticky=#{sticky},auditor=#{auditor} where id=#{id} and delete_flag ='0'")
     long top(@Param("sticky")Integer sticky,@Param("auditor")String auditor,@Param("id")long id);
 
+    @Select("select * from g_resource_info where status='0' and delete_flag='0'")
+    List<ResourceInfo> querySensitive();
+
+    @Select("select word from g_sensitive_word where  ")
+    String querySensitiveOfManager();
 }

@@ -13,7 +13,7 @@ ribbon:
   ReadTimeout: 60000
 ---
 img_url: http://47.94.238.185:8097/
-
+img_path: /home/jiantou/data/imgs
 eureka:
   client:
     service-url:

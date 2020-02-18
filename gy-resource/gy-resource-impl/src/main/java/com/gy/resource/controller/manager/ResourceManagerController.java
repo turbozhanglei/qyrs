@@ -69,7 +69,7 @@ public class ResourceManagerController implements ResourceManagerApi {
 
     @ApiOperation(value = "资源信息汇总报表页导出")
     @PostMapping(value = "/download-report")
-    public void reportDownLoad(@RequestBody  QueryResourceManagerRequest resourceManagerRequest) {
+    public void reportDownLoad(@RequestBody ReportRequest reportRequest) {
 
     }
 

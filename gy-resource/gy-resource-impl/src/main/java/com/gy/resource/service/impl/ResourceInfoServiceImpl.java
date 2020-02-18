@@ -201,7 +201,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     }
 
     public List<Integer> getFieldList(String field){
-        if(StringUtils.isEmpty(field)){
+        if (org.apache.commons.lang.StringUtils.equals(field, "-1") || StringUtils.isEmpty(field)){
             return null;
         }
         if(field.contains(",")){

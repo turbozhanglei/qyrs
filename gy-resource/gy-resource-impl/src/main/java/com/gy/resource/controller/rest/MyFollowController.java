@@ -55,7 +55,6 @@ public class MyFollowController {
             return RestResult.error("4000","非法请求");
         };
         try {
-
             List<MyFollowUserInfoResponse> reseult=myFollowService.queryMyFollowByUserId(Long.valueOf(userId));
             Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(userId));
             MyFollowResponse myFollowResponse=new MyFollowResponse();

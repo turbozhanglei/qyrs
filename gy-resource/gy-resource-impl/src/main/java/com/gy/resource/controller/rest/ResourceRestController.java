@@ -9,14 +9,7 @@ import com.gy.resource.entity.GlobalCorrelationModel;
 import com.gy.resource.enums.DeleteFlagEnum;
 import com.gy.resource.enums.FollowTypeEnum;
 import com.gy.resource.enums.RefTypeEnum;
-import com.gy.resource.request.rest.FollowRefRequest;
-import com.gy.resource.request.rest.IssureResourceRequest;
-import com.gy.resource.request.rest.QueryFollowCountRequest;
-import com.gy.resource.request.rest.QueryFollowStatusRequest;
-import com.gy.resource.request.rest.QueryResourceByConditionRequest;
-import com.gy.resource.request.rest.QueryResourceRequest;
-import com.gy.resource.request.rest.QueryWordsRequest;
-import com.gy.resource.request.rest.UserRequest;
+import com.gy.resource.request.rest.*;
 import com.gy.resource.response.rest.QueryResourceByConditionResponse;
 import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
@@ -224,11 +217,11 @@ public class ResourceRestController implements ResourceApi {
         return RestResult.success(Boolean.TRUE);
     }
 
-    @ApiOperation(value = "查询当前用户是否关注了发布资源用户(资源)")
+    @ApiOperation(value = "查询当前用户是否关注了发布资源用户")
     @PostMapping(value = "/query-follow-status")
     @Override
     public RestResult<Boolean> queryFollowStatus(@RequestBody QueryFollowStatusRequest req) {
-        log.info("------进入查询搜索模糊匹配列表,req{}-----", req);
+        log.info("------进入查询当前用户是否关注了发布资源用户,req{}-----", req);
         Map map = new HashMap(8);
 
         Long userId = 20L;
@@ -243,15 +236,24 @@ public class ResourceRestController implements ResourceApi {
         return RestResult.success(Boolean.FALSE);
     }
 
-    @ApiOperation(value = "查询关注我的(资源)人数量")
+    @ApiOperation(value = "查询关注我的人数量 或者 点赞某个资讯的数量")
     @PostMapping(value = "/query-follow-count")
     @Override
     public RestResult<Integer> queryFollowCount(QueryFollowCountRequest req) {
         log.info("------进入查询关注我的(资源)人数量,req{}-----", req);
         GlobalCorrelationModel model = new GlobalCorrelationModel();
+        // TODO 如果用户 token 与 refId 同时为空，则数据校验不通过
 
         Long userId = 20L;
-        model.setUserId(userId);
+        //如果是关注用户类型，则refId 为用户 id，是用 token 转成的
+        if (RefTypeEnum.FOLLOW_USER.getCode().equals(req.getRefType())){
+            model.setRefId(userId);
+        }
+        //如果是资讯点赞类型，则refId 为资讯 id，是取自 refType 的
+        else if (RefTypeEnum.INFO_FOLLOW.getCode().equals(req.getRefType())){
+            model.setRefId(req.getRefId());
+        }
+
         model.setRefType(req.getRefType());
         model.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
         Integer count = pGlobalCorrelationService.globalCorrelationQueryCount(model);
@@ -266,11 +268,11 @@ public class ResourceRestController implements ResourceApi {
      * @param req
      * @return
      */
-    @ApiOperation(value = "记录浏览记录(单独处理)、分享成功记录、拨打电话记录、点赞")
+    @ApiOperation(value = "记录浏览记录(单独处理)、分享记录、拨打电话记录")
     @PostMapping(value = "/add-correlation")
     @Override
-    public RestResult<Boolean> addCorrelation(@RequestBody QueryFollowCountRequest req) {
-        log.info("------记录浏览记录(单独处理)、分享成功记录、拨打电话记录、点赞, req{}-----", req);
+    public RestResult<Boolean> addCorrelation(@RequestBody AddCorrelationRequest req) {
+        log.info("------记录浏览记录(单独处理)、分享记录、拨打电话记录、点赞, req{}-----", req);
         Long userId = 20L;
         Map map = new HashMap(8);
         map.put("userId", userId);

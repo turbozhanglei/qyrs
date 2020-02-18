@@ -160,8 +160,11 @@ public class ResourceRestController implements ResourceApi {
 //        }
 //        Map<String,Object> userMap = JSONArray.parseObject(userStr, HashMap.class);
 //        Long userId = Long.valueOf(userMap.get("id").toString());
-
-        Long userId = 2L;
+        String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
+        if (StringUtils.isBlank(userIdStr)) {
+            return RestResult.error("1000", "请重新登录");
+        }
+        Long userId = Long.valueOf(userIdStr);
         Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", req.getRefId());
@@ -235,7 +238,11 @@ public class ResourceRestController implements ResourceApi {
         log.info("------进入查询当前用户是否关注了发布资源用户,req{}-----", req);
         Map map = new HashMap(8);
 
-        Long userId = 2L;
+        String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
+        if (StringUtils.isBlank(userIdStr)) {
+            return RestResult.error("1000", "请重新登录");
+        }
+        Long userId = Long.valueOf(userIdStr);
         map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
@@ -255,7 +262,11 @@ public class ResourceRestController implements ResourceApi {
         GlobalCorrelationModel model = new GlobalCorrelationModel();
         // TODO 如果用户 token 与 refId 同时为空，则数据校验不通过
 
-        Long userId = 2L;
+        String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
+        if (StringUtils.isBlank(userIdStr)) {
+            return RestResult.error("1000", "请重新登录");
+        }
+        Long userId = Long.valueOf(userIdStr);
         //如果是关注用户类型，则refId 为用户 id，是用 token 转成的
         if (RefTypeEnum.FOLLOW_USER.getCode().equals(req.getRefType())) {
             model.setRefId(userId);
@@ -280,7 +291,11 @@ public class ResourceRestController implements ResourceApi {
     @Override
     public RestResult<Boolean> addCorrelation(@RequestBody AddCorrelationRequest req) {
         log.info("------记录浏览记录(单独处理)、分享记录、拨打电话记录、点赞, req{}-----", req);
-        Long userId = 2L;
+        String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
+        if (StringUtils.isBlank(userIdStr)) {
+            return RestResult.error("1000", "请重新登录");
+        }
+        Long userId = Long.valueOf(userIdStr);
         Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", req.getRefId());

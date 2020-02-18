@@ -1,12 +1,16 @@
 package com.gy.resource.service.impl;
 
 
+import com.gy.resource.constant.AffectConstant;
 import com.gy.resource.entity.GlobalCorrelationModel;
+import com.gy.resource.enums.RefTypeEnum;
 import com.gy.resource.mapper.GlobalCorrelationMapper;
 import com.gy.resource.service.PGlobalCorrelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.jic.common.base.vo.Page;
@@ -99,6 +103,42 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
     @Override
     public Integer globalCorrelationChangeApproveStatus(Map map){
         return modelMapper.globalCorrelationChangeApproveStatus(map);
+    }
+
+    @Override
+    public Boolean addBrowse(Long userId, Long refId, Integer refType) {
+        Map map = new HashMap(8);
+        map.put("userId", userId);
+        map.put("refId", refId);
+        map.put("refType", refType);
+        GlobalCorrelationModel dbModel =
+                this.globalCorrelationQuery(map);
+        if (dbModel == null) {
+            GlobalCorrelationModel model = new GlobalCorrelationModel();
+            model.setUserId(userId);
+            model.setRefId(refId);
+            model.setRefType(refType);
+            Integer count = this.globalCorrelationAdd(model);
+            if(!AffectConstant.ADD_FAIL.equals(count)){
+                return Boolean.TRUE;
+            }
+        }
+        // 记录浏览记录的逻辑需要 单拎出来
+        if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(refType)) {
+            if (dbModel != null) {
+                GlobalCorrelationModel modifyEntity = new GlobalCorrelationModel();
+                modifyEntity.setUpdateTime(new Date());
+                GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
+                whereCondition.setUserId(userId);
+                whereCondition.setRefId(refId);
+                whereCondition.setRefType(refType);
+                Integer count =this.globalCorrelationEdit(modifyEntity, whereCondition);
+                if(!AffectConstant.UPDATE_FAIL.equals(count)){
+                    return Boolean.TRUE;
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 
 }

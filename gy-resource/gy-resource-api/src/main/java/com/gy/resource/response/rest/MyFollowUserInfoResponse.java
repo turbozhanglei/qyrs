@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * @author xuyongliang
+ * @author zhuxiankun
  * @version V1.0
  * @description 我的关注用户信息
  * @date 2020/2/15
@@ -25,8 +25,8 @@ public class MyFollowUserInfoResponse implements Serializable{
     @ApiModelProperty(notes = "关注用户id")
     private Long userId;
     @ApiModelProperty(notes = "关注用户头像")
-    private Long headPic;
+    private String headpic;
     @ApiModelProperty(notes = "关注用户昵称")
-    private Long nickname;
+    private String nickname;
 
 }

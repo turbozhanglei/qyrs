@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gy.resource.mapper.MyFollowMapper">
+<mapper namespace="com.gy.resource.mapper.MyBrowseMapper">
 
     <!--查询我的关注列表-->
-    <select id="queryMyFollowByUserId" resultType="com.gy.resource.response.rest.MyFollowUserInfoResponse" parameterType="java.lang.Long">
+    <select id="queryMyBrowesByUserId" resultType="com.gy.resource.response.rest.MyBrowseResponse" parameterType="java.lang.Long">
                         SELECT
                             a.id AS userId,
                             a.head_pic AS headpic,

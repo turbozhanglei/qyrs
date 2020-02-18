@@ -12,7 +12,7 @@ ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://47.100.214.25:9906/
+img_url: https://gymp25.chinayie.com/image
 img_path: /home/gymp25/gy-mp/imgs
 
 eureka:

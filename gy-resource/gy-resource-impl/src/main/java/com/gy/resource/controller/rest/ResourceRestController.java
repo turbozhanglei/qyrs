@@ -1,6 +1,7 @@
 package com.gy.resource.controller.rest;
 
 import com.gy.resource.api.rest.ResourceApi;
+import com.gy.resource.constant.AffectConstant;
 import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.entity.AssociationalWordModel;
 import com.gy.resource.entity.DictionaryCodeModel;
@@ -296,31 +297,9 @@ public class ResourceRestController implements ResourceApi {
             return RestResult.error("1000", "请重新登录");
         }
         Long userId = Long.valueOf(userIdStr);
-        Map map = new HashMap(8);
-        map.put("userId", userId);
-        map.put("refId", req.getRefId());
-        map.put("refType", req.getRefType());
-        GlobalCorrelationModel dbModel =
-                pGlobalCorrelationService.globalCorrelationQuery(map);
-        if (dbModel == null) {
-            GlobalCorrelationModel model = new GlobalCorrelationModel();
-            model.setUserId(userId);
-            model.setRefId(req.getRefId());
-            model.setRefType(req.getRefType());
-            pGlobalCorrelationService.globalCorrelationAdd(model);
-        }
-        // 记录浏览记录的逻辑需要 单拎出来
-        if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(req.getRefType())) {
-            if (dbModel != null) {
-                GlobalCorrelationModel modifyEntity = new GlobalCorrelationModel();
-                modifyEntity.setUpdateTime(new Date());
-                GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
-                whereCondition.setUserId(userId);
-                whereCondition.setRefId(req.getRefId());
-                whereCondition.setRefType(req.getRefType());
-                pGlobalCorrelationService.globalCorrelationEdit(modifyEntity, whereCondition);
-            }
-        }
+        pGlobalCorrelationService.addBrowse(userId,req.getRefId(), req.getRefType());
         return RestResult.success(Boolean.TRUE);
     }
+
+
 }

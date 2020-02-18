@@ -20,10 +20,15 @@ public interface MyBrowseMapper {
 
 
     /**
-     *根据用户id查询我的关注
+     *根据用户id查询我的浏览记录
      *@Param Long
      */
     List<MyBrowseResponse> queryMyBrowesByUserId(@Param("userId") Long userId);
 
 
+    /**
+     *根据用户id删除我的浏览记录
+     *@Param Long
+     */
+    Integer myBrowesDelete(@Param("userId") Long userId);
 }

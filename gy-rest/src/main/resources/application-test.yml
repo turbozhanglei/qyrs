@@ -1,0 +1,102 @@
+server:
+  port: 9903
+ # servlet:
+ #   context-path: /wms-rest
+  #logging:
+  #  level:
+  #    root: INFO
+  config: classpath:logback.xml
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess,
+
+ribbon:
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
+---
+img_url: https://gymp25.chinayie.com/image/
+img_path: /home/gymp25/gy-mp/imgs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9901/eureka
+spring:
+  application:
+    name: gy-rest #服务名称--调用的时候根据名称来调用该服务的方法
+---
+spring:
+  datasource:
+    readSize: 1
+    type: com.alibaba.druid.pool.DruidDataSource
+    master:
+      url: jdbc:mysql://rm-uf6p1936n154wl8gmo.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp7
+      password: P@$$w0rd2020
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      filters: stat,wall
+      initialSize: 5
+      maxActive: 200
+      maxPoolPreparedStatementPerConnectionSize: 20
+      maxWait: 60000
+      minEvictableIdleTimeMillis: 300000
+      minIdle: 5
+      poolPreparedStatements: true
+      testOnBorrow: false
+      testOnReturn: false
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 60000
+      useGlobalDataSourceStat: true
+      validationQuery: SELECT 1 FROM DUAL
+    slave:
+      url: jdbc:mysql://rm-uf6p1936n154wl8gmo.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp7
+      password: P@$$w0rd2020
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      filters: stat,wall
+      initialSize: 5
+      maxActive: 200
+      maxPoolPreparedStatementPerConnectionSize: 20
+      maxWait: 60000
+      minEvictableIdleTimeMillis: 300000
+      minIdle: 5
+      poolPreparedStatements: true
+      testOnBorrow: false
+      testOnReturn: false
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 60000
+      useGlobalDataSourceStat: true
+      validationQuery: SELECT 1 FROM DUAL
+  messages:
+    encoding: UTF-8
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+  main:
+    allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+---
+mybatis:
+  config-location: classpath:mybatis.cfg.xml    #  mybatis主配置文件所在路径
+  type-aliases-package: com.tmsbean
+  mapper-locations: classpath:mapper/*/*.xml
+mapper:
+  not-empty: false
+  identity: MYSQL
+
+---
+spring:
+  redis:
+    host: 47.100.214.25
+    port: 6379
+    password: asdf@123
+    pool:
+        max-active: 200
+        max-idle: 100
+        min-idle: 20
+        max-wait: -1
+    timeout: 6000
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8

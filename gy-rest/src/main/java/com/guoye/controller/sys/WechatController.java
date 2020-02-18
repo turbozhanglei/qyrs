@@ -88,11 +88,12 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-              String token = "mp_login_token:"+UUID.randomUUID().toString();
+              String token = UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
               if(null !=member){
                   member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
-                  redisService.setValue(token, JSONArray.toJSONString(member), 7200l);
+                  member.put("token",token);
+                  redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(member), 7200l);
                   result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
@@ -111,7 +112,7 @@ public class WechatController extends BizAction {
                       bizService.saveInfo(udto);
                       udto.put("id",udto.getAsString("id"));//返回当前用户登录的id
                       udto.put("token",token);
-                      redisService.setValue(token, JSONArray.toJSONString(udto), 7200l);
+                      redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(udto), 7200l);
                       result.setData(udto);
 
                   }

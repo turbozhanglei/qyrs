@@ -72,6 +72,9 @@ public interface  ResourceInfoMapper {
     @Select("select * from g_resource_info where status='0' and delete_flag='0'")
     List<ResourceInfo> querySensitive();
 
-    @Select("select word from g_sensitive_word where  ")
+    @Select("select word from g_sensitive_word where delete_flag='0'")
     String querySensitiveOfManager();
+
+    @Update("update g_resource_info set status='2',content=#{content},auditTime=now(),auditor=#{auditor} where id=#{id} and delete_flag='0'")
+    long systemCheckFail(@Param("content")String content,@Param("auditor")String auditor,@Param("id")long id);
 }

@@ -12,6 +12,7 @@ import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
 import com.gy.resource.response.rest.RecommendResourceResponse;
 import com.gy.resource.service.ResourceInfoService;
+import com.gy.resource.service.TokenService;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -43,6 +44,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     @Autowired
     private ResourceInfoMapper resourceInfoMapper;
+
+    @Autowired
+    TokenService tokenService;
 
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
@@ -165,15 +169,15 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
         Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
-        if(browseSortFlag==ResourceConstant.brownSort.up){
+        if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.up){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
-        }else if(browseSortFlag==ResourceConstant.brownSort.down){
+        }else if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.down){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
         }
 
-        if(shareSortFlag==ResourceConstant.shareSort.up){
+        if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.up){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
-        }else if(shareSortFlag==ResourceConstant.shareSort.down){
+        }else if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.down){
             responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
         }
 
@@ -315,7 +319,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public ResourceInfo getResourceInfo(IssureResourceRequest request) {
         ResourceInfo resourceInfo = new ResourceInfo();
         resourceInfo.setUserId(Long.parseLong(request.getIssureId()));
-        resourceInfo.setMobile(resourceInfoMapper.getMobile(resourceInfo.getUserId()));
+        resourceInfo.setMobile(tokenService.decryptMobile(resourceInfoMapper.getMobile(resourceInfo.getUserId())));
         resourceInfo.setTitle(request.getResourceTitle());
         resourceInfo.setPlatform(ResourceConstant.platform.weixin);
         resourceInfo.setReleaseType(Integer.parseInt(request.getResourceType()));

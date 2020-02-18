@@ -1,6 +1,7 @@
 package com.gy.resource.controller.rest;
 
 import com.gy.resource.api.rest.ResourceApi;
+import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.entity.AssociationalWordModel;
 import com.gy.resource.entity.DictionaryCodeModel;
 import com.gy.resource.entity.GlobalCorrelationModel;
@@ -59,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 @Api(tags = {"资源小程序接口"})
 @Slf4j
 public class ResourceRestController implements ResourceApi {
+    private static final String channel_WX= ResourceConstant.channel.WX;
 
     @Resource
     PAssociationalWordService pAssociationalWordService;
@@ -81,7 +83,7 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "发布资源api，返回资源id")
     @PostMapping(value = "/issure-resource")
     public RestResult<String> issureResourceApi(@RequestBody IssureResourceRequest resourceRequest) {
-        String userId = tokenService.getUserIdByToken(resourceRequest.getToken());
+        String userId = tokenService.getUserIdByToken(resourceRequest.getToken(),channel_WX);
         if (StringUtils.isBlank(userId)) {
             return RestResult.error("1000", "请重新登录");
         }
@@ -92,7 +94,7 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
-        String userId = tokenService.getUserIdByToken(resourceRequest.getToken());
+        String userId = tokenService.getUserIdByToken(resourceRequest.getToken(),channel_WX);
         if (StringUtils.isBlank(userId)) {
             return RestResult.error("1000", "请重新登录");
         }
@@ -115,7 +117,7 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询用户发布的资源列表")
     @PostMapping(value = "/query-resource-user")
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(@RequestBody UserRequest request) {
-        String userId = tokenService.getUserIdByToken(request.getToken());
+        String userId = tokenService.getUserIdByToken(request.getToken(),channel_WX);
         if (StringUtils.isBlank(userId)) {
             return RestResult.error("1000", "请重新登录");
         }

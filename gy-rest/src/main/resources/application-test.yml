@@ -13,6 +13,7 @@ ribbon:
   ReadTimeout: 60000
 ---
 img_url: http://47.100.214.25:9906/
+img_path: /home/gymp25/gy-mp/imgs
 
 eureka:
   client:

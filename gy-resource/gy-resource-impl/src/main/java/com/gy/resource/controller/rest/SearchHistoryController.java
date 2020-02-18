@@ -1,9 +1,11 @@
 package com.gy.resource.controller.rest;
 
+import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.entity.SearchHistoryModel;
 import com.gy.resource.request.rest.*;
 import com.gy.resource.response.rest.SearchHistoryResponse;
 import com.gy.resource.service.PSearchHistoryService;
+import com.gy.resource.service.TokenService;
 import com.jic.common.base.vo.RestResult;
 import com.jic.common.redis.RedisClientTemplate;
 import io.swagger.annotations.Api;
@@ -28,11 +30,15 @@ import java.util.List;
 @Api(tags = {"搜索记录接口"})
 @Slf4j
 public class SearchHistoryController {
+    private static final String channel_WX= ResourceConstant.channel.WX;
     @Autowired
     RedisClientTemplate redisClientTemplate;
 
     @Autowired
     PSearchHistoryService pSearchHistoryService;
+
+    @Autowired
+    TokenService tokenService;
     /*
      *
      *新增搜索记录
@@ -42,12 +48,10 @@ public class SearchHistoryController {
     public RestResult insertProductUnits(@RequestBody SearchHistoryAddRequest searchHistoryAddRequest) {
         RestResult restResult = new RestResult<>();
         log.info("------进入新增搜索记录,req{}-----", searchHistoryAddRequest);
-        // 获取用户id
-//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryAddRequest.getToken());
-//
-//        if (StringUtils.isEmpty(userId)){
-//            return RestResult.error("4000","非法请求");
-//        };
+        String userId = tokenService.getUserIdByToken(searchHistoryAddRequest.getToken(),channel_WX);
+        if (StringUtils.isEmpty(userId)){
+            return RestResult.error("1000","请重新登录");
+        };
         try {
 
             if(StringUtils.isNotEmpty(searchHistoryAddRequest.getWord())){
@@ -64,7 +68,7 @@ public class SearchHistoryController {
                 for (String word:list){
                     SearchHistoryModel searchHistoryModel=new SearchHistoryModel();
                     searchHistoryModel.setWord(word);
-                    searchHistoryModel.setUserId(Long.valueOf(2));
+                    searchHistoryModel.setUserId(Long.valueOf(userId));
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DATE, 30);
                     Date validDate = cal.getTime();
@@ -94,13 +98,12 @@ public class SearchHistoryController {
     public RestResult<List<SearchHistoryResponse>> querySearchHistoryByUserId(@RequestBody SearchHistoryRequest searchHistoryRequest) {
         RestResult restResult = new RestResult<>();
         log.info("------查询搜索历史记录,req{}-----", searchHistoryRequest);
-        // 获取用户id
-//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
-//        if (StringUtils.isEmpty(userId)){
-//            return RestResult.error("4000","非法请求");
-//        };
+        String userId = tokenService.getUserIdByToken(searchHistoryRequest.getToken(),channel_WX);
+        if (StringUtils.isEmpty(userId)){
+            return RestResult.error("1000","请重新登录");
+        };
         try {
-           List<SearchHistoryResponse> reseult=pSearchHistoryService.querySearchHistoryByUserId(Long.valueOf(2));
+           List<SearchHistoryResponse> reseult=pSearchHistoryService.querySearchHistoryByUserId(Long.valueOf(userId));
            return restResult.success(reseult);
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,13 +123,12 @@ public class SearchHistoryController {
     public RestResult deleteSearchHistoryByUserId(@RequestBody SearchHistoryRequest searchHistoryRequest) {
         log.info("------删除历史搜索记录,req{}-----", searchHistoryRequest);
         RestResult restResult = new RestResult<>();
-        // 获取用户id
-//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
-//        if (StringUtils.isEmpty(userId)){
-//            return RestResult.error("4000","非法请求");
-//        };
+        String userId = tokenService.getUserIdByToken(searchHistoryRequest.getToken(),channel_WX);
+        if (StringUtils.isEmpty(userId)){
+            return RestResult.error("1000","请重新登录");
+        };
         try {
-           pSearchHistoryService.searchHistoryDelete(Long.valueOf(2));
+           pSearchHistoryService.searchHistoryDelete(Long.valueOf(userId));
             return RestResult.success(true);
         } catch (Exception e) {
             e.printStackTrace();

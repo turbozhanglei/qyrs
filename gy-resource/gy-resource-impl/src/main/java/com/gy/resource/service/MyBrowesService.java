@@ -21,4 +21,10 @@ public interface MyBrowesService {
      */
     List<MyBrowseResponse> queryMyBrowesByUserId(Long userId);
 
+    /**
+     * 浏览记录 删除
+     * @param \
+     */
+    Integer myBrowesDelete(Long userId);
+
 }

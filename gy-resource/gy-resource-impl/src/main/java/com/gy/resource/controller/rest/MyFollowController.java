@@ -48,6 +48,7 @@ public class MyFollowController {
 //        };
         try {
             myFollowRequest.setUserId(Long.valueOf(2));
+            myFollowRequest.setStart(myFollowRequest.getStart()-1);
             List<MyFollowUserInfoResponse> reseult=myFollowService.queryMyFollowByUserId(myFollowRequest);
             Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(2));
             MyFollowResponse myFollowResponse=new MyFollowResponse();

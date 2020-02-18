@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**n
  * @author zhuxiankun
@@ -22,9 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyBrowseGroupByDateResponse implements Serializable{
-    @ApiModelProperty(notes = "发布时间---按天分组")
-    private String createDate;
     @ApiModelProperty(notes = "浏览记录-按天")
-    private List<MyBrowseResponse> myBrowseResponseList;
+    private Map<String,List<MyBrowseResponse>> myBrowseResponseList;
 
 }

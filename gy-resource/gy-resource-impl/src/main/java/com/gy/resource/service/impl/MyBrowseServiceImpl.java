@@ -34,6 +34,13 @@ public class MyBrowseServiceImpl implements MyBrowesService{
     public  List<MyBrowseResponse> queryMyBrowesByUserId(Long userId){
         return myBrowseMapper.queryMyBrowesByUserId(userId);
     }
-
+    /**
+     * 根据用户id删除用户浏览记录
+     * @param \
+     */
+    @Override
+    public  Integer myBrowesDelete(Long userId){
+        return myBrowseMapper.myBrowesDelete(userId);
+    }
 
 }

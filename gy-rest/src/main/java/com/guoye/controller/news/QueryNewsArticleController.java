@@ -75,7 +75,7 @@ public class QueryNewsArticleController extends BizAction {
     public Dto queryArticleListByCategoryId(HttpServletRequest request){
         Dto dto = WebUtils.getParamAsDto(request);
         Dto retDto = new BaseDto();
-        dto.put("start",dto.getAsLong("start"));
+        dto.put("start",dto.getAsLong("start")-1);
         dto.put("end",dto.getAsLong("limit"));
         List<Dto> articleList=bizService.queryForList("newsArticle.queryArticleListByCategoryId", dto);
         Map<String,List<Dto>> data=new HashMap<String,List<Dto>>();

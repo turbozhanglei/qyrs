@@ -3,13 +3,17 @@ package com.gy.resource.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.service.TokenService;
+import com.gy.resource.utils.DESWrapper;
 import com.jic.common.redis.RedisClientTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: gaolanyu
@@ -17,7 +21,10 @@ import java.util.Map;
  * @remark:
  */
 @Service
+@Slf4j
 public class TokenServiceImpl implements TokenService {
+    @Value("${phone_key}")
+    private String phone_key;
     @Autowired
     RedisClientTemplate redisClientTemplate;
     @Override
@@ -36,5 +43,16 @@ public class TokenServiceImpl implements TokenService {
         Map<String, Object> userMap = JSONArray.parseObject(userStr, HashMap.class);
         String userId = userMap.get("id").toString();
         return userId;
+    }
+
+    @Override
+    public String decryptMobile(String mobile) {
+        String encryMobile="";
+        try{
+            encryMobile=DESWrapper.decrypt(mobile,phone_key);
+        }catch (Exception e){
+            log.error("解密手机号出错",e);
+        }
+        return encryMobile;
     }
 }

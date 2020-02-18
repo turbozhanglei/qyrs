@@ -12,6 +12,7 @@ import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
 import com.gy.resource.response.rest.RecommendResourceResponse;
 import com.gy.resource.service.ResourceInfoService;
+import com.gy.resource.service.TokenService;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -43,6 +44,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     @Autowired
     private ResourceInfoMapper resourceInfoMapper;
+
+    @Autowired
+    TokenService tokenService;
 
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
@@ -315,7 +319,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public ResourceInfo getResourceInfo(IssureResourceRequest request) {
         ResourceInfo resourceInfo = new ResourceInfo();
         resourceInfo.setUserId(Long.parseLong(request.getIssureId()));
-        resourceInfo.setMobile(resourceInfoMapper.getMobile(resourceInfo.getUserId()));
+        resourceInfo.setMobile(tokenService.decryptMobile(resourceInfoMapper.getMobile(resourceInfo.getUserId())));
         resourceInfo.setTitle(request.getResourceTitle());
         resourceInfo.setPlatform(ResourceConstant.platform.weixin);
         resourceInfo.setReleaseType(Integer.parseInt(request.getResourceType()));

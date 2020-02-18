@@ -26,6 +26,7 @@ import com.gy.resource.service.PAssociationalWordService;
 import com.gy.resource.service.PDictionaryCodeService;
 import com.gy.resource.service.PGlobalCorrelationService;
 import com.gy.resource.service.ResourceInfoService;
+import com.gy.resource.service.TokenService;
 import com.gy.resource.utils.ListUtils;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -72,19 +73,31 @@ public class ResourceRestController implements ResourceApi {
     @Autowired
     RedisClientTemplate redisClientTemplate;
 
-
     @Autowired
     ResourceInfoService resourceInfoService;
+
+    @Autowired
+    TokenService tokenService;
 
     @ApiOperation(value = "发布资源api，返回资源id")
     @PostMapping(value = "/issure-resource")
     public RestResult<String> issureResourceApi(@RequestBody IssureResourceRequest resourceRequest) {
+        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        resourceRequest.setIssureId(userId);
         return resourceInfoService.issureResourceApi(resourceRequest);
     }
 
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
+        String userId=tokenService.getUserIdByToken(resourceRequest.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        resourceRequest.setLoginUserId(userId);
         return resourceInfoService.queryResource(resourceRequest);
     }
 
@@ -103,6 +116,11 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询用户发布的资源列表")
     @PostMapping(value = "/query-resource-user")
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(@RequestBody UserRequest request) {
+        String userId=tokenService.getUserIdByToken(request.getToken());
+        if(StringUtils.isBlank(userId)){
+            return RestResult.error("1000","请重新登录");
+        }
+        request.setLoginUserId(userId);
         return resourceInfoService.queryResourceByUserId(request);
     }
 

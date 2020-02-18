@@ -40,7 +40,7 @@ spring:
     useGlobalDataSourceStat: true
 
   redis:
-    database: 1
+    database: 0
     host: 40.73.65.243
     port: 6379
     password: adminjic123456

@@ -370,8 +370,14 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     public PageResult<ResourceInfo> queryPageOrderByAuditTime(ResourceInfo resourceInfo, Page pageQuery) {
         //计算下标
         int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
-        List<ResourceInfo> list = resourceInfoMapper.queryPage(startIndex, pageQuery.getLimit(), resourceInfo);
-        long count = resourceInfoMapper.queryPageCount(resourceInfo);
+        List<ResourceInfo> list = resourceInfoMapper.queryPageOrderByAuditTime(startIndex,
+                pageQuery.getLimit(),
+                resourceInfo,
+                resourceInfo.getCreateStartTime(),
+                resourceInfo.getCreateEndTime());
+        long count = resourceInfoMapper.queryPageCount(resourceInfo,
+                resourceInfo.getCreateStartTime(),
+                resourceInfo.getCreateEndTime());
         PageResult pageResult = new PageResult();
         pageResult.setRows(list);
         pageResult.setTotal(count);

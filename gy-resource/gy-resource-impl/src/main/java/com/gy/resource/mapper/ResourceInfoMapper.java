@@ -3,9 +3,11 @@ package com.gy.resource.mapper;
 import com.gy.resource.entity.ResourceInfo;
 
 import java.lang.Long;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,9 +31,15 @@ public interface  ResourceInfoMapper {
 
     List<ResourceInfo> query(ResourceInfo resourceInfo);
 
-    List<ResourceInfo> queryPage(@Param("startIndex") int startIndex, @Param("limit") int limit, @Param("resourceInfo") ResourceInfo resourceInfo);
+    List<ResourceInfo> queryPageOrderByAuditTime(@Param("startIndex") int startIndex,
+                                                 @Param("limit") int limit,
+                                                 @Param("resourceInfo") ResourceInfo resourceInfo,
+                                                 @Param("createStartTime")Date createStartTime,
+                                                 @Param("createEndTime")Date createEndTime);
 
-    long queryPageCount(ResourceInfo resourceInfo);
+    long queryPageCount(@Param("resourceInfo") ResourceInfo resourceInfo,
+                        @Param("createStartTime")Date createStartTime,
+                        @Param("createEndTime")Date createEndTime);
 
     //TODO 暂时写这 懒得生成了
     @Select("select mobile from g_user where id=#{id} and delete_flag='0'")
@@ -49,8 +57,16 @@ public interface  ResourceInfoMapper {
     @Select("select * from g_resource_info where status='3' and sticky='1' and delete_flag='0' limit 10")
     List<ResourceInfo> queryTopResourceTen();
 
-    @Select("select * from g_resource_info where status='3' and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
+    @Select("select * from g_resource_info where (status ='3' or status='1') and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
     List<ResourceInfo> queryResourceCheckSuccess(@Param("limit")int limit);
 
+    @Update("update g_resource_info set status=#{status},auditor=#{auditor},auditTime=now() where id=#{id} and delete_flag='0'")
+    long check(@Param("status")Integer status,@Param("auditor")String auditor,@Param("id")long id);
+
+    @Update("update g_resource_info set status=#{status},auditor=#{auditor},auditTime=now() where id in #{idList} and delete_flag='0'")
+    long checkBatch(@Param("status")Integer status,@Param("auditor")String auditor,@Param("idList")List<Long> idList);
+
+    @Update("update g_resource_info set sticky=#{sticky},auditor=#{auditor} where id=#{id} and delete_flag ='0'")
+    long top(@Param("sticky")Integer sticky,@Param("auditor")String auditor,@Param("id")long id);
 
 }

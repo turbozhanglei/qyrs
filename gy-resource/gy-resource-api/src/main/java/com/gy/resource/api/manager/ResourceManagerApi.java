@@ -25,7 +25,9 @@ public interface ResourceManagerApi {
 
     public RestResult<Boolean> top(TopRequest request);
 
-    public void download(DownloadRequest downloadRequest);
+    public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest);
 
-    public RestResult<ReportResponse> resourceReport(ReportRequest reportRequest);
+    public void reportDownLoad(QueryResourceManagerRequest resourceManagerRequest);
+
+    public void resourceInfoListDownLoad(QueryResourceManagerRequest resourceManagerRequest);
 }

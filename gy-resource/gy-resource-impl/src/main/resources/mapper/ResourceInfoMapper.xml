@@ -121,7 +121,7 @@
                 mobile = #{mobile} and
             </if>
             <if test="title">
-                title = #{title} and
+                title like concat(#{title},'%') and
             </if>
             <if test="platform">
                 platform = #{platform} and
@@ -226,7 +226,7 @@
                 mobile = #{mobile} and
             </if>
             <if test="title">
-                title = #{title} and
+                title like concat(#{title},'%') and
             </if>
             <if test="platform">
                 platform = #{platform} and
@@ -287,7 +287,7 @@
                 mobile = #{resourceInfo.mobile} and
             </if>
             <if test="resourceInfo.title">
-                title = #{resourceInfo.title} and
+                title like concat(#{resourceInfo.title},'%') and
             </if>
             <if test="resourceInfo.platform !=null">
                 platform = #{resourceInfo.platform} and
@@ -351,7 +351,7 @@
                 mobile = #{resourceInfo.mobile} and
             </if>
             <if test="resourceInfo.title">
-                title = #{resourceInfo.title} and
+                title like concat(#{resourceInfo.title},'%') and
             </if>
             <if test="resourceInfo.platform !=null">
                 platform = #{resourceInfo.platform} and

@@ -132,13 +132,16 @@ public class ResourceRestController implements ResourceApi {
                 pAssociationalWordService.associationalWordFuzzyWordQuery(req.getTitle());
         List<QueryWordsResponse> qwrList = ListUtils.entityListToModelList(
                 associationalWordModels, QueryWordsResponse.class);
-        for (QueryWordsResponse queryWordsResponse : qwrList) {
-            Map dicQueryMap = new HashMap(8);
-            dicQueryMap.put("code", queryWordsResponse.getCode());
-            dicQueryMap.put("category", "resource_label");
-            DictionaryCodeModel dictionaryCodeModel = pDictionaryCodeService.dictionaryCodeQuery(dicQueryMap);
-            queryWordsResponse.setCodeName(dictionaryCodeModel.getDesc());
+        if(qwrList != null && !qwrList.isEmpty()){
+            for (QueryWordsResponse queryWordsResponse : qwrList) {
+                Map dicQueryMap = new HashMap(8);
+                dicQueryMap.put("code", queryWordsResponse.getCode());
+                dicQueryMap.put("category", "resource_label");
+                DictionaryCodeModel dictionaryCodeModel = pDictionaryCodeService.dictionaryCodeQuery(dicQueryMap);
+                queryWordsResponse.setCodeName(dictionaryCodeModel.getDesc());
+            }
         }
+
         return RestResult.success(qwrList);
     }
 
@@ -156,7 +159,7 @@ public class ResourceRestController implements ResourceApi {
 //        Map<String,Object> userMap = JSONArray.parseObject(userStr, HashMap.class);
 //        Long userId = Long.valueOf(userMap.get("id").toString());
 
-        Long userId = 20L;
+        Long userId = 2L;
         Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", req.getRefId());
@@ -230,7 +233,7 @@ public class ResourceRestController implements ResourceApi {
         log.info("------进入查询当前用户是否关注了发布资源用户,req{}-----", req);
         Map map = new HashMap(8);
 
-        Long userId = 20L;
+        Long userId = 2L;
         map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
@@ -250,7 +253,7 @@ public class ResourceRestController implements ResourceApi {
         GlobalCorrelationModel model = new GlobalCorrelationModel();
         // TODO 如果用户 token 与 refId 同时为空，则数据校验不通过
 
-        Long userId = 20L;
+        Long userId = 2L;
         //如果是关注用户类型，则refId 为用户 id，是用 token 转成的
         if (RefTypeEnum.FOLLOW_USER.getCode().equals(req.getRefType())) {
             model.setRefId(userId);
@@ -275,7 +278,7 @@ public class ResourceRestController implements ResourceApi {
     @Override
     public RestResult<Boolean> addCorrelation(@RequestBody AddCorrelationRequest req) {
         log.info("------记录浏览记录(单独处理)、分享记录、拨打电话记录、点赞, req{}-----", req);
-        Long userId = 20L;
+        Long userId = 2L;
         Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", req.getRefId());

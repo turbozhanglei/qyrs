@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://Mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://Mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.gy.resource.mapper.ResourceInfoMapper">
     <resultMap id="resourceInfoMap" type="com.gy.resource.entity.ResourceInfo">
@@ -26,7 +27,7 @@
         <result property="updator" column="updator"/>
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.gy.resource.entity.ResourceInfo">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into g_resource_info
         (user_id,mobile,title,platform,release_type,resource_label,resource_area,resource_trade,status,sticky,sensitive_flag,image_flag,content,auditor,audit_time,delete_flag,create_time,update_time,creator,updator)
         values
@@ -39,7 +40,7 @@
 
     <update id="update" parameterType="com.gy.resource.entity.ResourceInfo">
         update g_resource_info set
-        <trim suffixOverrides="," >
+        <trim suffixOverrides=",">
             <if test="userId">
                 user_id = #{userId},
             </if>
@@ -100,7 +101,7 @@
             <if test="updator">
                 updator = #{updator},
             </if>
-            </trim>
+        </trim>
         where
         id = #{id} and delete_flag='0'
     </update>
@@ -111,7 +112,7 @@
 
     <select id="query" resultMap="resourceInfoMap">
         select * from g_resource_info where
-        <trim suffixOverrides="and" >
+        <trim suffixOverrides="and">
             1=1 and
             <if test="userId">
                 user_id = #{userId} and
@@ -173,15 +174,50 @@
             <if test="updator">
                 updator = #{updator} and
             </if>
-            </trim>
+        </trim>
 
         order by audit_time desc
     </select>
 
 
+    <select id="queryByCondition" resultMap="resourceInfoMap">
+        select * from g_resource_info where
+        <trim suffixOverrides="and">
+            1=1 and
+            <if test="resourceInfo.userId !=null">
+                user_id = #{resourceInfo.userId} and
+            </if>
+            <if test="resourceInfo.title !=null">
+                title like concat(#{resourceInfo.title},'%') and
+            </if>
+            <if test="releaseTypeList !=null">
+                release_type in
+                <foreach item="item" index="index" collection="releaseTypeList" open="("
+                         separator="," close=")">#{item}</foreach>and
+            </if>
+            <if test="resourceLabelList !=null">
+                resource_label in
+                <foreach item="item" index="index" collection="resourceLabelList" open="("
+                         separator="," close=")">#{item}</foreach>and
+            </if>
+            <if test="resourceAreaList !=null">
+                resource_area in
+                <foreach item="item" index="index" collection="resourceAreaList" open="("
+                         separator="," close=")">#{item}</foreach>and
+            </if>
+            <if test="resourceTradeList !=null">
+                resource_trade in
+                <foreach item="item" index="index" collection="resourceTradeList" open="("
+                         separator="," close=")">#{item}</foreach>and
+            </if>
+        </trim>
+        and status in ('1','3') and delete_flag != '1' order by audit_time desc
+    </select>
+
+
     <select id="queryOfManager" resultMap="resourceInfoMap">
         select * from g_resource_info where
-        <trim suffixOverrides="and" >
+        <trim suffixOverrides="and">
             1=1 and
             <if test="userId">
                 user_id = #{userId} and
@@ -239,7 +275,7 @@
     <select id="queryPageOrderByAuditTime" resultMap="resourceInfoMap">
         select * from g_resource_info
         where
-        <trim suffixOverrides="and" >
+        <trim suffixOverrides="and">
             1=1 and
             <if test="resourceInfo.id !=null">
                 id = #{resourceInfo.id} and
@@ -298,7 +334,7 @@
             <if test="resourceInfo.updator !=null">
                 updator = #{resourceInfo.updator} and
             </if>
-            </trim>
+        </trim>
         and delete_flag != '1'
         order by audit_time desc limit #{startIndex},#{limit}
     </select>
@@ -306,7 +342,7 @@
     <select id="queryPageCount" resultType="java.lang.Long">
         select count(*) from g_resource_info
         where
-        <trim suffixOverrides="and" >
+        <trim suffixOverrides="and">
             1=1 and
             <if test="resourceInfo.userId !=null">
                 user_id = #{resourceInfo.userId} and
@@ -362,8 +398,8 @@
             <if test="resourceInfo.updator !=null">
                 updator = #{resourceInfo.updator} and
             </if>
-            </trim>
-            and delete_flag !='1'
+        </trim>
+        and delete_flag !='1'
     </select>
 
 </mapper>

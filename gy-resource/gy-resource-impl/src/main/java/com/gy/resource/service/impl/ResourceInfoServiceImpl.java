@@ -1,6 +1,7 @@
 package com.gy.resource.service.impl;
 
 import com.gy.resource.constant.ResourceConstant;
+import com.gy.resource.entity.GlobalCorrelationModel;
 import com.gy.resource.entity.ResourceInfo;
 import com.gy.resource.mapper.ResourceInfoMapper;
 import com.gy.resource.request.rest.IssureResourceRequest;
@@ -11,6 +12,7 @@ import com.gy.resource.response.rest.QueryResourceByConditionResponse;
 import com.gy.resource.response.rest.QueryResourceByUserIdResponse;
 import com.gy.resource.response.rest.QueryResourceResponse;
 import com.gy.resource.response.rest.RecommendResourceResponse;
+import com.gy.resource.service.PGlobalCorrelationService;
 import com.gy.resource.service.ResourceInfoService;
 import com.gy.resource.service.TokenService;
 import com.jic.common.base.vo.Page;
@@ -27,6 +29,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,15 +53,19 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     @Autowired
     TokenService tokenService;
 
+    @Resource
+    PGlobalCorrelationService pGlobalCorrelationService;
+
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
         ResourceInfo resourceInfo = getResourceInfo(resourceRequest);
-        long id = insert(resourceInfo);
-        return RestResult.success(Long.toString(id));
+        insert(resourceInfo);
+        return RestResult.success(Long.toString(resourceInfo.getId()));
     }
 
     @Override
     public RestResult<QueryResourceResponse> queryResource(QueryResourceRequest request) {
+        browse(request);
         ResourceInfo resourceInfo = resourceInfoMapper.queryByPrimaryKey(Long.parseLong(request.getResourceId()));
         QueryResourceResponse response = new QueryResourceResponse();
         response.setIssureUserId(Long.toString(resourceInfo.getUserId()));
@@ -79,8 +88,6 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         response.setTopStatus(resourceInfo.getSticky().toString());
         response.setCheckAccount(resourceInfo.getAuditor());
         response.setCheckDate(resourceInfo.getAuditTime());
-
-        browse(request);
         return RestResult.success(response);
     }
 
@@ -157,7 +164,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     @Override
     public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest) {
         ResourceInfo param = setResourceInfo(resourceByConditionRequest);
-        List<ResourceInfo> resultList = query(param);
+        List<ResourceInfo> resultList = queryResourceInfoList(param,resourceByConditionRequest);
         if(CollectionUtils.isEmpty(resultList)){
             return RestResult.success(new ArrayList<>());
         }
@@ -185,6 +192,28 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         return RestResult.success(responseList);
     }
 
+    public List<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
+        return resourceInfoMapper.queryByCondition(param,
+                getFieldList(request.getResourceType()),
+                getFieldList(request.getResourceLabel()),
+                getFieldList(request.getResourceArea()),
+                getFieldList(request.getTradeType()));
+    }
+
+    public List<Integer> getFieldList(String field){
+        if(StringUtils.isEmpty(field)){
+            return null;
+        }
+        if(field.contains(",")){
+            String [] fieldArray=field.split(",");
+            List<Integer> list=Stream.of(fieldArray).map(item-> Integer.parseInt(item)).collect(Collectors.toList());
+            return list;
+        }
+        List<Integer> listOne=new ArrayList<>();
+        listOne.add(Integer.parseInt(field));
+        return listOne;
+    }
+
     public List<QueryResourceByConditionResponse> setQueryResourceByConditionResponseList(List<ResourceInfo> resultList) {
         if (CollectionUtils.isEmpty(resultList)) {
             return new ArrayList<>();
@@ -208,10 +237,10 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public ResourceInfo setResourceInfo(QueryResourceByConditionRequest request) {
         ResourceInfo param = new ResourceInfo();
-        param.setReleaseType(getValueByParam(request.getResourceType()));
-        param.setResourceLabel(getValueByParam(request.getResourceLabel()));
-        param.setResourceArea(getValueByParam(request.getResourceArea()));
-        param.setResourceTrade(getValueByParam(request.getTradeType()));
+//        param.setReleaseType(getValueByParam(request.getResourceType()));
+//        param.setResourceLabel(getValueByParam(request.getResourceLabel()));
+//        param.setResourceArea(getValueByParam(request.getResourceArea()));
+//        param.setResourceTrade(getValueByParam(request.getTradeType()));
         param.setTitle(getValue(request.getResourceTitle()));
         param.setUserId(getLongValue(request.getIssureUserId()));
         return param;
@@ -271,11 +300,19 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     }
 
     public String getShareNum(ResourceInfo resourceInfo) {
-        return "0";
+        GlobalCorrelationModel modelEntity=new GlobalCorrelationModel();
+        modelEntity.setRefId(resourceInfo.getId());
+        modelEntity.setRefType(ResourceConstant.refType.resource_share_num);
+        Integer shareNum=pGlobalCorrelationService.globalCorrelationQueryCount(modelEntity);
+        return Integer.toString(shareNum);
     }
 
     public String getBrowseNum(ResourceInfo resourceInfo) {
-        return "0";
+        GlobalCorrelationModel modelEntity=new GlobalCorrelationModel();
+        modelEntity.setRefId(resourceInfo.getId());
+        modelEntity.setRefType(ResourceConstant.refType.resource_brown_num);
+        Integer browseNum=pGlobalCorrelationService.globalCorrelationQueryCount(modelEntity);
+        return Integer.toString(browseNum);
     }
 
     public String getCompany(ResourceInfo resourceInfo) {
@@ -314,6 +351,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public void browse(QueryResourceRequest request) {
         //TODO 记录浏览记录
+        pGlobalCorrelationService.addBrowse(Long.parseLong(request.getLoginUserId()),
+                Long.parseLong(request.getResourceId()),
+                ResourceConstant.refType.resource_brown_num);
     }
 
     public ResourceInfo getResourceInfo(IssureResourceRequest request) {

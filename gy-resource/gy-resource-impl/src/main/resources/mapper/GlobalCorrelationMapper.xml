@@ -195,7 +195,7 @@
         select
         <include refid="Base_Column_List"/>
         from  g_global_correlation
-        where id = #{id}
+        <include refid="Plain_Where_Clause"/>
     </select>
 
     <!--全局关联信息表 查询分页-->

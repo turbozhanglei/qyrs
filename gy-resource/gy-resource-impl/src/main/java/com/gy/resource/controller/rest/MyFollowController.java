@@ -1,12 +1,14 @@
 package com.gy.resource.controller.rest;
 
 
+import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.request.rest.MyFollowRequest;
 
 import com.gy.resource.response.rest.MyFollowPeopleResourceResponse;
 import com.gy.resource.response.rest.MyFollowResponse;
 import com.gy.resource.response.rest.MyFollowUserInfoResponse;
 import com.gy.resource.service.MyFollowService;
+import com.gy.resource.service.TokenService;
 import com.gy.resource.utils.DESWrapper;
 import com.jic.common.base.vo.RestResult;
 import com.jic.common.redis.RedisClientTemplate;
@@ -27,10 +29,13 @@ import java.util.List;
 @Api(tags = {"我的关注接口"})
 @Slf4j
 public class MyFollowController {
+    private static final String channel_WX= ResourceConstant.channel.WX;
     @Autowired
     RedisClientTemplate redisClientTemplate;
     @Autowired
     MyFollowService myFollowService;
+    @Autowired
+    TokenService tokenService;
     /*
      *
      *我的关注
@@ -41,16 +46,15 @@ public class MyFollowController {
     public RestResult<MyFollowResponse> queryMyFollow(@RequestBody MyFollowRequest myFollowRequest) {
         RestResult restResult = new RestResult<>();
         log.info("------查询我的关注,req{}-----", myFollowRequest);
-//        // 获取用户id
-//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + myFollowRequest.getToken());
-//        if (StringUtils.isEmpty(userId)){
-//            return RestResult.error("4000","非法请求");
-//        };
+        String userId = tokenService.getUserIdByToken(myFollowRequest.getToken(),channel_WX);
+        if (StringUtils.isEmpty(userId)){
+            return RestResult.error("1000","请重新登录");
+        };
         try {
-            myFollowRequest.setUserId(Long.valueOf(2));
+            myFollowRequest.setUserId(Long.valueOf(userId));
             myFollowRequest.setStart(myFollowRequest.getStart()-1);
             List<MyFollowUserInfoResponse> reseult=myFollowService.queryMyFollowByUserId(myFollowRequest);
-            Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(2));
+            Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(userId));
             MyFollowResponse myFollowResponse=new MyFollowResponse();
             myFollowResponse.setMyFollowUserInfoResponses(reseult);
             myFollowResponse.setTotal(total);

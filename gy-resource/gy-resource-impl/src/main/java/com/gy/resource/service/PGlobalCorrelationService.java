@@ -63,4 +63,13 @@ public interface PGlobalCorrelationService {
      */
     Integer globalCorrelationChangeApproveStatus(Map map);
 
+    /**
+     *  增加记录
+     * @param userId    用户id
+     * @param refId     资源id
+     * @param refType  关联类型，0、关注用户，1、资源浏览数，2、资源分享数，3、资源拨打电话数，4、资讯文章分享数，5、资讯文章点赞数，6、资讯文章浏览数
+     * @return
+     */
+    Boolean addBrowse(Long userId, Long refId, Integer refType);
+
 }

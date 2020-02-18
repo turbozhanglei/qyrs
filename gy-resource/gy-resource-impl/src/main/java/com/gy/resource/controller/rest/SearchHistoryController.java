@@ -41,12 +41,13 @@ public class SearchHistoryController {
     @RequestMapping(value = "/addSearchHistory")
     public RestResult insertProductUnits(@RequestBody SearchHistoryAddRequest searchHistoryAddRequest) {
         RestResult restResult = new RestResult<>();
+        log.info("------进入新增搜索记录,req{}-----", searchHistoryAddRequest);
         // 获取用户id
-        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryAddRequest.getToken());
-
-        if (StringUtils.isEmpty(userId)){
-            return RestResult.error("4000","非法请求");
-        };
+//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryAddRequest.getToken());
+//
+//        if (StringUtils.isEmpty(userId)){
+//            return RestResult.error("4000","非法请求");
+//        };
         try {
 
             if(StringUtils.isNotEmpty(searchHistoryAddRequest.getWord())){
@@ -63,7 +64,7 @@ public class SearchHistoryController {
                 for (String word:list){
                     SearchHistoryModel searchHistoryModel=new SearchHistoryModel();
                     searchHistoryModel.setWord(word);
-                    searchHistoryModel.setUserId(Long.valueOf(userId));
+                    searchHistoryModel.setUserId(Long.valueOf(2));
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DATE, 30);
                     Date validDate = cal.getTime();
@@ -71,7 +72,7 @@ public class SearchHistoryController {
                     searchHistoryModel.setValidTime(fDate.format(validDate));
                     pSearchHistoryService.searchHistoryAdd(searchHistoryModel);
                 }
-                   return  restResult.success(true);
+                   return  RestResult.success(true);
             }else{
                 return RestResult.error("4000","搜索词不能为空");
             }
@@ -92,14 +93,14 @@ public class SearchHistoryController {
     @RequestMapping(value = "/querySearchHistoryByUserId")
     public RestResult<List<SearchHistoryResponse>> querySearchHistoryByUserId(@RequestBody SearchHistoryRequest searchHistoryRequest) {
         RestResult restResult = new RestResult<>();
+        log.info("------查询搜索历史记录,req{}-----", searchHistoryRequest);
         // 获取用户id
-        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
-        if (StringUtils.isEmpty(userId)){
-            return RestResult.error("4000","非法请求");
-        };
+//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
+//        if (StringUtils.isEmpty(userId)){
+//            return RestResult.error("4000","非法请求");
+//        };
         try {
-
-           List<SearchHistoryResponse> reseult=pSearchHistoryService.querySearchHistoryByUserId(Long.valueOf(userId));
+           List<SearchHistoryResponse> reseult=pSearchHistoryService.querySearchHistoryByUserId(Long.valueOf(2));
            return restResult.success(reseult);
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,15 +118,16 @@ public class SearchHistoryController {
     @ResponseBody
     @RequestMapping(value = "/deleteSearchHistoryByUserId")
     public RestResult deleteSearchHistoryByUserId(@RequestBody SearchHistoryRequest searchHistoryRequest) {
+        log.info("------删除历史搜索记录,req{}-----", searchHistoryRequest);
         RestResult restResult = new RestResult<>();
         // 获取用户id
-        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
-        if (StringUtils.isEmpty(userId)){
-            return RestResult.error("4000","非法请求");
-        };
+//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + searchHistoryRequest.getToken());
+//        if (StringUtils.isEmpty(userId)){
+//            return RestResult.error("4000","非法请求");
+//        };
         try {
-           pSearchHistoryService.searchHistoryDelete(Long.valueOf(userId));
-            return restResult.success(true);
+           pSearchHistoryService.searchHistoryDelete(Long.valueOf(2));
+            return RestResult.success(true);
         } catch (Exception e) {
             e.printStackTrace();
             restResult = RestResult.error("9999", e.getLocalizedMessage());

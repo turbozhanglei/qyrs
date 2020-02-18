@@ -1,29 +1,20 @@
 package com.gy.resource.controller.rest;
 
-import com.gy.resource.entity.SearchHistoryModel;
+
 import com.gy.resource.request.rest.MyFollowRequest;
-import com.gy.resource.request.rest.SearchHistoryAddRequest;
-import com.gy.resource.request.rest.SearchHistoryRequest;
+
+import com.gy.resource.response.rest.MyFollowPeopleResourceResponse;
 import com.gy.resource.response.rest.MyFollowResponse;
 import com.gy.resource.response.rest.MyFollowUserInfoResponse;
-import com.gy.resource.response.rest.SearchHistoryResponse;
 import com.gy.resource.service.MyFollowService;
-import com.gy.resource.service.PSearchHistoryService;
+import com.gy.resource.utils.DESWrapper;
 import com.jic.common.base.vo.RestResult;
 import com.jic.common.redis.RedisClientTemplate;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
@@ -49,19 +40,20 @@ public class MyFollowController {
     @RequestMapping(value = "/queryMyFollow")
     public RestResult<MyFollowResponse> queryMyFollow(@RequestBody MyFollowRequest myFollowRequest) {
         RestResult restResult = new RestResult<>();
-        // 获取用户id
-        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + myFollowRequest.getToken());
-        if (StringUtils.isEmpty(userId)){
-            return RestResult.error("4000","非法请求");
-        };
+        log.info("------查询我的关注,req{}-----", myFollowRequest);
+//        // 获取用户id
+//        String userId =redisClientTemplate.get("H5_LOGIN_TOKEN_" + myFollowRequest.getToken());
+//        if (StringUtils.isEmpty(userId)){
+//            return RestResult.error("4000","非法请求");
+//        };
         try {
-
-            List<MyFollowUserInfoResponse> reseult=myFollowService.queryMyFollowByUserId(Long.valueOf(userId));
-            Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(userId));
+            myFollowRequest.setUserId(Long.valueOf(2));
+            List<MyFollowUserInfoResponse> reseult=myFollowService.queryMyFollowByUserId(myFollowRequest);
+            Integer total=myFollowService.queryMyFollowTotal(Long.valueOf(2));
             MyFollowResponse myFollowResponse=new MyFollowResponse();
             myFollowResponse.setMyFollowUserInfoResponses(reseult);
             myFollowResponse.setTotal(total);
-           return restResult.success(myFollowResponse);
+           return RestResult.success(myFollowResponse);
         } catch (Exception e) {
             e.printStackTrace();
             restResult = RestResult.error("9999", e.getLocalizedMessage());
@@ -71,6 +63,29 @@ public class MyFollowController {
     }
 
 
+    /*
+     *
+     *我的关注人的一条最新资源
+     *
+     * */
+    @ResponseBody
+    @RequestMapping(value = "/queryMyFollowResourceByUserId")
+    public RestResult queryMyFollowResourceByUserId(@RequestParam Long userId) {
+        DESWrapper desWrapper=new DESWrapper();
+        RestResult restResult = new RestResult<>();
+        log.info("------查询我的关注人最新的一篇文章,req{}-----", userId);
+        String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+        try {
+            MyFollowPeopleResourceResponse reseult=myFollowService.queryMyFollowResourceByUserId(userId);
+          reseult.setMobile(desWrapper.decrypt(reseult.getMobile(),password));//解密手机号
+            return RestResult.success(reseult);
+        } catch (Exception e) {
+            e.printStackTrace();
+            restResult = RestResult.error("9999", e.getLocalizedMessage());
+        }
+        return restResult;
+
+    }
 
 
 }

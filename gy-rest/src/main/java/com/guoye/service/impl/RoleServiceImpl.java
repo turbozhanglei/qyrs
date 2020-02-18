@@ -47,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
                     delete.put("tableName", "sysRole");
                     delete.put("roleid", id[i]);
 
-                    bizService.delete(delete);
+                    //bizService.delete(delete);
                     bizService.update(rDto);
                     bizService.update(rmDto);
                 }

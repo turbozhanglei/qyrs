@@ -6,6 +6,9 @@
 
 
     <sql id="sql_where">
+        <if test="null!=role_name  and ''!= role_name">
+            and a.role_name like Concat ('%',#{role_name},'%')
+        </if>
         <if test="null!=name  and ''!= name">
             and a.role_name like Concat ('%',#{name},'%')
         </if>

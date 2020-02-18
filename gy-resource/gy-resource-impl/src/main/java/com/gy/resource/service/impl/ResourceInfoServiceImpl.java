@@ -59,12 +59,13 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
         ResourceInfo resourceInfo = getResourceInfo(resourceRequest);
-        long id = insert(resourceInfo);
-        return RestResult.success(Long.toString(id));
+        insert(resourceInfo);
+        return RestResult.success(Long.toString(resourceInfo.getId()));
     }
 
     @Override
     public RestResult<QueryResourceResponse> queryResource(QueryResourceRequest request) {
+        browse(request);
         ResourceInfo resourceInfo = resourceInfoMapper.queryByPrimaryKey(Long.parseLong(request.getResourceId()));
         QueryResourceResponse response = new QueryResourceResponse();
         response.setIssureUserId(Long.toString(resourceInfo.getUserId()));
@@ -87,8 +88,6 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         response.setTopStatus(resourceInfo.getSticky().toString());
         response.setCheckAccount(resourceInfo.getAuditor());
         response.setCheckDate(resourceInfo.getAuditTime());
-
-        browse(request);
         return RestResult.success(response);
     }
 
@@ -352,6 +351,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public void browse(QueryResourceRequest request) {
         //TODO 记录浏览记录
+        pGlobalCorrelationService.addBrowse(Long.parseLong(request.getLoginUserId()),
+                Long.parseLong(request.getResourceId()),
+                ResourceConstant.refType.resource_brown_num);
     }
 
     public ResourceInfo getResourceInfo(IssureResourceRequest request) {

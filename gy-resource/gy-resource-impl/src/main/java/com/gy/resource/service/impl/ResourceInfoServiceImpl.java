@@ -332,10 +332,16 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             return nickName;
         }
         if (nickName.length() == 2) {
-            return nickName.substring(0, 1);
+            return nickName.substring(0, 1)+"*";
         }
         if (nickName.length() > 2) {
-            return nickName.indexOf(0) + "*" + nickName.indexOf(nickName.length() + 1);
+            StringBuffer sb=new StringBuffer();
+            sb.append(nickName.charAt(0));
+            for(int i=0;i<nickName.length()-2;i++){
+                sb.append("*");
+            }
+            sb.append(nickName.charAt(nickName.length()-1));
+            return sb.toString();
         }
         return nickName;
     }

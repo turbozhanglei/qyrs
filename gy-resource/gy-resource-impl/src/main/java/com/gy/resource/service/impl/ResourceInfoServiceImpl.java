@@ -183,15 +183,15 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
         Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
         }
 
         if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
         }else if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
         }
 
 

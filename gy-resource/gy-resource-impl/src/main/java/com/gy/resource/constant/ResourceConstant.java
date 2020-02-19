@@ -67,4 +67,11 @@ public interface ResourceConstant {
         String shareUp="1";
         String phoneUp="2";
     }
+
+    interface category{
+        String release_type="release_type";
+        String resource_label="resource_label";
+        String resource_area="resource_area";
+        String resource_trade="resource_trade";
+    }
 }

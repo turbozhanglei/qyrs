@@ -95,7 +95,11 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询资源详情包括内容")
     @PostMapping(value = "/query-resource-detail")
     public RestResult<QueryResourceResponse> queryResource(@RequestBody QueryResourceRequest resourceRequest) {
-        String userId = tokenService.getUserIdByToken(resourceRequest.getToken(),channel_WX);
+        String channel=channel_WX;
+        if(resourceRequest.getToken().startsWith("pc_login_token:")){
+            channel=ResourceConstant.channel.Manager;
+        }
+        String userId = tokenService.getUserIdByToken(resourceRequest.getToken(),channel);
         if (StringUtils.isBlank(userId)) {
             return RestResult.error("1000", "请重新登录");
         }
@@ -111,7 +115,7 @@ public class ResourceRestController implements ResourceApi {
 
     @ApiOperation(value = "根据筛选条件查询资源列表")
     @PostMapping(value = "/query-resource-condition")
-    public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(@RequestBody QueryResourceByConditionRequest resourceByConditionRequest) {
+    public RestResult<PageResult<QueryResourceByConditionResponse>> queryResourceByCondition(@RequestBody QueryResourceByConditionRequest resourceByConditionRequest) {
         return resourceInfoService.queryResourceByCondition(resourceByConditionRequest);
     }
 

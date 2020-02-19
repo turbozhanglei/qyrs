@@ -51,4 +51,7 @@ public class QueryResourceByConditionRequest implements Serializable {
     @ApiModelProperty(notes = "发布人用户Id")
     private String issureUserId;
 
+    private Integer start = 1;
+    private Integer limit = 10;
+
 }

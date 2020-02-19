@@ -13,6 +13,8 @@ import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ public interface ResourceInfoService {
 
     public RestResult<List<RecommendResourceResponse>> recommendResource();
 
-    public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest);
+    public RestResult<PageResult<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest);
 
     long insert(ResourceInfo resourceInfo);
 
@@ -45,4 +47,9 @@ public interface ResourceInfoService {
     List<ResourceInfo> query(ResourceInfo resourceInfo);
 
     PageResult<ResourceInfo> queryPageOrderByAuditTime(ResourceInfo resourceInfo, Page pageQuery);
+
+    public PageResult<ResourceInfo> queryPageByCondition(ResourceInfo resourceInfo, Page pageQuery,List<Integer> releaseTypeList,
+                                                         List<Integer> resourceLabelList,
+                                                         List<Integer> resourceAreaList,
+                                                         List<Integer> tradeTypeList);
 }

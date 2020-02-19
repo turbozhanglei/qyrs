@@ -37,7 +37,7 @@ ORDER BY
         and a.delete_flag = 0
         and a.level =2
         ORDER BY
-	a.create_time DESC
+	a.sort  asc
     </select>
 
     <!-- 分类类型初始化-->

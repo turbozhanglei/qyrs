@@ -57,10 +57,12 @@ public class ResourceContentServiceImpl implements ResourceContentService {
             log.info("该资源内容为空,resourceId:{}",resourceInfo.getId());
             return;
         }
-        String wordArray[]=word.split(",");
+        String []wordArray=word.split(",");
         List<String> sensiticeWordList=new ArrayList<>();
         for(String sensiteiceWord:wordArray){
-            sensiticeWordList.add(sensiteiceWord);
+            if(content.contains(sensiteiceWord)) {
+                sensiticeWordList.add(sensiteiceWord);
+            }
         }
         if(CollectionUtils.isEmpty(sensiticeWordList)){
             log.info("该资源内容没有敏感词 系统审核通过,resourceId:{}",resourceInfo.getId());

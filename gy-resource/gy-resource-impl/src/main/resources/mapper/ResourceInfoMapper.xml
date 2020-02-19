@@ -215,7 +215,7 @@
     </select>
 
     <select id="queryByConditionCount" resultMap="resourceInfoMap">
-        select * from g_resource_info where
+        select count(id) from g_resource_info where
         <trim suffixOverrides="and">
             1=1 and
             <if test="resourceInfo.userId !=null">

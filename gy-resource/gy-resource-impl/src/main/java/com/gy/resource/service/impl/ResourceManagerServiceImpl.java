@@ -283,7 +283,31 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
 
     @Override
     public void reportDownLoad(HttpServletResponse response, ReportRequest reportRequest) {
-
+        reportRequest.setStart(1);
+        //excel单sheet最大6万多。此数量也要限制，以防IO过大
+        reportRequest.setLimit(80000);
+        RestResult<PageResult<ReportResponse>> result= resourceReport(reportRequest);
+        try{
+            String fileName="resourceReportList";
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+            response.setContentType("application/x-download");
+            List<ReportResponse> responseList=result.getData().getRows();
+            if(!CollectionUtils.isEmpty(responseList)){
+                responseList=responseList.stream().map(item->{
+                    item.setResourceType(dictionaryMapper.queryDesc(ResourceConstant.category.release_type,item.getResourceType()));
+                    item.setResourceLabel(dictionaryMapper.queryDesc(ResourceConstant.category.resource_label,item.getResourceLabel()));
+                    item.setResourceArea(dictionaryMapper.queryDesc(ResourceConstant.category.resource_area,item.getResourceArea()));
+                    item.setTradeType(dictionaryMapper.queryDesc(ResourceConstant.category.resource_trade,item.getTradeType()));
+                    item.setIssureStatus(getCheckStatus(Integer.parseInt(item.getIssureStatus())));
+                    item.setTopStatus(getTopStatus(Integer.parseInt(item.getTopStatus())));
+                    return item;
+                }).collect(Collectors.toList());
+            }
+            EasyExcel.write(response.getOutputStream(), QueryResourceManagerResponse.class).sheet("资源信息报表").doWrite(responseList);
+        }catch (Exception e){
+            log.error("reportDownLoad==>error",e);
+        }
     }
 
     public PageResult<ReportResponse> setReportResponsePageResult(PageResult<ResourceInfo> pageResult, ReportRequest reportRequest) {

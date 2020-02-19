@@ -169,14 +169,14 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         List<ResourceInfo> resultList=resultResource.getRows();
         if(CollectionUtils.isEmpty(resultList)){
             result.setRows(new ArrayList<>());
-            result.setTotal(0);
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
         List<QueryResourceByConditionResponse> responseList=setQueryResourceByConditionResponseList(resultList);
         if (getValueByParam(resourceByConditionRequest.getBrowseUpNum()) == null &&
                 getValueByParam(resourceByConditionRequest.getShareUpNum()) == null) {
             result.setRows(responseList);
-            result.setTotal(responseList.size());
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
 
@@ -196,7 +196,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
 
         result.setRows(responseList);
-        result.setTotal(responseList.size());
+        result.setTotal(resultResource.getTotal());
         return RestResult.success(result);
     }
 

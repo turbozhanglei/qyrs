@@ -90,6 +90,9 @@ public class WechatController extends BizAction {
         try {
               String token = UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
+              if(member.getAsInteger("status")==1){
+                  throw new Exception("登录失败，用户账号已被禁用！");
+              }
               if(null !=member){
                   member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
                   member.put("token",token);

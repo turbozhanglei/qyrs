@@ -6,6 +6,9 @@
 
 
     <sql id="sql_where">
+        <if test="null!=identity_type  and ''!= identity_type">
+            and a.identity_type = #{identity_type}
+        </if>
         <if test="null!=openid  and ''!= openid">
             and a.openid = #{openid}
         </if>

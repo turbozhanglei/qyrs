@@ -202,12 +202,28 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public PageResult<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
         Page page=setPage(request.getStart(),request.getLimit());
+        Integer refType=null;
+        Integer sortType=null;
+        if(org.apache.commons.lang.StringUtils.isNotBlank(request.getBrowseUpNum())){
+            refType=ResourceConstant.refType.resource_brown_num;
+            if(ResourceConstant.brownSort.up==Integer.parseInt(request.getBrowseUpNum())){
+                sortType=ResourceConstant.brownSort.up;
+            }
+        }else if(org.apache.commons.lang.StringUtils.isNotBlank(request.getShareUpNum())){
+            refType=ResourceConstant.refType.resource_share_num;
+            if(ResourceConstant.shareSort.up==Integer.parseInt(request.getShareUpNum())){
+                sortType=ResourceConstant.shareSort.up;
+            }
+        }
+
         PageResult<ResourceInfo> resourceInfoPageResult=queryPageByCondition(param,
                 page,
                 getFieldList(request.getResourceType()),
                 getFieldList(request.getResourceLabel()),
                 getFieldList(request.getResourceArea()),
-                getFieldList(request.getTradeType()));
+                getFieldList(request.getTradeType()),
+                refType,
+                sortType);
         return resourceInfoPageResult;
     }
 
@@ -454,7 +470,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                                                          List<Integer> releaseTypeList,
                                                          List<Integer> resourceLabelList,
                                                          List<Integer> resourceAreaList,
-                                                         List<Integer> tradeTypeList) {
+                                                         List<Integer> tradeTypeList,
+                                                         Integer refType,
+                                                         Integer sortType) {
         PageResult pageResult = new PageResult();
         //计算下标
         int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
@@ -465,7 +483,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                 resourceAreaList,
                 tradeTypeList,
                 startIndex,
-                pageQuery.getLimit());
+                pageQuery.getLimit(),
+                refType,
+                sortType);
         long count=resourceInfoMapper.queryByConditionCount(resourceInfo,
                 releaseTypeList,
                 resourceLabelList,

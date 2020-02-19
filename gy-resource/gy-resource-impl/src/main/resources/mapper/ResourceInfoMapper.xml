@@ -181,7 +181,51 @@
 
 
     <select id="queryByCondition" resultMap="resourceInfoMap">
-        select * from g_resource_info where
+        <if test="refType!=null">
+            select a.* from
+            (select * from g_resource_info  where
+            <trim suffixOverrides="and">
+                1=1 and
+                <if test="resourceInfo.userId !=null">
+                    user_id = #{resourceInfo.userId} and
+                </if>
+                <if test="resourceInfo.title !=null">
+                    title like concat(#{resourceInfo.title},'%') and
+                </if>
+                <if test="releaseTypeList !=null">
+                    release_type in
+                    <foreach item="item" index="index" collection="releaseTypeList" open="("
+                             separator="," close=")">#{item}</foreach>and
+                </if>
+                <if test="resourceLabelList !=null">
+                    resource_label in
+                    <foreach item="item" index="index" collection="resourceLabelList" open="("
+                             separator="," close=")">#{item}</foreach>and
+                </if>
+                <if test="resourceAreaList !=null">
+                    resource_area in
+                    <foreach item="item" index="index" collection="resourceAreaList" open="("
+                             separator="," close=")">#{item}</foreach>and
+                </if>
+                <if test="resourceTradeList !=null">
+                    resource_trade in
+                    <foreach item="item" index="index" collection="resourceTradeList" open="("
+                             separator="," close=")">#{item}</foreach>and
+                </if>
+            </trim>
+            and status in ('1','3') and delete_flag != '1' order by audit_time desc) a left join
+            (select ref_id,count(id) as sort_num from g_global_correlation where ref_type=#{refType} group by ref_id) b
+            on a.id=b.ref_id order by b.sort_num
+            <if test="sortType!=null">
+                asc
+            </if>
+            <if test="sortType==null">
+                desc
+            </if>
+            limit #{startIndex},#{limit}
+        </if>
+        <if test="refType == null">
+        select * from g_resource_info  where
         <trim suffixOverrides="and">
             1=1 and
             <if test="resourceInfo.userId !=null">
@@ -212,6 +256,7 @@
             </if>
         </trim>
         and status in ('1','3') and delete_flag != '1' order by audit_time desc limit #{startIndex},#{limit}
+        </if>
     </select>
 
     <select id="queryByConditionCount" resultType="java.lang.Long">
@@ -245,7 +290,7 @@
                          separator="," close=")">#{item}</foreach>and
             </if>
         </trim>
-        and status in ('1','3') and delete_flag != '1' order by audit_time desc
+        and status in ('1','3') and delete_flag != '1'
     </select>
 
 

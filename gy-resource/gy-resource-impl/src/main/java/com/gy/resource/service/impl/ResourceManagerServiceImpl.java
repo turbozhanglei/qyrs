@@ -314,13 +314,13 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         PageResult<ReportResponse> responsePageResult = new PageResult<>();
         if (CollectionUtils.isEmpty(pageResult.getRows())) {
             responsePageResult.setRows(new ArrayList<>());
-            responsePageResult.setTotal(0);
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         List<ReportResponse> responseList = setResponseList(pageResult);
         if (StringUtils.isEmpty(reportRequest.getResourceSort())) {
             responsePageResult.setRows(responseList);
-            responsePageResult.setTotal(responseList.size());
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         if (org.apache.commons.lang.StringUtils.equals(reportRequest.getResourceSort(), ResourceConstant.sortType.brownUp)) {
@@ -331,7 +331,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             responseList.stream().sorted(Comparator.comparing(ReportResponse::getPhoneNum).reversed()).collect(Collectors.toList());
         }
         responsePageResult.setRows(responseList);
-        responsePageResult.setTotal(responseList.size());
+        responsePageResult.setTotal(pageResult.getTotal());
         return responsePageResult;
     }
 

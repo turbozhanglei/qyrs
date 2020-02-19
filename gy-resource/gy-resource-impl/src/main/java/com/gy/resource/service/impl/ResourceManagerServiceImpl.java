@@ -77,7 +77,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
                     .collect(Collectors.toList());
         }
         responsePageResult.setRows(responseList);
-        responsePageResult.setTotal(resourceInfoList.size());
+        responsePageResult.setTotal(pageResult.getTotal());
         return responsePageResult;
     }
 

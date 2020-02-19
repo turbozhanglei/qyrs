@@ -152,19 +152,11 @@ public class ResourceRestController implements ResourceApi {
         return RestResult.success(qwrList);
     }
 
-    @ApiOperation(value = "关注 取消关注 发布资源的用户 (点赞)")
+    @ApiOperation(value = "关注取消关注发布资源的用户(或者点赞取赞文章)")
     @PostMapping(value = "/follow-ref")
     @Override
     public RestResult<Boolean> followRef(@RequestBody FollowRefRequest req) {
-        log.info("-----关注 取消关注 发布资源的用户 (点赞){}-----", req);
-
-        // 获取用户id
-//        String userStr = redisClientTemplate.get(UserLoginTokenPrefix.LOGIN_H5 + req.getToken());
-//        if (StringUtils.isEmpty(userStr)) {
-//            return RestResult.error("4000", "非法请求");
-//        }
-//        Map<String,Object> userMap = JSONArray.parseObject(userStr, HashMap.class);
-//        Long userId = Long.valueOf(userMap.get("id").toString());
+        log.info("-----关注取消关注发布资源的用户(或者点赞取赞文章)--req:{}-----", req);
         String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
         if (StringUtils.isBlank(userIdStr)) {
             return RestResult.error("1000", "请重新登录");
@@ -176,14 +168,15 @@ public class ResourceRestController implements ResourceApi {
         map.put("refType", req.getRefType());
 
 
-        // 通过用户id，资源id，与资源类型，查询该实例是否存在，
+        // 通过用户id，关联id，与关联类型，查询该实例是否存在，
         // ps: 这里不指定deleteFlag，是因为其充当了业务逻辑，
         // 且表中存在唯一键uq_userId_refId_refType_delete
-        // 在关注或者点赞的时候，很容易赞成唯一键冲突。
+        // 在关注或者点赞的时候，很容易造成唯一键冲突。
         GlobalCorrelationModel globalCorrelationModel =
                 pGlobalCorrelationService.globalCorrelationQuery(map);
         //如果是关注  或者  点赞   类型
         if (FollowTypeEnum.FOLLOW.getCode().equals(req.getFollowType())) {
+            log.info("-----判断此处为关注或者点赞,refId:{}----参数req:{}-----",req.getRefId(), req);
             // 如果是不存在记录，则直接添加此记录
             if (globalCorrelationModel == null) {
                 GlobalCorrelationModel model = new GlobalCorrelationModel();
@@ -191,12 +184,12 @@ public class ResourceRestController implements ResourceApi {
                 model.setRefId(req.getRefId());
                 model.setRefType(req.getRefType());
                 pGlobalCorrelationService.globalCorrelationAdd(model);
-
             }
             // 如果存在记录，判断此记录是否是 delete 状态，即取消关注或者取消点赞状态。
             // 此时需要修改deleteFlag状态从1改为0
             else if (globalCorrelationModel != null &&
                     DeleteFlagEnum.DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())) {
+                log.info("-----判断此处为关注或者点赞类型,其记录为删除状态,refId:{}--下方执行修改此记录为未删除--参数req:{}-----",req.getRefId(), req);
                 GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
                 // 设置删除状态 为未删除状态
                 modelValue.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
@@ -209,6 +202,7 @@ public class ResourceRestController implements ResourceApi {
         }
         //如果是取消关注  或者  取消点赞   类型
         else {
+            log.info("-----判断此处为取关或者取赞,refId:{}----参数req:{}-----",req.getRefId(), req);
             // 如果是不存在记录，则直接添加此记录，并且指定deleteFlag删除状态为 删除
             if (globalCorrelationModel == null) {
                 GlobalCorrelationModel model = new GlobalCorrelationModel();
@@ -223,9 +217,12 @@ public class ResourceRestController implements ResourceApi {
             // 此时需要修改deleteFlag状态从0改为1
             else if (globalCorrelationModel != null &&
                     DeleteFlagEnum.UN_DELETE.getCode().equals(globalCorrelationModel.getDeleteFlag())) {
+                log.info("-----判断此处为取关或者取赞类型,其记录为未删除状态,refId:{}--下方执行修改此记录为删除--参数req:{}-----",
+                        req.getRefId(), req);
                 GlobalCorrelationModel modelValue = new GlobalCorrelationModel();
                 // 设置删除状态 为删除状态
                 modelValue.setDeleteFlag(DeleteFlagEnum.DELETE.getCode());
+                modelValue.setUpdateTime(new Date());
                 GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
                 whereCondition.setUserId(userId);
                 whereCondition.setRefId(req.getRefId());
@@ -236,34 +233,35 @@ public class ResourceRestController implements ResourceApi {
         return RestResult.success(Boolean.TRUE);
     }
 
-    @ApiOperation(value = "查询当前用户是否关注了发布资源用户")
+    @ApiOperation(value = "查询当前用户是否关注了发布资源用户,或者当前用户是否点赞某个文章")
     @PostMapping(value = "/query-follow-status")
     @Override
     public RestResult<Boolean> queryFollowStatus(@RequestBody QueryFollowStatusRequest req) {
-        log.info("------进入查询当前用户是否关注了发布资源用户,req{}-----", req);
-        Map map = new HashMap(8);
-
+        log.info("------进入查询当前用户是否关注了发布资源用户,或者当前用户是否点赞某个文章,req{}-----", req);
         String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
         if (StringUtils.isBlank(userIdStr)) {
             return RestResult.error("1000", "请重新登录");
         }
         Long userId = Long.valueOf(userIdStr);
+        Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", req.getRefId());
         map.put("refType", req.getRefType());
         map.put("deleteFlag", DeleteFlagEnum.UN_DELETE.getCode());
         GlobalCorrelationModel model = pGlobalCorrelationService.globalCorrelationQuery(map);
         if (model != null) {
+            log.info("-----判断此处并未在数据表GlobalCorrelation找到关注或者点赞记录,当前用户id:{}-关联id:{}-资源类型:{}-----",
+                    userId,req.getRefId(),req.getRefType());
             return RestResult.success(Boolean.TRUE);
         }
         return RestResult.success(Boolean.FALSE);
     }
 
-    @ApiOperation(value = "查询关注我的人数量 或者 点赞某个资讯的数量")
+    @ApiOperation(value = "查询关注我的人数量 或者 点赞某个文章的数量")
     @PostMapping(value = "/query-follow-count")
     @Override
     public RestResult<Integer> queryFollowCount(QueryFollowCountRequest req) {
-        log.info("------进入查询关注我的(资源)人数量,req{}-----", req);
+        log.info("------进入查询关注我的人数量 或者 点赞某个文章的数量,req{}-----", req);
         GlobalCorrelationModel model = new GlobalCorrelationModel();
         // TODO 如果用户 token 与 refId 同时为空，则数据校验不通过
 
@@ -288,7 +286,7 @@ public class ResourceRestController implements ResourceApi {
     }
 
     /**
-     * 页面逻辑：点击页面右下角清空按钮可直接清空浏览记录； 浏览记录根据浏览日期分组排序，根据用户浏览的时间倒序排序， 数据记录采用更新模式，例如用户10-01浏览了A信息，10-03又浏览了A信息，
+     * 页面逻辑(ps:此为展示逻辑，非此接口逻辑，但是需要根据展示逻辑推出添加逻辑)：点击页面右下角清空按钮可直接清空浏览记录； 浏览记录根据浏览日期分组排序，根据用户浏览的时间倒序排序， 数据记录采用更新模式，例如用户10-01浏览了A信息，10-03又浏览了A信息，
      * 则浏览记录中A信息排在10-03下面，页面初始为10条记录，向下滑动加载下一页，每页10条
      */
     @ApiOperation(value = "记录浏览记录(单独处理)、分享记录、拨打电话记录")

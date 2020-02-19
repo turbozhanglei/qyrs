@@ -9,6 +9,7 @@ import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.util.G4Constants;
 import org.g4studio.core.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/queryArticle")
 public class QueryNewsArticleController extends BizAction {
+
       /*
       * 咨询分类初始化*/
       @ResponseBody
@@ -53,7 +55,11 @@ public class QueryNewsArticleController extends BizAction {
     public BaseResult queryArticleDetail(HttpServletRequest request){
         BaseResult result =new BaseResult();
         Dto dto = WebUtils.getParamAsDto(request);
-        Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+        String token=dto.getAsString("token");
+        if (!token.startsWith("pc_login_token:")) {
+            token="mp_login_token:"+token;
+        }
+        Dto member = redisService.getObject(token, BaseDto.class);
 //        if (null == member) {
 //            result.setCode(StatusConstant.CODE_4000);
 //            result.setMsg("请登录");

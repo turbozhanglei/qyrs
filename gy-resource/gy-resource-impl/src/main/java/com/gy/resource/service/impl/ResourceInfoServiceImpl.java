@@ -466,11 +466,13 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                 tradeTypeList,
                 startIndex,
                 pageQuery.getLimit());
-        if(CollectionUtils.isEmpty(list)){
-            pageResult.setTotal(0);
-        }
+        long count=resourceInfoMapper.queryByConditionCount(resourceInfo,
+                releaseTypeList,
+                resourceLabelList,
+                resourceAreaList,
+                tradeTypeList);
         pageResult.setRows(list);
-        pageResult.setTotal(list.size());
+        pageResult.setTotal(count);
         return pageResult;
     }
 }

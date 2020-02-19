@@ -5,6 +5,8 @@ import com.gy.resource.response.rest.*;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 
 /**
@@ -19,7 +21,7 @@ public interface ResourceApi {
 
     public RestResult<List<RecommendResourceResponse>> recommendResource();
 
-    public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest);
+    public RestResult<PageResult<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest);
 
     public RestResult<PageResult<QueryResourceByUserIdResponse>> queryResourceByUserId(UserRequest request);
 

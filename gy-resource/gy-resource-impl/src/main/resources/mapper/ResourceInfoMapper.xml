@@ -211,7 +211,7 @@
                          separator="," close=")">#{item}</foreach>and
             </if>
         </trim>
-        and status in ('1','3') and delete_flag != '1' order by audit_time desc
+        and status in ('1','3') and delete_flag != '1' order by audit_time desc limit #{startIndex},#{limit}
     </select>
 
 

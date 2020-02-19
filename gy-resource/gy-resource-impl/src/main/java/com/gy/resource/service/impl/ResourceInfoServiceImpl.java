@@ -162,16 +162,22 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     }
 
     @Override
-    public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest) {
+    public RestResult<PageResult<QueryResourceByConditionResponse>> queryResourceByCondition(QueryResourceByConditionRequest resourceByConditionRequest) {
+        PageResult result=new PageResult();
         ResourceInfo param = setResourceInfo(resourceByConditionRequest);
-        List<ResourceInfo> resultList = queryResourceInfoList(param,resourceByConditionRequest);
+        PageResult<ResourceInfo> resultResource= queryResourceInfoList(param,resourceByConditionRequest);
+        List<ResourceInfo> resultList=resultResource.getRows();
         if(CollectionUtils.isEmpty(resultList)){
-            return RestResult.success(new ArrayList<>());
+            result.setRows(new ArrayList<>());
+            result.setTotal(0);
+            return RestResult.success(result);
         }
         List<QueryResourceByConditionResponse> responseList=setQueryResourceByConditionResponseList(resultList);
         if (getValueByParam(resourceByConditionRequest.getBrowseUpNum()) == null &&
                 getValueByParam(resourceByConditionRequest.getShareUpNum()) == null) {
-            return RestResult.success(responseList);
+            result.setRows(responseList);
+            result.setTotal(responseList.size());
+            return RestResult.success(result);
         }
 
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
@@ -189,15 +195,20 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         }
 
 
-        return RestResult.success(responseList);
+        result.setRows(responseList);
+        result.setTotal(responseList.size());
+        return RestResult.success(result);
     }
 
-    public List<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
-        return resourceInfoMapper.queryByCondition(param,
+    public PageResult<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
+        Page page=setPage(request.getStart(),request.getLimit());
+        PageResult<ResourceInfo> resourceInfoPageResult=queryPageByCondition(param,
+                page,
                 getFieldList(request.getResourceType()),
                 getFieldList(request.getResourceLabel()),
                 getFieldList(request.getResourceArea()),
                 getFieldList(request.getTradeType()));
+        return resourceInfoPageResult;
     }
 
     public List<Integer> getFieldList(String field){
@@ -434,6 +445,32 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         PageResult pageResult = new PageResult();
         pageResult.setRows(list);
         pageResult.setTotal(count);
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<ResourceInfo> queryPageByCondition(ResourceInfo resourceInfo,
+                                                         Page pageQuery,
+                                                         List<Integer> releaseTypeList,
+                                                         List<Integer> resourceLabelList,
+                                                         List<Integer> resourceAreaList,
+                                                         List<Integer> tradeTypeList) {
+        PageResult pageResult = new PageResult();
+        //计算下标
+        int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
+        List<ResourceInfo> list = resourceInfoMapper.queryByCondition(
+                resourceInfo,
+                releaseTypeList,
+                resourceLabelList,
+                resourceAreaList,
+                tradeTypeList,
+                startIndex,
+                pageQuery.getLimit());
+        if(CollectionUtils.isEmpty(list)){
+            pageResult.setTotal(0);
+        }
+        pageResult.setRows(list);
+        pageResult.setTotal(list.size());
         return pageResult;
     }
 }

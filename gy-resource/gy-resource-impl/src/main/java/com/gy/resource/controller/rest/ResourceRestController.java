@@ -115,7 +115,7 @@ public class ResourceRestController implements ResourceApi {
 
     @ApiOperation(value = "根据筛选条件查询资源列表")
     @PostMapping(value = "/query-resource-condition")
-    public RestResult<List<QueryResourceByConditionResponse>> queryResourceByCondition(@RequestBody QueryResourceByConditionRequest resourceByConditionRequest) {
+    public RestResult<PageResult<QueryResourceByConditionResponse>> queryResourceByCondition(@RequestBody QueryResourceByConditionRequest resourceByConditionRequest) {
         return resourceInfoService.queryResourceByCondition(resourceByConditionRequest);
     }
 

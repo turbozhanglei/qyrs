@@ -357,6 +357,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public void browse(QueryResourceRequest request) {
         //TODO 记录浏览记录
+        if(request.getToken().startsWith("pc_login_token:")){
+            return;
+        }
         pGlobalCorrelationService.addBrowse(Long.parseLong(request.getLoginUserId()),
                 Long.parseLong(request.getResourceId()),
                 ResourceConstant.refType.resource_brown_num);

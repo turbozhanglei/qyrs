@@ -11,6 +11,8 @@ import com.gy.resource.response.manager.ReportResponse;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author: gaolanyu
  * @date: 2020-02-15
@@ -25,8 +27,10 @@ public interface ResourceManagerService {
 
     public RestResult<Boolean> top(TopRequest request);
 
-    public void download(DownloadRequest downloadRequest);
-
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest);
+
+    public void resourceInfoListDownLoad(HttpServletResponse response, QueryResourceManagerRequest resourceManagerRequest);
+
+    public void reportDownLoad(HttpServletResponse response,ReportRequest reportRequest);
 
 }

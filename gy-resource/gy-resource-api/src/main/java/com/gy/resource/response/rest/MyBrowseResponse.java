@@ -31,4 +31,15 @@ public class MyBrowseResponse implements Serializable{
     @ApiModelProperty(notes = "发布时间")
     private String createTime;
 
+    @ApiModelProperty(notes = "当前文章人的头像")
+    private String headPic;
+
+    @ApiModelProperty(notes = "当前文章人的昵称")
+    private String nickname;
+
+    @ApiModelProperty(notes = "当前文章浏览数")
+    private Integer browses;
+
+    @ApiModelProperty(notes = "当前文章发布人的电话号码")
+    private String  mobile;
 }

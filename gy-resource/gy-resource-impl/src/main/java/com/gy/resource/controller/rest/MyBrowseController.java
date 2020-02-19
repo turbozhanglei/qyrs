@@ -45,6 +45,8 @@ public class MyBrowseController {
     @ResponseBody
     @RequestMapping(value = "/queryMyBrowse")
     public RestResult<MyBrowseGroupByDateResponse> queryMyBrowse(@RequestBody MyBrowseRequest  myBrowseRequest) {
+        DESWrapper desWrapper=new DESWrapper();
+        String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
         RestResult restResult = new RestResult<>();
         log.info("------查询我的浏览记录,req{}-----", myBrowseRequest);
         String userId = tokenService.getUserIdByToken(myBrowseRequest.getToken(),channel_WX);
@@ -66,6 +68,7 @@ public class MyBrowseController {
                   List<MyBrowseResponse> myBrowseResponses=new ArrayList<>();
                   for(MyBrowseResponse myBrowseResponse:reseult){
                       if(key.equals(myBrowseResponse.getCreateTime().substring(0,10))){
+                          myBrowseResponse.setMobile(desWrapper.decrypt(myBrowseResponse.getMobile(),password));//解密手机号);
                           myBrowseResponses.add(myBrowseResponse);
                           myBrowseResponseList.put(key,myBrowseResponses);
                       }

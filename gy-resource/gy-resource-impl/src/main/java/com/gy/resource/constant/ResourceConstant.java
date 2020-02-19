@@ -10,6 +10,12 @@ package com.gy.resource.constant;
  * //是否有图 0：否、1：是
  */
 public interface ResourceConstant {
+    //关联类型，0、关注用户，1、资源浏览数，2、资源分享数，3、资源拨打电话数，4、资讯文章分享数，5、资讯文章点赞数，6、资讯文章浏览数
+    interface refType{
+        Integer resource_brown_num=1;
+        Integer resource_share_num=2;
+        Integer resource_phone_num=3;
+    }
     interface channel{
         String WX="wx";
         String Manager="manager";
@@ -60,5 +66,12 @@ public interface ResourceConstant {
         String brownUp="0";
         String shareUp="1";
         String phoneUp="2";
+    }
+
+    interface category{
+        String release_type="release_type";
+        String resource_label="resource_label";
+        String resource_area="resource_area";
+        String resource_trade="resource_trade";
     }
 }

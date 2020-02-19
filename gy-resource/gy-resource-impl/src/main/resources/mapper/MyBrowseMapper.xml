@@ -4,20 +4,37 @@
 
     <!--查询我的浏览记录-->
     <select id="queryMyBrowesByUserId" resultType="com.gy.resource.response.rest.MyBrowseResponse" parameterType="java.lang.Long">
-                       SELECT
-                        a.user_id as userId,
-                        a.update_time as createTime ,
-                        gri.title,
-                        gri.id as resourceId
-                        FROM
-                            g_global_correlation  a
-                        LEFT JOIN g_resource_info gri on gri.id=a.ref_id
-                        WHERE
-                        1=1
-                        and a.delete_flag=0
-                        and a.ref_type=1
-                        and a.user_id=#{userId}
-                        GROUP BY a.ref_id
+                           SELECT
+                                    a.user_id AS userId,
+                                    a.update_time AS createTime,
+                                    gri.title,
+
+                                    gri.id AS resourceId,
+                                    gu.head_pic AS headPic,
+                                     gu.nickname,
+                                     gu.mobile,
+                                    (
+                                        SELECT
+                                            COUNT(b.id)
+                                        FROM
+                                            g_global_correlation b
+                                        WHERE
+                                            1 = 1
+                                        AND b.delete_flag = 0
+                                        AND b.ref_type = 1
+                                        AND b.ref_id = gri.id
+                                    ) AS browses
+                                FROM
+                                    g_global_correlation a
+                                LEFT JOIN g_resource_info gri ON gri.id = a.ref_id
+                                LEFT JOIN g_user gu ON gu.id = gri.user_id
+                                WHERE
+                                    1 = 1
+                                AND a.delete_flag = 0
+                                AND a.ref_type = 1
+                                AND a.user_id = #{userId}
+                                GROUP BY
+                                    a.ref_id
     </select>
     <!--搜索历史 删除-->
     <update id="myBrowesDelete" parameterType="java.lang.Long">

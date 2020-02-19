@@ -10,6 +10,8 @@ import com.gy.resource.response.manager.ReportResponse;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author: gaolanyu
  * @date: 2020-02-14
@@ -26,7 +28,7 @@ public interface ResourceManagerApi {
 
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest);
 
-    public void reportDownLoad(ReportRequest reportRequest);
+    public void reportDownLoad(HttpServletResponse response,ReportRequest reportRequest);
 
-    public void resourceInfoListDownLoad(QueryResourceManagerRequest resourceManagerRequest);
+    public void resourceInfoListDownLoad(HttpServletResponse response,QueryResourceManagerRequest resourceManagerRequest);
 }

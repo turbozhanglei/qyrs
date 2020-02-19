@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ResourceContentFilterTask {
     @Autowired
     ResourceContentService resourceContentService;
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void task(){
       log.info("开始处理敏感词");
-        resourceContentService.sensitiveFilter();
+      resourceContentService.sensitiveFilter();
     }
 }

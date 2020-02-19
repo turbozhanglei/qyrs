@@ -825,6 +825,9 @@ public class SysUserController extends BizAction {
         inDto.put("tableName", inDto.getAsString("t"));
         try {
             Dto member = redisService.getObject(inDto.getAsString("token"), BaseDto.class);
+            if(member.getAsString("username").equals("admin")){
+                throw new Exception("无法禁用系统管理员账号");
+            }
             String []ids = inDto.getAsString("ids").split(",");
             Dto user=new BaseDto();
             user.put("tableName","userToken");

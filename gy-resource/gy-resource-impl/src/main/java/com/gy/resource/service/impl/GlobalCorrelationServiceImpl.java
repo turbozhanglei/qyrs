@@ -6,6 +6,7 @@ import com.gy.resource.entity.GlobalCorrelationModel;
 import com.gy.resource.enums.RefTypeEnum;
 import com.gy.resource.mapper.GlobalCorrelationMapper;
 import com.gy.resource.service.PGlobalCorrelationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import com.jic.common.base.vo.PageResult;
  * @since 2020-02-14
  */
 @Service
+@Slf4j
 public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
 
     @Autowired
@@ -107,6 +109,8 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
 
     @Override
     public Boolean addBrowse(Long userId, Long refId, Integer refType) {
+        log.info("-----进入全局关联信息服务类-添加记录-userId:{}---refId:{}---refType:{}-----",
+                userId, refId, refType);
         Map map = new HashMap(8);
         map.put("userId", userId);
         map.put("refId", refId);
@@ -114,6 +118,8 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
         GlobalCorrelationModel dbModel =
                 this.globalCorrelationQuery(map);
         if (dbModel == null) {
+            log.info("-----根据userId,refId,refType未查到GlobalCorrelation,执行添加操作。userId:{}---refId:{}---refType:{}-----",
+                    userId, refId, refType);
             GlobalCorrelationModel model = new GlobalCorrelationModel();
             model.setUserId(userId);
             model.setRefId(refId);
@@ -125,6 +131,8 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
         }
         // 记录浏览记录的逻辑需要 单拎出来
         if (RefTypeEnum.SOURCE_BROWSE.getCode().equals(refType)) {
+            log.info("-----判断此为资源浏览类型-----userId:{}---refId:{}---refType:{}--",
+                    userId, refId, refType);
             if (dbModel != null) {
                 GlobalCorrelationModel modifyEntity = new GlobalCorrelationModel();
                 modifyEntity.setUpdateTime(new Date());

@@ -57,13 +57,13 @@ public class ResourceContentServiceImpl implements ResourceContentService {
             log.info("该资源内容为空,resourceId:{}",resourceInfo.getId());
             return;
         }
-        String wordArray[]=word.split(",");
+        String []wordArray=word.split(",");
         List<String> sensiticeWordList=new ArrayList<>();
-        Stream.of(wordArray).forEach(item->{
-            if(content.contains(item)){
-                sensiticeWordList.add(item);
+        for(String sensiteiceWord:wordArray){
+            if(content.contains(sensiteiceWord)) {
+                sensiticeWordList.add(sensiteiceWord);
             }
-        });
+        }
         if(CollectionUtils.isEmpty(sensiticeWordList)){
             log.info("该资源内容没有敏感词 系统审核通过,resourceId:{}",resourceInfo.getId());
             long flag=resourceInfoMapper.check(ResourceConstant.check.system_check_success,ResourceConstant.check_person.system,resourceInfo.getId());
@@ -72,9 +72,9 @@ public class ResourceContentServiceImpl implements ResourceContentService {
             }
             return;
         }
-        sensiticeWordList.stream().forEach(item -> {
-            content.replace(item,"*");
-        });
+        for(String item:sensiticeWordList){
+            content=content.replace(item,"*");
+        }
         long flag=resourceInfoMapper.systemCheckFail(content,ResourceConstant.check_person.system,resourceInfo.getId());
         if(flag<1){
             log.info("该资源内容审核异常，请检查数据，resourceId:{}",resourceInfo.getId());

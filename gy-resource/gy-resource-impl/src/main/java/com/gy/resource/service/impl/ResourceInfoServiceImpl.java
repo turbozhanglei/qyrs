@@ -169,34 +169,34 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         List<ResourceInfo> resultList=resultResource.getRows();
         if(CollectionUtils.isEmpty(resultList)){
             result.setRows(new ArrayList<>());
-            result.setTotal(0);
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
         List<QueryResourceByConditionResponse> responseList=setQueryResourceByConditionResponseList(resultList);
         if (getValueByParam(resourceByConditionRequest.getBrowseUpNum()) == null &&
                 getValueByParam(resourceByConditionRequest.getShareUpNum()) == null) {
             result.setRows(responseList);
-            result.setTotal(responseList.size());
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
 
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
         Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
         }
 
         if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
         }else if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
         }
 
 
         result.setRows(responseList);
-        result.setTotal(responseList.size());
+        result.setTotal(resultResource.getTotal());
         return RestResult.success(result);
     }
 
@@ -466,11 +466,13 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                 tradeTypeList,
                 startIndex,
                 pageQuery.getLimit());
-        if(CollectionUtils.isEmpty(list)){
-            pageResult.setTotal(0);
-        }
+        long count=resourceInfoMapper.queryByConditionCount(resourceInfo,
+                releaseTypeList,
+                resourceLabelList,
+                resourceAreaList,
+                tradeTypeList);
         pageResult.setRows(list);
-        pageResult.setTotal(list.size());
+        pageResult.setTotal(count);
         return pageResult;
     }
 }

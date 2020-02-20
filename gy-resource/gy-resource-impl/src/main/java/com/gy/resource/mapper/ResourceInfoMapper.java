@@ -139,7 +139,7 @@ public interface  ResourceInfoMapper {
             "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
             "on a.id=c.ref_id )d where 1=1 ",
             "<if test=\"resourceInfo.browNumStart!=null and resourceInfo.browNumEnd!=null\">and brow_num between #{resourceInfo.browNumStart} and #{resourceInfo.browNumEnd} </if>",
-            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.ShareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.ShareNumEnd} </if>",
+            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.shareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.shareNumEnd} </if>",
             "limit #{startIndex},#{limit} ",
             "</script>"
     })
@@ -180,7 +180,7 @@ public interface  ResourceInfoMapper {
             "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
             "on a.id=c.ref_id )d where 1=1 ",
             "<if test=\"resourceInfo.browNumStart!=null and resourceInfo.browNumEnd!=null\">and brow_num between #{resourceInfo.browNumStart} and #{resourceInfo.browNumEnd} </if> ",
-            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.ShareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.ShareNumEnd} </if> ",
+            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.shareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.shareNumEnd} </if> ",
             "</script>"
     })
     int queryResourceInfoListManagerCount(@Param("resourceInfo") ResourceInfo resourceInfo);

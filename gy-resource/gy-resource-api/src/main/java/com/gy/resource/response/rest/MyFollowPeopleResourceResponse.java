@@ -31,7 +31,7 @@ public class MyFollowPeopleResourceResponse implements Serializable{
     @ApiModelProperty(notes = "资源内容")
     private String content;
     @ApiModelProperty(notes = "发布时间")
-    private String createTime;
+    private String auditTime;
     @ApiModelProperty(notes = "发布类型")
     private String releaseType;
     @ApiModelProperty(notes = "资源标签")

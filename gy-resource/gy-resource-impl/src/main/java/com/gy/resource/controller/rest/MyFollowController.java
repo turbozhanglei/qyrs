@@ -73,6 +73,9 @@ public class MyFollowController {
                            }
                        }
                         myFollowUserInfoResponse.setNickname(getNickName(myFollowUserInfoResponse.getNickname()));
+                       if(StringUtils.isNotEmpty(myFollowPeopleResourceResponse.getAuditTime())){
+                           myFollowPeopleResourceResponse.setAuditTime(myFollowPeopleResourceResponse.getAuditTime().substring(0,10));
+                       }
                         myFollowUserInfoResponse.setMyFollowPeopleResourceResponse(myFollowPeopleResourceResponse);
                     }
                 }

@@ -50,7 +50,7 @@
                     a.mobile,
                     a.title,
                     a.content,
-                    a.create_time as createTime,
+                    a.audit_time as auditTime,
                     gdc1.`desc` as releaseType,
                     gdc2.`desc` as resourceLabel,
                     gdc3.`desc` as resourceArea,

@@ -228,7 +228,11 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest) {
         ResourceInfo resourceInfo = setResourceInfo(reportRequest);
         Page page = setPage(reportRequest.getStart(), reportRequest.getLimit());
-        PageResult<ResourceInfo> pageResult = resourceInfoService.queryPageOrderByAuditTime(resourceInfo, page);
+        Integer refType=null;
+        if(org.apache.commons.lang.StringUtils.isNotBlank(reportRequest.getResourceSort())){
+            refType=Integer.parseInt(reportRequest.getResourceSort());
+        }
+        PageResult<ResourceInfo> pageResult = resourceInfoService.queryReportListManager(resourceInfo, page,refType);
         PageResult<ReportResponse> result=setReportResponsePageResult(pageResult,reportRequest);
         return RestResult.success(result);
     }
@@ -345,18 +349,18 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         List<ReportResponse> responseList = new ArrayList<>();
         for (ResourceInfo resourceInfo : pageResult.getRows()) {
             ReportResponse report = new ReportResponse();
-            report.setBrowseNum(getBrowseNum(resourceInfo));
+            report.setBrowseNum(Integer.toString(resourceInfo.getBrowNum()));
             report.setCreateTime(resourceInfo.getCreateTime());
             report.setIssurePhone(resourceInfo.getMobile());
             report.setIssureStatus(Integer.toString(resourceInfo.getStatus()));
             report.setIssureUserId(Long.toString(resourceInfo.getUserId()));
-            report.setPhoneNum(getPhoneNum(resourceInfo));
+            report.setPhoneNum(Integer.toString(resourceInfo.getPhoneNum()));
             report.setResourceArea(Integer.toString(resourceInfo.getResourceArea()));
             report.setResourceId(Long.toString(resourceInfo.getId()));
             report.setResourceLabel(Integer.toString(resourceInfo.getResourceLabel()));
             report.setResourceTitle(resourceInfo.getTitle());
             report.setResourceType(Integer.toString(resourceInfo.getReleaseType()));
-            report.setShareNum(getShareNum(resourceInfo));
+            report.setShareNum(Integer.toString(resourceInfo.getShareNum()));
             report.setTopStatus(Integer.toString(resourceInfo.getSticky()));
             report.setTradeType(Integer.toString(resourceInfo.getResourceTrade()));
             responseList.add(report);

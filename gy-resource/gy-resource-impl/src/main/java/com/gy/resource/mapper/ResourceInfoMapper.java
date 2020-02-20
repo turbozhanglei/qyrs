@@ -184,4 +184,44 @@ public interface  ResourceInfoMapper {
             "</script>"
     })
     int queryResourceInfoListManagerCount(@Param("resourceInfo") ResourceInfo resourceInfo);
+
+    @Select({
+            "<script>",
+            "select a.*,ifnull(b.brow_num,0) as brow_num,ifnull(c.share_num,0) as share_num,ifnull(d.phone_num,0) as phone_num from ",
+            "(select * from g_resource_info where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            ") ",
+            "a left join ",
+            "(select ref_id,count(id) as brow_num from g_global_correlation where ref_type='1' group by ref_id) b ",
+            "on a.id=b.ref_id  left join ",
+            "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
+            "on a.id=c.ref_id left join ",
+            "(select ref_id,count(id) as phone_num from g_global_correlation where ref_type='3' group by ref_id) d ",
+            "on a.id=d.ref_id ",
+            "<if test=\"refType == '2'\">order by d.phone_num desc</if> ",
+            "<if test=\"refType == '0'\">order by b.brow_num desc</if> ",
+            "<if test=\"refType == '1'\">order by c.share_num desc</if> ",
+            "limit #{startIndex},#{limit} ",
+            "</script>"
+    })
+    List<ResourceInfo> queryReportListByPage(@Param("resourceInfo") ResourceInfo resourceInfo,
+                                             @Param("refType")Integer refType,
+                                             @Param("startIndex") int startIndex,
+                                             @Param("limit") int limit);
+
+    @Select({
+            "<script>",
+            "select count(id) from g_resource_info where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "</script>"
+    })
+    int queryReportListCountByPage(@Param("resourceInfo") ResourceInfo resourceInfo);
 }

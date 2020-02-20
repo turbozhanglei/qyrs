@@ -54,6 +54,8 @@ public interface ResourceInfoService {
                                                          List<Integer> tradeTypeList,
                                                          Integer refType,
                                                          Integer sortType);
-
     public PageResult<ResourceInfo> queryResourceInfoListManager(ResourceInfo resourceInfo, Page pageQuery);
+
+    public PageResult<ResourceInfo> queryReportListManager(ResourceInfo resourceInfo, Page pageQuery,Integer refType);
+
 }

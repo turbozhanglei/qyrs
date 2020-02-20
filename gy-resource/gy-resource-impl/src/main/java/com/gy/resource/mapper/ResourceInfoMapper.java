@@ -194,6 +194,7 @@ public interface  ResourceInfoMapper {
             "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
             "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
             "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "</trim>",
             ") ",
             "a left join ",
             "(select ref_id,count(id) as brow_num from g_global_correlation where ref_type='1' group by ref_id) b ",
@@ -221,6 +222,7 @@ public interface  ResourceInfoMapper {
             "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
             "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
             "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "</trim>",
             "</script>"
     })
     int queryReportListCountByPage(@Param("resourceInfo") ResourceInfo resourceInfo);

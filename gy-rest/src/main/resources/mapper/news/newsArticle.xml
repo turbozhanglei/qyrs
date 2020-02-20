@@ -279,8 +279,10 @@
         1 = 1
         and a.delete_flag=0
         and  a.category_id=#{categoryId}
+        order by  a.create_time DESC
         <if test="null!=start and null!=limit">
             limit ${start},${limit}
         </if>
+
     </select>
 </mapper>

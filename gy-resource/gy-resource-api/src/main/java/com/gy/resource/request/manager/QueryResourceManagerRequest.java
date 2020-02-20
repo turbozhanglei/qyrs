@@ -38,7 +38,7 @@ public class QueryResourceManagerRequest extends TokenRequest {
     @ApiModelProperty(notes = "资源标题")
     private String resourceTitle;
 
-    @ApiModelProperty(notes = "资源发布类型 -1全部 0求购 1出售")
+    @ApiModelProperty(notes = "资源发布类型 -1全部 1求购 0出售")
     private String resourceType;
 
     @ApiModelProperty(notes = "发布状态 -1全部 0待审核 1系统审核通过 2待人工审核 3人工审核通过 4人工审核不通过")
@@ -82,10 +82,10 @@ public class QueryResourceManagerRequest extends TokenRequest {
     @ApiModelProperty(notes = "资源标签 -1全部 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他")
     private String resourceLabel;
 
-    @ApiModelProperty(notes = "资源区域 -1全部 0东北 1华东 2华北 3华中 4华南 5西南 6西北 7境外")
+    @ApiModelProperty(notes = "资源区域 -1全部 1东北 2华东 3华北 4华中 5华南 6西南 7西北 8境外")
     private String resourceArea;
 
-    @ApiModelProperty(notes = "内贸外贸 -1全部 0内贸 1进口 2出口")
+    @ApiModelProperty(notes = "内贸外贸 -1全部 1内贸 2进口 3出口")
     private String tradeType;
 
 //    @ApiModelProperty(notes = "操作人ID")

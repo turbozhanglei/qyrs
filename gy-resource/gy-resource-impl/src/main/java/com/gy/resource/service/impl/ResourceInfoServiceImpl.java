@@ -154,7 +154,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             if (CollectionUtils.isEmpty(resourceInfos)) {
                 return RestResult.success(new ArrayList<>());
             }
-            List<RecommendResourceResponse> responseList = getRecommendResourceResponse(resourceInfos);
+            topList.addAll(resourceInfos);
+            List<RecommendResourceResponse> responseList = getRecommendResourceResponse(topList);
             return RestResult.success(responseList);
         }
 

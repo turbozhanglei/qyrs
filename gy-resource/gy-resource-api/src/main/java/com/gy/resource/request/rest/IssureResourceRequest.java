@@ -46,7 +46,7 @@ public class IssureResourceRequest extends TokenRequest {
     @NotNull(message = "资源标题必填")
     private String resourceTitle;
 
-    @ApiModelProperty(notes = "资源发布类型 -1全部 0求购 1出售", required = true,example ="0")
+    @ApiModelProperty(notes = "资源发布类型 -1全部 1求购 0出售", required = true,example ="0")
     private String resourceType;
 
     @ApiModelProperty(notes = "资源标签 -1全部 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他", required = true,example = "1")

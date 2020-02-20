@@ -64,6 +64,12 @@ public class ResourceInfo implements Serializable {
 
     private Date createStartTime;
     private Date createEndTime;
+    private Integer browNumStart;
+    private Integer browNumEnd;
 
-    
+    private Integer shareNumStart;
+    private Integer shareNumEnd;
+    private Integer browNum;
+    private Integer shareNum;
+
 }

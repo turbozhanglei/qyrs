@@ -465,6 +465,20 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     }
 
     @Override
+    public PageResult<ResourceInfo> queryResourceInfoListManager(ResourceInfo resourceInfo, Page pageQuery) {
+        //计算下标
+        int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
+        List<ResourceInfo> list = resourceInfoMapper.queryResourceInfoListManager(startIndex,
+                pageQuery.getLimit(),
+                resourceInfo);
+        long count = resourceInfoMapper.queryResourceInfoListManagerCount(resourceInfo);
+        PageResult pageResult = new PageResult();
+        pageResult.setRows(list);
+        pageResult.setTotal(count);
+        return pageResult;
+    }
+
+    @Override
     public PageResult<ResourceInfo> queryPageByCondition(ResourceInfo resourceInfo,
                                                          Page pageQuery,
                                                          List<Integer> releaseTypeList,

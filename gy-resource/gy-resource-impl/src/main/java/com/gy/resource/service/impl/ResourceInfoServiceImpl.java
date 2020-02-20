@@ -169,45 +169,61 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         List<ResourceInfo> resultList=resultResource.getRows();
         if(CollectionUtils.isEmpty(resultList)){
             result.setRows(new ArrayList<>());
-            result.setTotal(0);
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
         List<QueryResourceByConditionResponse> responseList=setQueryResourceByConditionResponseList(resultList);
         if (getValueByParam(resourceByConditionRequest.getBrowseUpNum()) == null &&
                 getValueByParam(resourceByConditionRequest.getShareUpNum()) == null) {
             result.setRows(responseList);
-            result.setTotal(responseList.size());
+            result.setTotal(resultResource.getTotal());
             return RestResult.success(result);
         }
 
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
         Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
         }
 
         if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
         }else if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
         }
 
 
         result.setRows(responseList);
-        result.setTotal(responseList.size());
+        result.setTotal(resultResource.getTotal());
         return RestResult.success(result);
     }
 
     public PageResult<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
         Page page=setPage(request.getStart(),request.getLimit());
+        Integer refType=null;
+        Integer sortType=null;
+        if(org.apache.commons.lang.StringUtils.isNotBlank(request.getBrowseUpNum())){
+            refType=ResourceConstant.refType.resource_brown_num;
+            if(ResourceConstant.brownSort.up==Integer.parseInt(request.getBrowseUpNum())){
+                sortType=ResourceConstant.brownSort.up;
+            }
+        }else if(org.apache.commons.lang.StringUtils.isNotBlank(request.getShareUpNum())){
+            refType=ResourceConstant.refType.resource_share_num;
+            if(ResourceConstant.shareSort.up==Integer.parseInt(request.getShareUpNum())){
+                sortType=ResourceConstant.shareSort.up;
+            }
+        }
+
         PageResult<ResourceInfo> resourceInfoPageResult=queryPageByCondition(param,
                 page,
                 getFieldList(request.getResourceType()),
                 getFieldList(request.getResourceLabel()),
                 getFieldList(request.getResourceArea()),
-                getFieldList(request.getTradeType()));
+                getFieldList(request.getTradeType()),
+                refType,
+                sortType);
         return resourceInfoPageResult;
     }
 
@@ -454,7 +470,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                                                          List<Integer> releaseTypeList,
                                                          List<Integer> resourceLabelList,
                                                          List<Integer> resourceAreaList,
-                                                         List<Integer> tradeTypeList) {
+                                                         List<Integer> tradeTypeList,
+                                                         Integer refType,
+                                                         Integer sortType) {
         PageResult pageResult = new PageResult();
         //计算下标
         int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
@@ -465,12 +483,16 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                 resourceAreaList,
                 tradeTypeList,
                 startIndex,
-                pageQuery.getLimit());
-        if(CollectionUtils.isEmpty(list)){
-            pageResult.setTotal(0);
-        }
+                pageQuery.getLimit(),
+                refType,
+                sortType);
+        long count=resourceInfoMapper.queryByConditionCount(resourceInfo,
+                releaseTypeList,
+                resourceLabelList,
+                resourceAreaList,
+                tradeTypeList);
         pageResult.setRows(list);
-        pageResult.setTotal(list.size());
+        pageResult.setTotal(count);
         return pageResult;
     }
 }

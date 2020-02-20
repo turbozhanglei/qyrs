@@ -1,5 +1,6 @@
 package com.gy.resource.response.manager;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
@@ -39,42 +40,55 @@ public class QueryResourceManagerResponse implements Serializable {
     private static final long serialVersionUID = -1157585160309841464L;
 
     @ApiModelProperty(notes = "资源Id",required = true)
+    @ExcelProperty("资源Id")
     private String resourceId;
 
     @ApiModelProperty(notes = "资源标题")
+    @ExcelProperty("资源标题")
     private String resourceTitle;
 
     @ApiModelProperty(notes = "资源发布类型  0求购 1出售")
+    @ExcelProperty("资源发布类型")
     private String resourceType;
 
     @ApiModelProperty(notes = "发布状态  0待审核 1系统审核通过 2待人工审核 3人工审核通过 4人工审核不通过")
+    @ExcelProperty("发布状态")
     private String issureStatus;
 
     @ApiModelProperty(notes = "置顶状态  0普通 1置顶")
+    @ExcelProperty("置顶状态")
     private String topStatus;
 
     @ApiModelProperty(notes = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @ExcelProperty("创建时间")
     private Date createTime;
 
     @ApiModelProperty(notes = "发布人id")
+    @ExcelProperty("发布人id")
     private String issureId;
 
     @ApiModelProperty(notes = "发布人电话")
+    @ExcelProperty("发布人电话")
     private String issurePhone;
 
+    @ExcelProperty("浏览量数")
     @ApiModelProperty(notes = "浏览量数")
     private String browseNum;
 
+    @ExcelProperty("分享数")
     @ApiModelProperty(notes = "分享数")
     private String shareNum;
 
+    @ExcelProperty("资源标签")
     @ApiModelProperty(notes = "资源标签 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他", required = true)
     private String resourceLabel;
 
+    @ExcelProperty("资源区域")
     @ApiModelProperty(notes = "资源区域 0东北 1华东 2华北 3华中 4华南 5西南 6西北 7境外")
     private String resourceArea;
 
+    @ExcelProperty("内贸外贸")
     @ApiModelProperty(notes = "内贸外贸  0内贸 1进口 2出口")
     private String tradeType;
 }

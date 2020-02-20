@@ -1,11 +1,12 @@
 package com.gy.resource.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.gy.resource.constant.ResourceConstant;
 import com.gy.resource.entity.ResourceInfo;
+import com.gy.resource.mapper.DictionaryMapper;
 import com.gy.resource.mapper.ResourceInfoMapper;
 import com.gy.resource.request.manager.CheckBatchRequest;
 import com.gy.resource.request.manager.CheckRequest;
-import com.gy.resource.request.manager.DownloadRequest;
 import com.gy.resource.request.manager.QueryResourceManagerRequest;
 import com.gy.resource.request.manager.ReportRequest;
 import com.gy.resource.request.manager.TopRequest;
@@ -27,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,6 +44,8 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     ResourceInfoService resourceInfoService;
     @Autowired
     ResourceInfoMapper resourceInfoMapper;
+    @Autowired
+    DictionaryMapper dictionaryMapper;
 
     @Override
     public RestResult<PageResult<QueryResourceManagerResponse>> queryResourceManager(QueryResourceManagerRequest resourceManagerRequest) {
@@ -72,7 +77,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
                     .collect(Collectors.toList());
         }
         responsePageResult.setRows(responseList);
-        responsePageResult.setTotal(resourceInfoList.size());
+        responsePageResult.setTotal(pageResult.getTotal());
         return responsePageResult;
     }
 
@@ -214,11 +219,6 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     }
 
     @Override
-    public void download(DownloadRequest downloadRequest) {
-
-    }
-
-    @Override
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest) {
         ResourceInfo resourceInfo = setResourceInfo(reportRequest);
         Page page = setPage(reportRequest.getStart(), reportRequest.getLimit());
@@ -227,17 +227,100 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         return RestResult.success(result);
     }
 
+    @Override
+    public void resourceInfoListDownLoad(HttpServletResponse response, QueryResourceManagerRequest resourceManagerRequest) {
+        resourceManagerRequest.setStart(1);
+        //excel单sheet最大6万多。此数量也要限制，以防IO过大
+        resourceManagerRequest.setLimit(80000);
+        RestResult<PageResult<QueryResourceManagerResponse>> result= queryResourceManager(resourceManagerRequest);
+        try{
+            String fileName="resourceInfoList";
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+            response.setContentType("application/x-download");
+            List<QueryResourceManagerResponse> responseList=result.getData().getRows();
+            if(!CollectionUtils.isEmpty(responseList)){
+                responseList=responseList.stream().map(item->{
+                    item.setResourceType(dictionaryMapper.queryDesc(ResourceConstant.category.release_type,item.getResourceType()));
+                    item.setResourceLabel(dictionaryMapper.queryDesc(ResourceConstant.category.resource_label,item.getResourceLabel()));
+                    item.setResourceArea(dictionaryMapper.queryDesc(ResourceConstant.category.resource_area,item.getResourceArea()));
+                    item.setTradeType(dictionaryMapper.queryDesc(ResourceConstant.category.resource_trade,item.getTradeType()));
+                    item.setIssureStatus(getCheckStatus(Integer.parseInt(item.getIssureStatus())));
+                    item.setTopStatus(getTopStatus(Integer.parseInt(item.getTopStatus())));
+                    return item;
+                }).collect(Collectors.toList());
+            }
+            EasyExcel.write(response.getOutputStream(), QueryResourceManagerResponse.class).sheet("资源信息列表").doWrite(responseList);
+        }catch (Exception e){
+            log.error("resourceInfoListDownLoad==>error",e);
+        }
+    }
+
+    public String getTopStatus(Integer topStatus){
+        if(ResourceConstant.top.top==topStatus){
+            return "置顶";
+        }else if(ResourceConstant.top.down==topStatus){
+            return "未置顶";
+        }
+        return "";
+    }
+
+    public String getCheckStatus(Integer checkStatus){
+        //0、待审核，1、系统审核通过，2、待人工审核，3、人工审核通过，4、人工审核不通过
+        if(ResourceConstant.check.check_init==checkStatus){
+            return "待审核";
+        }else if(ResourceConstant.check.system_check_success==checkStatus){
+            return "系统审核通过";
+        }else if(ResourceConstant.check.person_check_need==checkStatus){
+            return "待人工审核";
+        }else if(ResourceConstant.check.person_check_success==checkStatus){
+            return "人工审核通过";
+        }else if(ResourceConstant.check.person_check_fail==checkStatus){
+            return "人工审核不通过";
+        }
+        return "";
+    }
+
+    @Override
+    public void reportDownLoad(HttpServletResponse response, ReportRequest reportRequest) {
+        reportRequest.setStart(1);
+        //excel单sheet最大6万多。此数量也要限制，以防IO过大
+        reportRequest.setLimit(80000);
+        RestResult<PageResult<ReportResponse>> result= resourceReport(reportRequest);
+        try{
+            String fileName="resourceReportList";
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+            response.setContentType("application/x-download");
+            List<ReportResponse> responseList=result.getData().getRows();
+            if(!CollectionUtils.isEmpty(responseList)){
+                responseList=responseList.stream().map(item->{
+                    item.setResourceType(dictionaryMapper.queryDesc(ResourceConstant.category.release_type,item.getResourceType()));
+                    item.setResourceLabel(dictionaryMapper.queryDesc(ResourceConstant.category.resource_label,item.getResourceLabel()));
+                    item.setResourceArea(dictionaryMapper.queryDesc(ResourceConstant.category.resource_area,item.getResourceArea()));
+                    item.setTradeType(dictionaryMapper.queryDesc(ResourceConstant.category.resource_trade,item.getTradeType()));
+                    item.setIssureStatus(getCheckStatus(Integer.parseInt(item.getIssureStatus())));
+                    item.setTopStatus(getTopStatus(Integer.parseInt(item.getTopStatus())));
+                    return item;
+                }).collect(Collectors.toList());
+            }
+            EasyExcel.write(response.getOutputStream(), QueryResourceManagerResponse.class).sheet("资源信息报表").doWrite(responseList);
+        }catch (Exception e){
+            log.error("reportDownLoad==>error",e);
+        }
+    }
+
     public PageResult<ReportResponse> setReportResponsePageResult(PageResult<ResourceInfo> pageResult, ReportRequest reportRequest) {
         PageResult<ReportResponse> responsePageResult = new PageResult<>();
         if (CollectionUtils.isEmpty(pageResult.getRows())) {
             responsePageResult.setRows(new ArrayList<>());
-            responsePageResult.setTotal(0);
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         List<ReportResponse> responseList = setResponseList(pageResult);
         if (StringUtils.isEmpty(reportRequest.getResourceSort())) {
             responsePageResult.setRows(responseList);
-            responsePageResult.setTotal(responseList.size());
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         if (org.apache.commons.lang.StringUtils.equals(reportRequest.getResourceSort(), ResourceConstant.sortType.brownUp)) {
@@ -248,7 +331,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             responseList.stream().sorted(Comparator.comparing(ReportResponse::getPhoneNum).reversed()).collect(Collectors.toList());
         }
         responsePageResult.setRows(responseList);
-        responsePageResult.setTotal(responseList.size());
+        responsePageResult.setTotal(pageResult.getTotal());
         return responsePageResult;
     }
 

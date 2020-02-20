@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -82,14 +84,14 @@ public class ResourceManagerController implements ResourceManagerApi {
 
     @ApiOperation(value = "资源信息列表页导出")
     @PostMapping(value = "/download-resource")
-    public void resourceInfoListDownLoad(@RequestBody  QueryResourceManagerRequest resourceManagerRequest) {
-
+    public void resourceInfoListDownLoad(HttpServletResponse response,@RequestBody QueryResourceManagerRequest resourceManagerRequest) {
+        resourceManagerService.resourceInfoListDownLoad(response,resourceManagerRequest);
     }
 
     @ApiOperation(value = "资源信息汇总报表页导出")
     @PostMapping(value = "/download-report")
-    public void reportDownLoad(@RequestBody ReportRequest reportRequest) {
-
+    public void reportDownLoad(HttpServletResponse response,@RequestBody ReportRequest reportRequest) {
+        resourceManagerService.reportDownLoad(response,reportRequest);
     }
 
     @ApiOperation(value = "资源信息汇总报表")

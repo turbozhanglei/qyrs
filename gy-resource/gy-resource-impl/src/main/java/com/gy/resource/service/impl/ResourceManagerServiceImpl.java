@@ -51,7 +51,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     public RestResult<PageResult<QueryResourceManagerResponse>> queryResourceManager(QueryResourceManagerRequest resourceManagerRequest) {
         ResourceInfo resourceInfo = setResourceInfo(resourceManagerRequest);
         Page page = setPage(resourceManagerRequest.getStart(), resourceManagerRequest.getLimit());
-        PageResult<ResourceInfo> pageResult = resourceInfoService.queryPageOrderByAuditTime(resourceInfo, page);
+        PageResult<ResourceInfo> pageResult = resourceInfoService.queryResourceInfoListManager(resourceInfo, page);
         PageResult<QueryResourceManagerResponse> result = setQueryResourceManagerResponse(pageResult, resourceManagerRequest);
         return RestResult.success(result);
     }
@@ -85,7 +85,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         List<QueryResourceManagerResponse> responseList = new ArrayList<>(resourceInfoList.size());
         resourceInfoList.stream().forEach(item -> {
             QueryResourceManagerResponse response = new QueryResourceManagerResponse();
-            response.setBrowseNum(getBrowseNum(item));
+            response.setBrowseNum(Integer.toString(item.getBrowNum()));
             response.setCreateTime(item.getCreateTime());
             response.setIssureId(Long.toString(item.getUserId()));
             response.setIssurePhone(item.getMobile());
@@ -95,7 +95,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             response.setResourceLabel(Integer.toString(item.getResourceLabel()));
             response.setResourceTitle(item.getTitle());
             response.setResourceType(Integer.toString(item.getReleaseType()));
-            response.setShareNum(getShareNum(item));
+            response.setShareNum(Integer.toString(item.getShareNum()));
             response.setTopStatus(Integer.toString(item.getSticky()));
             response.setTradeType(Integer.toString(item.getResourceTrade()));
             responseList.add(response);
@@ -128,7 +128,9 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         if(id!=null){
             resourceInfo.setId(getLongValue(request.getResourceId()));
         }
-        resourceInfo.setTitle(request.getResourceTitle());
+        if(!StringUtils.isEmpty(request.getResourceTitle())){
+            resourceInfo.setTitle(request.getResourceTitle());
+        }
         resourceInfo.setReleaseType(getValueByParam(request.getResourceType()));
         resourceInfo.setStatus(getValueByParam(request.getIssureStatus()));
         resourceInfo.setSticky(getValueByParam(request.getTopStatus()));
@@ -144,6 +146,10 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         resourceInfo.setResourceLabel(getValueByParam(request.getResourceLabel()));
         resourceInfo.setResourceArea(getValueByParam(request.getResourceArea()));
         resourceInfo.setResourceTrade(getValueByParam(request.getTradeType()));
+        resourceInfo.setBrowNumStart(getValueByParam(request.getBrowseStartNum()));
+        resourceInfo.setBrowNumEnd(getValueByParam(request.getBrowseEndNum()));
+        resourceInfo.setShareNumStart(getValueByParam(request.getShareStartNum()));
+        resourceInfo.setShareNumEnd(getValueByParam(request.getShareEndNum()));
         return resourceInfo;
     }
 

@@ -69,7 +69,7 @@ public interface  ResourceInfoMapper {
     @Select("select company_name from g_user where id=#{id} and delete_flag='0'")
     String getCompanyName(@Param("id")long id);
 
-    @Select("select * from g_resource_info where status='3' and sticky='1' and delete_flag='0' limit 10")
+    @Select("select * from g_resource_info where status in('1','3') and sticky='1' and delete_flag='0' order by audit_time desc limit 10")
     List<ResourceInfo> queryTopResourceTen();
 
     @Select("select * from g_resource_info where (status ='3' or status='1') and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
@@ -203,9 +203,9 @@ public interface  ResourceInfoMapper {
             "on a.id=c.ref_id left join ",
             "(select ref_id,count(id) as phone_num from g_global_correlation where ref_type='3' group by ref_id) d ",
             "on a.id=d.ref_id ",
-            "<if test=\"refType == '2'\">order by d.phone_num desc</if> ",
-            "<if test=\"refType == '0'\">order by b.brow_num desc</if> ",
-            "<if test=\"refType == '1'\">order by c.share_num desc</if> ",
+            "<if test=\"refType == '2'.toString()\">order by d.phone_num desc</if> ",
+            "<if test=\"refType == '0'.toString()\">order by b.brow_num desc</if> ",
+            "<if test=\"refType == '1'.toString()\">order by c.share_num desc</if> ",
             "limit #{startIndex},#{limit} ",
             "</script>"
     })

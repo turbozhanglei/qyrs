@@ -372,7 +372,9 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         ResourceInfo resourceInfo = new ResourceInfo();
         resourceInfo.setCreateStartTime(reportRequest.getCreateStartTime());
         resourceInfo.setCreateEndTime(reportRequest.getCreateEndTime());
-        resourceInfo.setMobile(reportRequest.getIssurePhone());
+        if(!StringUtils.isEmpty(reportRequest.getIssurePhone())){
+            resourceInfo.setMobile(reportRequest.getIssurePhone());
+        }
         return resourceInfo;
     }
 }

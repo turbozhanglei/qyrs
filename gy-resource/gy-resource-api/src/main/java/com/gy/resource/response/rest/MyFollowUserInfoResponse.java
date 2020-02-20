@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhuxiankun
@@ -28,5 +29,6 @@ public class MyFollowUserInfoResponse implements Serializable{
     private String headpic;
     @ApiModelProperty(notes = "关注用户昵称")
     private String nickname;
-
+    @ApiModelProperty(notes = "用户最新发布的资源")
+    private MyFollowPeopleResourceResponse myFollowPeopleResourceResponse;
 }

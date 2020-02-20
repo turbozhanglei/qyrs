@@ -68,10 +68,14 @@ public class MyBrowseController {
                   List<MyBrowseResponse> myBrowseResponses=new ArrayList<>();
                   for(MyBrowseResponse myBrowseResponse:reseult){
                       if(key.equals(myBrowseResponse.getCreateTime().substring(0,10))){
-                          myBrowseResponse.setMobile(desWrapper.decrypt(myBrowseResponse.getMobile(),password));//解密手机号);
+                          if(StringUtils.isNotEmpty(myBrowseResponse.getMobile())){
+                              myBrowseResponse.setMobile(desWrapper.decrypt(myBrowseResponse.getMobile(),password));//解密手机号);
+                          }
+                          myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
                           myBrowseResponses.add(myBrowseResponse);
                           myBrowseResponseList.put(key,myBrowseResponses);
                       }
+
                   }
               }
               myBrowseGroupByDateResponse.setMyBrowseResponseList(myBrowseResponseList);
@@ -113,6 +117,26 @@ public class MyBrowseController {
 
     }
 
-
+    public String getNickName(String nickName) {
+        if (org.springframework.util.StringUtils.isEmpty(nickName)) {
+            return nickName;
+        }
+        if (nickName.length() == 1) {
+            return nickName;
+        }
+        if (nickName.length() == 2) {
+            return nickName.substring(0, 1)+"*";
+        }
+        if (nickName.length() > 2) {
+            StringBuffer sb=new StringBuffer();
+            sb.append(nickName.charAt(0));
+            for(int i=0;i<nickName.length()-2;i++){
+                sb.append("*");
+            }
+            sb.append(nickName.charAt(nickName.length()-1));
+            return sb.toString();
+        }
+        return nickName;
+    }
 
 }

@@ -64,7 +64,13 @@ public class MyFollowController {
                     if (!String.valueOf(myFollowUserInfoResponse.getUserId()).isEmpty()) {
                         MyFollowPeopleResourceResponse myFollowPeopleResourceResponse = myFollowService.queryMyFollowResourceByUserId(myFollowUserInfoResponse.getUserId());
                        if(myFollowPeopleResourceResponse!=null&&StringUtils.isNotEmpty(myFollowPeopleResourceResponse.getMobile())){
-                           myFollowPeopleResourceResponse.setMobile(desWrapper.decrypt(myFollowPeopleResourceResponse.getMobile(),password));//解密手机号
+                           try {
+                               String mobile="";
+                               mobile=desWrapper.decrypt(myFollowPeopleResourceResponse.getMobile(),password);
+                               myFollowPeopleResourceResponse.setMobile(mobile);//解密手机号
+                           } catch (Exception e) {
+                              log.error("queryMyFollow========》",e);
+                           }
                        }
                         myFollowUserInfoResponse.setNickname(getNickName(myFollowUserInfoResponse.getNickname()));
                         myFollowUserInfoResponse.setMyFollowPeopleResourceResponse(myFollowPeopleResourceResponse);
@@ -77,7 +83,7 @@ public class MyFollowController {
                 myFollowResponse.setTotal(total);
                 return RestResult.success(myFollowResponse);
             } catch(Exception e){
-                e.printStackTrace();
+               log.error("queryMyFollow========》",e);
                 restResult = RestResult.error("9999", e.getLocalizedMessage());
             }
             return restResult;

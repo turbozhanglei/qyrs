@@ -69,7 +69,13 @@ public class MyBrowseController {
                   for(MyBrowseResponse myBrowseResponse:reseult){
                       if(key.equals(myBrowseResponse.getCreateTime().substring(0,10))){
                           if(StringUtils.isNotEmpty(myBrowseResponse.getMobile())){
-                              myBrowseResponse.setMobile(desWrapper.decrypt(myBrowseResponse.getMobile(),password));//解密手机号);
+                              try {
+                                  String mobile="";
+                                  mobile=desWrapper.decrypt(myBrowseResponse.getMobile(),password);
+                                  myBrowseResponse.setMobile(mobile);//解密手机号);
+                              } catch (Exception e) {
+                                  log.error("queryMyBrowse========》",e);
+                              }
                           }
                           myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
                           myBrowseResponses.add(myBrowseResponse);
@@ -85,7 +91,7 @@ public class MyBrowseController {
           }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("queryMyBrowse========》",e);
             restResult = RestResult.error("9999", e.getLocalizedMessage());
         }
         return restResult;

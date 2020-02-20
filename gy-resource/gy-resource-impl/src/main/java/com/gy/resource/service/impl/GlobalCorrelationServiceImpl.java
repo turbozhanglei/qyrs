@@ -3,6 +3,7 @@ package com.gy.resource.service.impl;
 
 import com.gy.resource.constant.AffectConstant;
 import com.gy.resource.entity.GlobalCorrelationModel;
+import com.gy.resource.enums.DeleteFlagEnum;
 import com.gy.resource.enums.RefTypeEnum;
 import com.gy.resource.mapper.GlobalCorrelationMapper;
 import com.gy.resource.service.PGlobalCorrelationService;
@@ -136,6 +137,7 @@ public class GlobalCorrelationServiceImpl implements PGlobalCorrelationService{
             if (dbModel != null) {
                 GlobalCorrelationModel modifyEntity = new GlobalCorrelationModel();
                 modifyEntity.setUpdateTime(new Date());
+                modifyEntity.setDeleteFlag(DeleteFlagEnum.UN_DELETE.getCode());
                 GlobalCorrelationModel whereCondition = new GlobalCorrelationModel();
                 whereCondition.setUserId(userId);
                 whereCondition.setRefId(refId);

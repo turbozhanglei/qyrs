@@ -71,11 +71,11 @@ public class MyFollowController {
                                String mobile="";
                                mobile=desWrapper.decrypt(myFollowPeopleResourceResponse.getMobile(),password);
                                myFollowPeopleResourceResponse.setMobile(mobile);//解密手机号
-                               myFollowUserInfoResponse.setNickname(getNickName(myFollowUserInfoResponse.getNickname()));
                            } catch (Exception e) {
                               log.error("queryMyFollow========》",e);
                            }
                        }
+                        myFollowUserInfoResponse.setNickname(getNickName(myFollowUserInfoResponse.getNickname()));
                         myFollowUserInfoResponse.setMyFollowPeopleResourceResponse(myFollowPeopleResourceResponse);
                     }
                 }

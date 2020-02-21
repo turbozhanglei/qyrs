@@ -86,8 +86,8 @@ public class MyBrowseController {
                                   log.error("queryMyBrowse========》",e);
                               }
                           }
-                          if(StringUtils.isNotEmpty(myBrowseResponse.getCreateTime())){
-                              myBrowseResponse.setCreateTime(myBrowseResponse.getCreateTime().substring(0,10));
+                          if(StringUtils.isNotEmpty(myBrowseResponse.getAuditTime())){
+                              myBrowseResponse.setAuditTime(myBrowseResponse.getAuditTime().substring(0,10));
                           }
                           myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
                           myBrowseResponses.add(myBrowseResponse);

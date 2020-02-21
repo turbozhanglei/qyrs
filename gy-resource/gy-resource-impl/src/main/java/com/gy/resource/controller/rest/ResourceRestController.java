@@ -260,7 +260,7 @@ public class ResourceRestController implements ResourceApi {
     @ApiOperation(value = "查询关注我的人数量 或者 点赞某个文章的数量")
     @PostMapping(value = "/query-follow-count")
     @Override
-    public RestResult<Integer> queryFollowCount(QueryFollowCountRequest req) {
+    public RestResult<Integer> queryFollowCount(@RequestBody QueryFollowCountRequest req) {
         log.info("------进入查询关注我的人数量 或者 点赞某个文章的数量,req{}-----", req);
         GlobalCorrelationModel model = new GlobalCorrelationModel();
         // TODO 如果用户 token 与 refId 同时为空，则数据校验不通过
@@ -293,7 +293,7 @@ public class ResourceRestController implements ResourceApi {
     @PostMapping(value = "/add-correlation")
     @Override
     public RestResult<Boolean> addCorrelation(@RequestBody AddCorrelationRequest req) {
-        log.info("------记录浏览记录(单独处理)、分享记录、拨打电话记录、点赞, req{}-----", req);
+        log.info("------记录浏览记录(单独处理)、分享记录、拨打电话记录, req{}-----", req);
         String userIdStr = tokenService.getUserIdByToken(req.getToken(),channel_WX);
         if (StringUtils.isBlank(userIdStr)) {
             return RestResult.error("1000", "请重新登录");

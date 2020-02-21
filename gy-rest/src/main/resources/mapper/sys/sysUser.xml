@@ -196,7 +196,7 @@
         r.role_id_list,COUNT(ggc.id) as fens
         FROM
         g_user a
-        LEFT JOIN g_global_correlation ggc on a.id=ggc.ref_id and ggc.ref_type=0
+        LEFT JOIN g_global_correlation ggc on a.id=ggc.ref_id and ggc.ref_type=0 and ggc.delete_flag=0
         LEFT JOIN
         (
         SELECT

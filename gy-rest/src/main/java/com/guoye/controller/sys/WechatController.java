@@ -98,7 +98,7 @@ public class WechatController extends BizAction {
               if(null !=member){
                   member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
                   member.put("token",token);
-                  redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(member), 7200l);
+                  redisService.setValue("mp_login_token:"+token,JSONArray.toJSONString(member), 7200l);
                   result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){

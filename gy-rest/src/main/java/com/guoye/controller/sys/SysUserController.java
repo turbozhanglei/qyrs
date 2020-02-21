@@ -825,9 +825,6 @@ public class SysUserController extends BizAction {
         inDto.put("tableName", inDto.getAsString("t"));
         try {
             Dto member = redisService.getObject(inDto.getAsString("token"), BaseDto.class);
-            if(member.getAsString("username").equals("admin")){
-                throw new Exception("无法禁用系统管理员账号");
-            }
             String []ids = inDto.getAsString("ids").split(",");
             Dto user=new BaseDto();
             user.put("tableName","userToken");
@@ -837,6 +834,10 @@ public class SysUserController extends BizAction {
                 inDto.put("updator", member == null ? "" : member.get("id"));
                 for(int i=0;i<ids.length;i++){
                     inDto.put("id",ids[i]);
+                  Dto cdto = (BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("id",ids[i]));
+                  if (cdto.getAsString("username").equals("admin")){
+                      throw new Exception("无法禁用管理员账号");
+                  }
                     bizService.updateInfo(inDto);
                     //查询token
                     List<Dto> tlist= bizService.queryForList("userToken.queryList",new BaseDto("userid",ids[i]));

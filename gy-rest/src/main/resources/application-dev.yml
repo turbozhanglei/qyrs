@@ -89,9 +89,9 @@ mapper:
 ---
 spring:
   redis:
-    host: 40.73.65.243
+    host: 47.100.214.25
     port: 6379
-    password: adminjic123456
+    password: asdf@123
     pool:
       max-active: 200
       max-idle: 100

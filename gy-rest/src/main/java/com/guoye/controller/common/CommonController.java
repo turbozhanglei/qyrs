@@ -204,6 +204,9 @@ public class CommonController extends BizAction {
             if (!StringUtils.isNotBlank(sql)) {
                 sql = "queryList";
             }
+            if(dto.getAsString("mobile") !="" && dto.getAsString("t").equals("sysUser")){
+                dto.put("mobile",Des.encrypt(dto.getAsString("mobile"),password));
+            }
 
             List<Dto> paramList = bizService.queryForPageCenter(dto.getAsString("t") + "." + sql, dto);
             if (StringUtils.isNotEmpty(dto.getAsString("isNotDate"))) {

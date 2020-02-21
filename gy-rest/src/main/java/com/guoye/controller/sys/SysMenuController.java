@@ -69,11 +69,13 @@ public class SysMenuController extends BizAction {
                 result.setMsg("请登录");
                 return result;
             }
-
+            Dto user=new BaseDto();
+            user.put("mobile",Des.encrypt(dto.getAsString("mobile"),password));
+            user.put("identity_type",dto.getAsString("identity_type"));
             String id = dto.getAsString("id");
             dto.put("tableName", "sysUser");
             //判断手机号码是否重复
-            Dto mobile=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("mobile",dto.getAsString("mobile")));
+            Dto mobile=(BaseDto)bizService.queryForDto("sysUser.getInfo",user);
             //判断用户名是否重复
             Dto username=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("username",dto.getAsString("username")));
 
@@ -81,8 +83,11 @@ public class SysMenuController extends BizAction {
 
             if (StringUtils.isNotEmpty(id)) {
                 // 修改
-                if (udto.getAsString("mobile").equals(dto.getAsString("mobile"))==false){
-                    Dto mobileup=(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("mobile",dto.getAsString("mobile")));
+                if (Des.decrypt(udto.getAsString("mobile"),password).equals(dto.getAsString("mobile"))==false){
+                    Dto mem=new BaseDto();
+                    mem.put("mobile",Des.encrypt(dto.getAsString("mobile"),password));
+                    mem.put("identity_type",dto.getAsString("identity_type"));
+                    Dto mobileup=(BaseDto)bizService.queryForDto("sysUser.getInfo",mem);
                     if (null !=mobileup){
                         throw new Exception("手机号码重复，请重试");
                     }

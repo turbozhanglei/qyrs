@@ -8,7 +8,6 @@
                                     a.user_id AS userId,
                                     a.update_time AS createTime,
                                     gri.title,
-
                                     gri.id AS resourceId,
                                     gu.head_pic AS headPic,
                                      gu.nickname,
@@ -35,6 +34,7 @@
                                 AND a.user_id = #{userId}
                                 GROUP BY
                                     a.ref_id
+                                order  by a.update_time DESC
     </select>
     <!--搜索历史 删除-->
     <update id="myBrowesDelete" parameterType="java.lang.Long">

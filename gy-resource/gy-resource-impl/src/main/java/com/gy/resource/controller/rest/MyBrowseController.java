@@ -55,14 +55,23 @@ public class MyBrowseController {
         };
         try {
             List<MyBrowseResponse> reseult=myBrowesService.queryMyBrowesByUserId(Long.valueOf(userId));
-            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new HashMap<String,List<MyBrowseResponse>>();
+            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new LinkedHashMap<String,List<MyBrowseResponse>>();
             MyBrowseGroupByDateResponse myBrowseGroupByDateResponse=new MyBrowseGroupByDateResponse();
             //数据组装
           if(reseult.size()!=0){
-              Set<String> keys=new HashSet<String>();
-              int index=0;
+              List<String> list=new ArrayList<>();
               for(MyBrowseResponse myBrowseResponse:reseult){
-                  keys.add(myBrowseResponse.getCreateTime().substring(0,10));
+                  list.add(myBrowseResponse.getCreateTime().substring(0,10));
+              }
+              //list去重
+              List<String> keys=new ArrayList<>();
+              int  index=0;
+//              keys.add(list.get(0));
+              for(String str:list){
+                  if(keys.toString().indexOf(list.get(index))==-1){
+                      keys.add(list.get(index));
+                  }
+                  index++;
               }
               for (String key:keys){
                   List<MyBrowseResponse> myBrowseResponses=new ArrayList<>();

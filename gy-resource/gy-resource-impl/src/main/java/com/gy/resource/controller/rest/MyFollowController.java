@@ -64,11 +64,13 @@ public class MyFollowController {
                     if (!String.valueOf(myFollowUserInfoResponse.getUserId()).isEmpty()) {
                         MyFollowPeopleResourceResponse myFollowPeopleResourceResponse = myFollowService.queryMyFollowResourceByUserId(myFollowUserInfoResponse.getUserId());
                        if(myFollowPeopleResourceResponse!=null){
+                           if(StringUtils.isNotEmpty(myFollowPeopleResourceResponse.getAuditTime())){
+                               myFollowPeopleResourceResponse.setAuditTime(myFollowPeopleResourceResponse.getAuditTime().substring(0,10));
+                           }
                            try {
                                String mobile="";
                                mobile=desWrapper.decrypt(myFollowPeopleResourceResponse.getMobile(),password);
                                myFollowPeopleResourceResponse.setMobile(mobile);//解密手机号
-                               myFollowPeopleResourceResponse.setAuditTime(myFollowPeopleResourceResponse.getAuditTime().substring(0,10));
                                myFollowUserInfoResponse.setNickname(getNickName(myFollowUserInfoResponse.getNickname()));
                            } catch (Exception e) {
                               log.error("queryMyFollow========》",e);

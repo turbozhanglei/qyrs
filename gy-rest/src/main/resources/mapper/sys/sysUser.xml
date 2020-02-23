@@ -19,7 +19,7 @@
             and a.status = #{status}
         </if>
         <if test="null!=real_name  and ''!= real_name">
-            and a.real_name LIKE CONCAT('%', #{real_name}, '%')
+            and r.role_name LIKE CONCAT('%', #{real_name}, '%')
         </if>
         <if test="null!=nickname  and ''!= nickname">
             and a.nickname LIKE CONCAT('%', #{nickname}, '%')

@@ -353,24 +353,25 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public String getNickName(ResourceInfo resourceInfo) {
         String nickName = resourceInfoMapper.getNickName(resourceInfo.getUserId());
-        if (StringUtils.isEmpty(nickName)) {
-            return nickName;
-        }
-        if (nickName.length() == 1) {
-            return nickName;
-        }
-        if (nickName.length() == 2) {
-            return nickName.substring(0, 1)+"*";
-        }
-        if (nickName.length() > 2) {
-            StringBuffer sb=new StringBuffer();
-            sb.append(nickName.charAt(0));
-            for(int i=0;i<nickName.length()-2;i++){
-                sb.append("*");
-            }
-            sb.append(nickName.charAt(nickName.length()-1));
-            return sb.toString();
-        }
+        //2020-02-24客户提需求去掉昵称脱敏
+//        if (StringUtils.isEmpty(nickName)) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 1) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 2) {
+//            return nickName.substring(0, 1)+"*";
+//        }
+//        if (nickName.length() > 2) {
+//            StringBuffer sb=new StringBuffer();
+//            sb.append(nickName.charAt(0));
+//            for(int i=0;i<nickName.length()-2;i++){
+//                sb.append("*");
+//            }
+//            sb.append(nickName.charAt(nickName.length()-1));
+//            return sb.toString();
+//        }
         return nickName;
     }
 

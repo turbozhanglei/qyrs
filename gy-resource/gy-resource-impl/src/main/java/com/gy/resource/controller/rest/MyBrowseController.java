@@ -136,24 +136,25 @@ public class MyBrowseController {
     }
 
     public String getNickName(String nickName) {
-        if (org.springframework.util.StringUtils.isEmpty(nickName)) {
-            return nickName;
-        }
-        if (nickName.length() == 1) {
-            return nickName;
-        }
-        if (nickName.length() == 2) {
-            return nickName.substring(0, 1)+"*";
-        }
-        if (nickName.length() > 2) {
-            StringBuffer sb=new StringBuffer();
-            sb.append(nickName.charAt(0));
-            for(int i=0;i<nickName.length()-2;i++){
-                sb.append("*");
-            }
-            sb.append(nickName.charAt(nickName.length()-1));
-            return sb.toString();
-        }
+        //2020-02-24 客户提需求去掉脱敏，后期将复用服务提取出来共用
+//        if (org.springframework.util.StringUtils.isEmpty(nickName)) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 1) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 2) {
+//            return nickName.substring(0, 1)+"*";
+//        }
+//        if (nickName.length() > 2) {
+//            StringBuffer sb=new StringBuffer();
+//            sb.append(nickName.charAt(0));
+//            for(int i=0;i<nickName.length()-2;i++){
+//                sb.append("*");
+//            }
+//            sb.append(nickName.charAt(nickName.length()-1));
+//            return sb.toString();
+//        }
         return nickName;
     }
 

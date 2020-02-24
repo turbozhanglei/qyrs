@@ -120,9 +120,9 @@ public class QueryNewsArticleController extends BizAction {
         DateTime today_end = today_start.plusDays(1);
         DateTime yesterday_start = today_start.minusDays(1);
         if(date.after(today_start.toDate()) && date.before(today_end.toDate())) {
-            return String.format("%s", new DateTime(date).toString("HH:mm:ss"));
+            return String.format("%s", new DateTime(date).toString("HH:mm"));
         } else if(date.after(yesterday_start.toDate()) && date.before(today_start.toDate())) {
-            return String.format("昨天 %s", new DateTime(date).toString("HH:mm:ss"));
+            return String.format("昨天 %s", new DateTime(date).toString("HH:mm"));
         }
         return new DateTime(date).toString("yyyy-MM-dd");
     }

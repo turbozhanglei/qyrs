@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.guoye.base.BizAction;
 import com.guoye.util.*;
 import com.ning.http.util.Base64;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.g4studio.core.metatype.Dto;
@@ -38,6 +39,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/wechat")
+@Slf4j
 public class WechatController extends BizAction {
 
     @Autowired
@@ -189,7 +191,7 @@ public class WechatController extends BizAction {
         BaseResult result = new BaseResult();
 
         try {
-
+            log.info("------进入查询个人信息列表，request{---------}"+dto.getAsString("token"), dto.getAsString("token"));
             Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
             DESWrapper Des = new DESWrapper();
             String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
@@ -210,6 +212,7 @@ public class WechatController extends BizAction {
                 Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",dto.getAsString("id")));
                 if(userdto !=null){
                     userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));
+                    userdto.put("token",dto.getAsString("token"));
                     result.setData(userdto);
                 }
 

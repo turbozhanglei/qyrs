@@ -100,7 +100,7 @@ public class WechatController extends BizAction {
               if(null !=member){
                   member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
                   member.put("token",token);
-                  redisService.setValue("mp_login_token:"+token,JSONArray.toJSONString(member), 7200l);
+                  redisService.setValue("mp_login_token:"+token,JSONArray.toJSONString(member), 3600l*48);
                   result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
@@ -119,7 +119,7 @@ public class WechatController extends BizAction {
                       bizService.saveInfo(udto);
                       udto.put("id",udto.getAsString("id"));//返回当前用户登录的id
                       udto.put("token",token);
-                      redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(udto), 7200l);
+                      redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(udto), 3600l*48);
                       result.setData(udto);
 
                   }

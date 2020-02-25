@@ -11,6 +11,8 @@ import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,8 @@ import java.util.UUID;
 @RequestMapping("/wechat")
 public class WechatController extends BizAction {
 
-
+    @Autowired
+    UserUtil userUtil;
     //获取openid and session_key
     @ResponseBody
     @RequestMapping(value = "/getOpenid")
@@ -48,7 +51,7 @@ public class WechatController extends BizAction {
 
         try {
 
-            String openids = UserUtil.getopenid(dto.getAsString("code"));
+            String openids = userUtil.getopenid(dto.getAsString("code"));
             JSONObject jsonObject = JSONObject.fromObject(openids);
             if (StringUtils.isNotEmpty(openids) && openids!="") {
                 Dto udto=new BaseDto();
@@ -65,7 +68,6 @@ public class WechatController extends BizAction {
 
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);
-
                 result.setData(udto);
             }
 
@@ -147,7 +149,12 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-            String clt=dto.getAsString("clt");
+            //String clt=dto.getAsString("clt");
+            if (dto.getAsString("encryptedData").equals("undefined") || dto.getAsString("iv").equals("undefined")){
+                result.setCode("6000");
+                result.setMsg("参数错误");
+                return result;
+            }
             com.alibaba.fastjson.JSONObject userInfo = decryptUserInfo(dto.getAsString("encryptedData"), dto.getAsString("key"), dto.getAsString("iv"));
             //判断号码是否存在
             if(null !=userInfo){

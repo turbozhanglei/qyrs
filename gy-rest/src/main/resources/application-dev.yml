@@ -14,6 +14,9 @@ ribbon:
 ---
 img_url: http://40.73.65.243:8086/
 img_path: /home/jiantou/data/imgs
+
+app_id: wx8638e80c7186b393
+secret_id: 09ba7c8d17933848e5788a6c64de9c57
 #img_path: /Users/gaolanyu/Desktopn
 
 eureka:

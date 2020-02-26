@@ -1,5 +1,11 @@
 package com.guoye.util;
 
+import com.guoye.config.WxConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -8,12 +14,15 @@ import java.net.URLConnection;
 /**
  * Created by Administrator on 2019/3/6.
  */
+@Component
 public class UserUtil {
+    @Autowired
+    WxConfig wxConfig;
     //  获取微信id的方法
-    public static String getopenid(String code) {
+    public String getopenid(String code) {
             BufferedReader in = null;
-            String appid="wx8638e80c7186b393";
-            String secret="09ba7c8d17933848e5788a6c64de9c57";
+            String appid = wxConfig.getAppid();
+            String secret = wxConfig.getSecret();
             //appid和secret是开发者分别是小程序ID和小程序密钥，开发者通过微信公众平台-》设置-》开发设置就可以直接获取，
             String url="https://api.weixin.qq.com/sns/jscode2session?appid="
                     +appid+"&secret="+secret+"&js_code="+code+"&grant_type=authorization_code";

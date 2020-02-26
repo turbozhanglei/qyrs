@@ -193,6 +193,11 @@ public class WechatController extends BizAction {
         try {
             log.info("------进入查询个人信息列表，request{---------}"+dto.getAsString("token"), dto.getAsString("token"));
             Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            if (member==null){
+                result.setCode("1000");
+                result.setMsg("请重新登录");
+                return  result;
+            }
             DESWrapper Des = new DESWrapper();
             String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 

@@ -1,5 +1,6 @@
 package com.gy.resource;
 
+import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import com.jic.common.swagger.config.Swagger2Config;
 
 import org.mybatis.spring.annotation.MapperScan;
@@ -23,6 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @MapperScan("com.gy.resource.mapper")
 @EnableScheduling
+@EnableSwaggerBootstrapUI
 public class GyResourceImplApplication {
     public static void main(String[] args) {
         SpringApplication.run(GyResourceImplApplication.class, args);
@@ -31,7 +33,7 @@ public class GyResourceImplApplication {
     @Bean
     @ConditionalOnMissingBean
     public Docket getDocket() {
-        return new Swagger2Config().createRestApi(this.getClass().getSimpleName());
+        return new Swagger2Config().createRestApi(GyResourceImplApplication.class.getSimpleName());
     }
 
 }

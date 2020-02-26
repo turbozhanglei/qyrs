@@ -192,7 +192,7 @@ public class WechatController extends BizAction {
 
         try {
             log.info("------进入查询个人信息列表，request{---------}"+dto.getAsString("token"), dto.getAsString("token"));
-            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            Dto member = redisService.getObject("mp_login_token:"+dto.getAsString("token"), BaseDto.class);
             if (member==null){
                 result.setCode("1000");
                 result.setMsg("请重新登录");

@@ -93,7 +93,7 @@ public class MyBrowseController {
                               myBrowseResponse.setAuditTime(myBrowseResponse.getAuditTime().substring(0,10));
                           }
                           myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
-                          String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(Long.parseLong(userId));
+                          String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(myBrowseResponse.getUserId());
                           myBrowseResponse.setPhoneSwitch(phoneSwitch);
                           myBrowseResponse.setResourceContent(setResourceContentByLength(myBrowseResponse.getResourceContent()));
                           myBrowseResponses.add(myBrowseResponse);

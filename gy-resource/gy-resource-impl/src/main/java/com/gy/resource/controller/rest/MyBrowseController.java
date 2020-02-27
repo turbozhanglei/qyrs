@@ -93,6 +93,9 @@ public class MyBrowseController {
                               myBrowseResponse.setAuditTime(myBrowseResponse.getAuditTime().substring(0,10));
                           }
                           myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
+                          String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(Long.parseLong(userId));
+                          myBrowseResponse.setPhoneSwitch(phoneSwitch);
+                          myBrowseResponse.setResourceContent(setResourceContentByLength(myBrowseResponse.getResourceContent()));
                           myBrowseResponses.add(myBrowseResponse);
                           myBrowseResponseList.put(key,myBrowseResponses);
                       }
@@ -100,8 +103,6 @@ public class MyBrowseController {
                   }
               }
               myBrowseGroupByDateResponse.setMyBrowseResponseList(myBrowseResponseList);
-              String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(Long.parseLong(userId));
-              myBrowseGroupByDateResponse.setPhoneSwitch(phoneSwitch);
               return RestResult.success(myBrowseGroupByDateResponse);
           }else{
               return RestResult.error("0000","暂无搜索记录");
@@ -113,6 +114,17 @@ public class MyBrowseController {
         }
         return restResult;
 
+    }
+
+    public String setResourceContentByLength(String content){
+        if(org.apache.commons.lang.StringUtils.isBlank(content)){
+            return "";
+        }
+        //TODO 先写死50，具体也不知道截取多少
+        if(content.length()<=50){
+            return content;
+        }
+        return content.substring(0,50);
     }
 
     /*

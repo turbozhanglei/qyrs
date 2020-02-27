@@ -91,7 +91,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         response.setTopStatus(resourceInfo.getSticky().toString());
         response.setCheckAccount(resourceInfo.getAuditor());
         response.setCheckDate(resourceInfo.getAuditTime());
-        response.setPhoneSwitch(queryPhoneSwitch(Long.parseLong(request.getLoginUserId())));
+        response.setPhoneSwitch(queryPhoneSwitch(resourceInfo.getUserId()));
         return RestResult.success(response);
     }
 
@@ -121,7 +121,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
             response.setShareNum(getShareNum(param));
-            response.setResourceContent(param.getContent());
+            response.setResourceContent(setResourceContentByLength(param.getContent()));
             responseList.add(response);
         }
         pageResult.setRows(responseList);
@@ -263,7 +263,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssureUserId(Long.toString(resourceInfo.getUserId()));
             response.setResourceId(Long.toString(resourceInfo.getId()));
             response.setResourceTitle(resourceInfo.getTitle());
-            response.setResourceContent(resourceInfo.getContent());
+            response.setResourceContent(setResourceContentByLength(resourceInfo.getContent()));
             response.setPhoneSwitch(queryPhoneSwitch(resourceInfo.getUserId()));
             responseList.add(response);
         }
@@ -320,12 +320,23 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssurePhone(param.getMobile());
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
-            response.setResourceContent(param.getContent());
+            response.setResourceContent(setResourceContentByLength(param.getContent()));
             String phoneSwitch=queryPhoneSwitch(param.getUserId());
             response.setPhoneSwitch(phoneSwitch);
             responseList.add(response);
         }
         return responseList;
+    }
+
+    public String setResourceContentByLength(String content){
+        if(org.apache.commons.lang.StringUtils.isBlank(content)){
+            return "";
+        }
+        //TODO 先写死50，具体也不知道截取多少
+        if(content.length()<=50){
+            return content;
+        }
+        return content.substring(0,50);
     }
 
     public String queryPhoneSwitch(long userId){

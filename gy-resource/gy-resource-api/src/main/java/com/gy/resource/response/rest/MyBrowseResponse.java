@@ -46,4 +46,7 @@ public class MyBrowseResponse implements Serializable{
 
     @ApiModelProperty(notes = "资源信息内容")
     private String resourceContent;
+
+    @ApiModelProperty(notes = "0可以拨打 1不可以拨打")
+    private String phoneSwitch;
 }

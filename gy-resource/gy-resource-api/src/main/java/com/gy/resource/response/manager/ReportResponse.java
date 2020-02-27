@@ -40,9 +40,9 @@ public class ReportResponse implements Serializable {
     @ExcelProperty("资源Id")
     private String resourceId;
 
-    @ApiModelProperty(notes = "资源标题")
-    @ExcelProperty("资源标题")
-    private String resourceTitle;
+//    @ApiModelProperty(notes = "资源标题")
+//    @ExcelProperty("资源标题")
+//    private String resourceTitle;
 
     @ApiModelProperty(notes = "资源发布类型 1求购 0出售")
     @ExcelProperty("资源发布类型")

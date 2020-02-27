@@ -314,7 +314,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
                     return item;
                 }).collect(Collectors.toList());
             }
-            EasyExcel.write(response.getOutputStream(), QueryResourceManagerResponse.class).sheet("资源信息报表").doWrite(responseList);
+            EasyExcel.write(response.getOutputStream(), ReportResponse.class).sheet("资源信息报表").doWrite(responseList);
         }catch (Exception e){
             log.error("reportDownLoad==>error",e);
         }
@@ -358,7 +358,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             report.setResourceArea(Integer.toString(resourceInfo.getResourceArea()));
             report.setResourceId(Long.toString(resourceInfo.getId()));
             report.setResourceLabel(Integer.toString(resourceInfo.getResourceLabel()));
-            report.setResourceTitle(resourceInfo.getTitle());
+//            report.setResourceTitle(resourceInfo.getTitle());
             report.setResourceType(Integer.toString(resourceInfo.getReleaseType()));
             report.setShareNum(Integer.toString(resourceInfo.getShareNum()));
             report.setTopStatus(Integer.toString(resourceInfo.getSticky()));

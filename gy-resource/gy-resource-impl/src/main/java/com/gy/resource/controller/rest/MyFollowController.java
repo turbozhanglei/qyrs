@@ -64,6 +64,7 @@ public class MyFollowController {
                     if (!String.valueOf(myFollowUserInfoResponse.getUserId()).isEmpty()) {
                         MyFollowPeopleResourceResponse myFollowPeopleResourceResponse = myFollowService.queryMyFollowResourceByUserId(myFollowUserInfoResponse.getUserId());
                        if(myFollowPeopleResourceResponse!=null){
+                           myFollowPeopleResourceResponse.setContent(setResourceContentByLength(myFollowPeopleResourceResponse.getContent()));
                            if(StringUtils.isNotEmpty(myFollowPeopleResourceResponse.getAuditTime())){
                                myFollowPeopleResourceResponse.setAuditTime(myFollowPeopleResourceResponse.getAuditTime().substring(0,10));
                            }
@@ -91,6 +92,17 @@ public class MyFollowController {
             }
             return restResult;
 
+    }
+
+    public String setResourceContentByLength(String content){
+        if(org.apache.commons.lang.StringUtils.isBlank(content)){
+            return "";
+        }
+        //TODO 先写死50，具体也不知道截取多少
+        if(content.length()<=50){
+            return content;
+        }
+        return content.substring(0,50);
     }
     public String getNickName(String nickName) {
         //2020-02-24 客户提需求去掉脱敏

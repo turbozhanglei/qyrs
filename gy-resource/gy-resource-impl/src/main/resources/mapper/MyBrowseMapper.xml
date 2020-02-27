@@ -9,6 +9,7 @@
                                     gri.audit_time AS auditTime,
                                     a.update_time as createTime,
                                     gri.title,
+                                    gri.content as resourceContent,
                                     gri.id AS resourceId,
                                     gu.head_pic AS headPic,
                                      gu.nickname,

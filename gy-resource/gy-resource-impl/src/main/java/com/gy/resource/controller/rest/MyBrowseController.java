@@ -9,6 +9,7 @@ import com.gy.resource.response.rest.*;
 import com.gy.resource.service.MyBrowesService;
 import com.gy.resource.service.MyFollowService;
 import com.gy.resource.service.TokenService;
+import com.gy.resource.service.UserSerivice;
 import com.gy.resource.utils.DESWrapper;
 import com.jic.common.base.vo.RestResult;
 import com.jic.common.redis.RedisClientTemplate;
@@ -37,6 +38,8 @@ public class MyBrowseController {
     MyBrowesService myBrowesService;
     @Autowired
     TokenService tokenService;
+    @Autowired
+    UserSerivice userSerivice;
     /*
      *
      *查询我的浏览记录
@@ -97,6 +100,8 @@ public class MyBrowseController {
                   }
               }
               myBrowseGroupByDateResponse.setMyBrowseResponseList(myBrowseResponseList);
+              String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(Long.parseLong(userId));
+              myBrowseGroupByDateResponse.setPhoneSwitch(phoneSwitch);
               return RestResult.success(myBrowseGroupByDateResponse);
           }else{
               return RestResult.error("0000","暂无搜索记录");

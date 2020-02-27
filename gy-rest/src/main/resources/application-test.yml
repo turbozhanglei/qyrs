@@ -94,7 +94,8 @@ spring:
     host: 47.100.214.25
     port: 6379
     password: asdf@123
-    pool:
+    jedis:
+      pool:
         max-active: 200
         max-idle: 100
         min-idle: 20

@@ -38,4 +38,7 @@ public class QueryResourceByUserIdResponse implements Serializable {
 
     @ApiModelProperty(notes = "资源Id")
     private String resourceId;
+
+    @ApiModelProperty(notes = "资源信息内容")
+    private String resourceContent;
 }

@@ -192,6 +192,9 @@
                 <if test="resourceInfo.title !=null">
                     title like concat(#{resourceInfo.title},'%') and
                 </if>
+                <if test="resourceInfo.content !=null">
+                    content like concat('%',#{resourceInfo.content},'%') and
+                </if>
                 <if test="releaseTypeList !=null">
                     release_type in
                     <foreach item="item" index="index" collection="releaseTypeList" open="("
@@ -234,6 +237,9 @@
             <if test="resourceInfo.title !=null">
                 title like concat(#{resourceInfo.title},'%') and
             </if>
+            <if test="resourceInfo.content !=null">
+                content like concat('%',#{resourceInfo.content},'%') and
+            </if>
             <if test="releaseTypeList !=null">
                 release_type in
                 <foreach item="item" index="index" collection="releaseTypeList" open="("
@@ -268,6 +274,9 @@
             </if>
             <if test="resourceInfo.title !=null">
                 title like concat(#{resourceInfo.title},'%') and
+            </if>
+            <if test="resourceInfo.content !=null">
+                content like concat('%',#{resourceInfo.content},'%') and
             </if>
             <if test="releaseTypeList !=null">
                 release_type in

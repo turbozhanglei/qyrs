@@ -91,4 +91,7 @@ public class QueryResourceResponse implements Serializable {
     @ApiModelProperty(notes = "审核时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date checkDate;
+
+    @ApiModelProperty(notes = "0可以拨打 1不可以拨打")
+    private String phoneSwitch;
 }

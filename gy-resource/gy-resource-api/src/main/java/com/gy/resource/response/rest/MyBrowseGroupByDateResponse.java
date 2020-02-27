@@ -26,4 +26,6 @@ public class MyBrowseGroupByDateResponse implements Serializable{
     @ApiModelProperty(notes = "浏览记录-按天")
     private Map<String,List<MyBrowseResponse>> myBrowseResponseList;
 
+    @ApiModelProperty(notes = "0可以拨打 1不可以拨打")
+    private String phoneSwitch;
 }

@@ -15,6 +15,7 @@ import com.gy.resource.response.rest.RecommendResourceResponse;
 import com.gy.resource.service.PGlobalCorrelationService;
 import com.gy.resource.service.ResourceInfoService;
 import com.gy.resource.service.TokenService;
+import com.gy.resource.service.UserSerivice;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -55,6 +56,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     @Resource
     PGlobalCorrelationService pGlobalCorrelationService;
+    @Autowired
+    UserSerivice userSerivice;
 
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
@@ -88,6 +91,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         response.setTopStatus(resourceInfo.getSticky().toString());
         response.setCheckAccount(resourceInfo.getAuditor());
         response.setCheckDate(resourceInfo.getAuditTime());
+        response.setPhoneSwitch(queryPhoneSwitch(Long.parseLong(request.getLoginUserId())));
         return RestResult.success(response);
     }
 
@@ -117,6 +121,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
             response.setShareNum(getShareNum(param));
+            response.setResourceContent(param.getContent());
             responseList.add(response);
         }
         pageResult.setRows(responseList);
@@ -258,6 +263,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssureUserId(Long.toString(resourceInfo.getUserId()));
             response.setResourceId(Long.toString(resourceInfo.getId()));
             response.setResourceTitle(resourceInfo.getTitle());
+            response.setResourceContent(resourceInfo.getContent());
+            response.setPhoneSwitch(queryPhoneSwitch(resourceInfo.getUserId()));
             responseList.add(response);
         }
         return responseList;
@@ -269,7 +276,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 //        param.setResourceLabel(getValueByParam(request.getResourceLabel()));
 //        param.setResourceArea(getValueByParam(request.getResourceArea()));
 //        param.setResourceTrade(getValueByParam(request.getTradeType()));
-        param.setTitle(getValue(request.getResourceTitle()));
+//        param.setTitle(getValue(request.getResourceTitle()));
+        param.setTitle(null);
+        param.setContent(getValue(request.getResourceContent()));
         param.setUserId(getLongValue(request.getIssureUserId()));
         return param;
     }
@@ -311,9 +320,19 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssurePhone(param.getMobile());
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
+            response.setResourceContent(param.getContent());
+            String phoneSwitch=queryPhoneSwitch(param.getUserId());
+            response.setPhoneSwitch(phoneSwitch);
             responseList.add(response);
         }
         return responseList;
+    }
+
+    public String queryPhoneSwitch(long userId){
+        UserRequest userRequest=new UserRequest();
+        userRequest.setLoginUserId(Long.toString(userId));
+        RestResult<String> result=userSerivice.queryPhoneSwitch(userRequest);
+        return result.getData();
     }
 
     public List<ResourceInfo> getTopResource() {

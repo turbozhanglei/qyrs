@@ -43,4 +43,7 @@ public class MyBrowseResponse implements Serializable{
 
     @ApiModelProperty(notes = "当前文章发布人的电话号码")
     private String  mobile;
+
+    @ApiModelProperty(notes = "资源信息内容")
+    private String resourceContent;
 }

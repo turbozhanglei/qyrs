@@ -2,6 +2,8 @@ package com.gy.resource.request.rest;
 
 import com.gy.resource.request.TokenRequest;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -42,8 +44,8 @@ public class IssureResourceRequest extends TokenRequest {
     @ApiModelProperty(notes = "发布人id", required = true)
     private String issureId;
 
-    @ApiModelProperty(notes = "资源标题", required = true)
-    @NotNull(message = "资源标题必填")
+    @ApiModelProperty(notes = "资源标题")
+    @NotNull(message = "资源标题")
     private String resourceTitle;
 
     @ApiModelProperty(notes = "资源发布类型 -1全部 1求购 0出售", required = true,example ="0")
@@ -59,5 +61,6 @@ public class IssureResourceRequest extends TokenRequest {
     private String tradeType;
 
     @ApiModelProperty(notes = "资源信息内容", required = true,example = "")
+    @Length(max = 500,message = "请检查长度是否在范围内")
     private String resourceContent;
 }

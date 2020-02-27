@@ -93,7 +93,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             response.setResourceArea(Integer.toString(item.getResourceArea()));
             response.setResourceId(Long.toString(item.getId()));
             response.setResourceLabel(Integer.toString(item.getResourceLabel()));
-            response.setResourceTitle(item.getTitle());
+//            response.setResourceTitle(item.getTitle());
             response.setResourceType(Integer.toString(item.getReleaseType()));
             response.setShareNum(Integer.toString(item.getShareNum()));
             response.setTopStatus(Integer.toString(item.getSticky()));

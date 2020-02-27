@@ -5,7 +5,7 @@
     <!--查询我的浏览记录-->
     <select id="queryMyBrowesByUserId" resultType="com.gy.resource.response.rest.MyBrowseResponse" parameterType="java.lang.Long">
                            SELECT
-                                    a.user_id AS userId,
+                                    gri.user_id AS userId,
                                     gri.audit_time AS auditTime,
                                     a.update_time as createTime,
                                     gri.title,

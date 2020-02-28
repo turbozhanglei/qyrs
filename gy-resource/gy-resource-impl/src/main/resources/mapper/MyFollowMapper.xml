@@ -50,7 +50,7 @@
                     a.mobile,
                     a.title,
                     a.content,
-                    a.create_time as createTime,
+                    a.audit_time as auditTime,
                     gdc1.`desc` as releaseType,
                     gdc2.`desc` as resourceLabel,
                     gdc3.`desc` as resourceArea,
@@ -66,7 +66,7 @@
                     AND a.delete_flag=0
                     and (a.`status`=1 or a.`status`=3)
                     and a.user_id=#{userId}
-                    ORDER BY a.create_time DESC
+                    ORDER BY a.update_time DESC
 LIMIT 1
 
     </select>

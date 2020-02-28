@@ -19,7 +19,7 @@
             and a.status = #{status}
         </if>
         <if test="null!=real_name  and ''!= real_name">
-            and a.real_name LIKE CONCAT('%', #{real_name}, '%')
+            and r.role_name LIKE CONCAT('%', #{real_name}, '%')
         </if>
         <if test="null!=nickname  and ''!= nickname">
             and a.nickname LIKE CONCAT('%', #{nickname}, '%')
@@ -188,12 +188,51 @@
         </if>
     </select>
 
+    <!-- 查询 会员列表-->
+    <select id="queryListMember" parameterType="map" resultType="dto">
+        SELECT
+        a.*,
+        r.role_name AS rolename,
+        r.role_id_list,COUNT(ggc.id) as fens
+        FROM
+        g_user a
+        LEFT JOIN g_global_correlation ggc on a.id=ggc.ref_id and ggc.ref_type=0 and ggc.delete_flag=0
+        LEFT JOIN
+        (
+        SELECT
+        a.userid,
+        GROUP_CONCAT(b.role_name) role_name,
+        GROUP_CONCAT(b.id) role_id_list
+        FROM sys_role_user a
+        LEFT JOIN
+        sys_role b on a.roleid = b.id
+        GROUP BY a.userid
+        ) r on a.id = r.userid
+        WHERE 1=1 and a.delete_flag = 0
+        <include refid="sql_where"/>
+        GROUP BY a.id ORDER BY a.id asc
+        <if test="null!=start">
+            limit #{start},#{end}
+        </if>
+    </select>
+
 
     <!-- 查询 -->
     <select id="queryListCount" parameterType="map" resultType="dto">
         SELECT
-        count(a.id) as total
+         count(a.id) as total
         FROM g_user a
+        LEFT JOIN
+        (
+        SELECT
+        a.userid,
+        GROUP_CONCAT(b.role_name) role_name,
+        GROUP_CONCAT(b.id) role_id_list
+        FROM sys_role_user a
+        LEFT JOIN
+        sys_role b on a.roleid = b.id
+        GROUP BY a.userid
+        ) r on a.id = r.userid
         WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
     </select>

@@ -5,12 +5,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.guoye.base.BizAction;
 import com.guoye.util.*;
 import com.ning.http.util.Base64;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.resource.util.StringUtils;
 import org.g4studio.core.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,9 +39,11 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/wechat")
+@Slf4j
 public class WechatController extends BizAction {
 
-
+    @Autowired
+    UserUtil userUtil;
     //获取openid and session_key
     @ResponseBody
     @RequestMapping(value = "/getOpenid")
@@ -48,7 +53,7 @@ public class WechatController extends BizAction {
 
         try {
 
-            String openids = UserUtil.getopenid(dto.getAsString("code"));
+            String openids = userUtil.getopenid(dto.getAsString("code"));
             JSONObject jsonObject = JSONObject.fromObject(openids);
             if (StringUtils.isNotEmpty(openids) && openids!="") {
                 Dto udto=new BaseDto();
@@ -65,7 +70,6 @@ public class WechatController extends BizAction {
 
                 udto.put("openid",openid);
                 udto.put("session_key",session_key);
-
                 result.setData(udto);
             }
 
@@ -90,13 +94,15 @@ public class WechatController extends BizAction {
         try {
               String token = UUID.randomUUID().toString();
               Dto member =(BaseDto)bizService.queryForDto("sysUser.getInfo",new BaseDto("openid",dto.getAsString("openid")));
-              if(member.getAsInteger("status")==1){
-                  throw new Exception("登录失败，用户账号已被禁用！");
+              if(member !=null && member.getAsInteger("status")==1){
+                  result.setCode("5000");
+                  result.setMsg("用户已被禁用！登录失败！");
+                  return result;
               }
               if(null !=member){
                   member.put("mobile",Des.decrypt(member.getAsString("mobile"),password));//解密手机号
                   member.put("token",token);
-                  redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(member), 7200l);
+                  redisService.setValue("mp_login_token:"+token,JSONArray.toJSONString(member), 3600l*48);
                   result.setData(member);
               }else {
                   if(StringUtils.isNotEmpty(dto.getAsString("nickName"))){
@@ -115,7 +121,7 @@ public class WechatController extends BizAction {
                       bizService.saveInfo(udto);
                       udto.put("id",udto.getAsString("id"));//返回当前用户登录的id
                       udto.put("token",token);
-                      redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(udto), 7200l);
+                      redisService.setValue("mp_login_token:"+token, JSONArray.toJSONString(udto), 3600l*48);
                       result.setData(udto);
 
                   }
@@ -145,7 +151,12 @@ public class WechatController extends BizAction {
         String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
         try {
-            String clt=dto.getAsString("clt");
+            //String clt=dto.getAsString("clt");
+            if (dto.getAsString("encryptedData").equals("undefined") || dto.getAsString("iv").equals("undefined")){
+                result.setCode("6000");
+                result.setMsg("参数错误");
+                return result;
+            }
             com.alibaba.fastjson.JSONObject userInfo = decryptUserInfo(dto.getAsString("encryptedData"), dto.getAsString("key"), dto.getAsString("iv"));
             //判断号码是否存在
             if(null !=userInfo){
@@ -180,8 +191,13 @@ public class WechatController extends BizAction {
         BaseResult result = new BaseResult();
 
         try {
-
-            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            log.info("------进入查询个人信息列表，request{---------}"+dto.getAsString("token"), dto.getAsString("token"));
+            Dto member = redisService.getObject("mp_login_token:"+dto.getAsString("token"), BaseDto.class);
+            if (member==null){
+                result.setCode("1000");
+                result.setMsg("请重新登录");
+                return  result;
+            }
             DESWrapper Des = new DESWrapper();
             String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
 
@@ -201,6 +217,7 @@ public class WechatController extends BizAction {
                 Dto userdto=(BaseDto)bizService.queryForDto("sysUser.getUserInfo",new BaseDto("id",dto.getAsString("id")));
                 if(userdto !=null){
                     userdto.put("mobile",Des.decrypt(userdto.getAsString("mobile"),password));
+                    userdto.put("token",dto.getAsString("token"));
                     result.setData(userdto);
                 }
 

@@ -15,6 +15,9 @@ ribbon:
 img_url: https://gymp25.chinayie.com/image/
 img_path: /home/gymp25/gy-mp/imgs
 
+app_id: wx8638e80c7186b393
+secret_id: 09ba7c8d17933848e5788a6c64de9c57
+
 eureka:
   client:
     service-url:
@@ -91,7 +94,8 @@ spring:
     host: 47.100.214.25
     port: 6379
     password: asdf@123
-    pool:
+    jedis:
+      pool:
         max-active: 200
         max-idle: 100
         min-idle: 20

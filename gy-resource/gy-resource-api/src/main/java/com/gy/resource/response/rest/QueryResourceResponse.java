@@ -48,7 +48,7 @@ public class QueryResourceResponse implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date issureDate;
 
-    @ApiModelProperty(notes = "资源发布类型 0求购 1出售")
+    @ApiModelProperty(notes = "资源发布类型 1求购 0出售")
     private String resourceType;
 
     @ApiModelProperty(notes = "资源标签 1乙二醇 2PTA 3成品油 4PVC 5甲醇 6塑料 0其他", required = true)
@@ -57,7 +57,7 @@ public class QueryResourceResponse implements Serializable {
     @ApiModelProperty(notes = "资源区域 1东北 2华东 3华北 4华中 5华南 6西南 7西北 8境外", required = true)
     private String resourceArea;
 
-    @ApiModelProperty(notes = "内贸外贸 0内贸 1进口 2出口")
+    @ApiModelProperty(notes = "内贸外贸 1内贸 2进口 3出口")
     private String tradeType;
 
     @ApiModelProperty(notes = "资源信息内容")
@@ -91,4 +91,7 @@ public class QueryResourceResponse implements Serializable {
     @ApiModelProperty(notes = "审核时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date checkDate;
+
+    @ApiModelProperty(notes = "0可以拨打 1不可以拨打")
+    private String phoneSwitch;
 }

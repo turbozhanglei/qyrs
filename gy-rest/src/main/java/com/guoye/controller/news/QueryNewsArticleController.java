@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.DateTime;
 
 /**
  * @Autor:zhaosen
@@ -86,6 +90,17 @@ public class QueryNewsArticleController extends BizAction {
         List<Dto> articleList=bizService.queryForList("newsArticle.queryArticleListByCategoryId", dto);
         Map<String,List<Dto>> data=new HashMap<String,List<Dto>>();
        if(!articleList.isEmpty()){
+           for(Dto tDto:articleList){
+             if(StringUtils.isNotEmpty(tDto.getAsString("createTime"))){
+                 SimpleDateFormat formate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                 try {
+                     Date date=formate.parse(tDto.getAsString("createTime"));
+                     tDto.put("createTime",format(date));
+                 } catch (ParseException e) {
+                     e.printStackTrace();
+                 }
+             }
+           }
            data.put("articleList",JSONUtil.formatDateList(articleList, G4Constants.FORMAT_DateTime));
            retDto.put("data",data );
            retDto.put("total",articleList.size() );
@@ -99,4 +114,17 @@ public class QueryNewsArticleController extends BizAction {
        }
         return  retDto;
     }
+    private String format(Date date) {
+        DateTime now = new DateTime();
+        DateTime today_start = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), 0, 0, 0);
+        DateTime today_end = today_start.plusDays(1);
+        DateTime yesterday_start = today_start.minusDays(1);
+        if(date.after(today_start.toDate()) && date.before(today_end.toDate())) {
+            return String.format("%s", new DateTime(date).toString("HH:mm"));
+        } else if(date.after(yesterday_start.toDate()) && date.before(today_start.toDate())) {
+            return String.format("昨天 %s", new DateTime(date).toString("HH:mm"));
+        }
+        return new DateTime(date).toString("yyyy-MM-dd");
+    }
+
 }

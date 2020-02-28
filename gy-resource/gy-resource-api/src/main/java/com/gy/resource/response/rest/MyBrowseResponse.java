@@ -28,9 +28,10 @@ public class MyBrowseResponse implements Serializable{
     private Long userId;
     @ApiModelProperty(notes = "文章标题")
     private String title;
-    @ApiModelProperty(notes = "发布时间")
+    @ApiModelProperty(notes = "资源发布时间")
+    private String auditTime;
+    @ApiModelProperty(notes = "浏览时间")
     private String createTime;
-
     @ApiModelProperty(notes = "当前文章人的头像")
     private String headPic;
 
@@ -42,4 +43,10 @@ public class MyBrowseResponse implements Serializable{
 
     @ApiModelProperty(notes = "当前文章发布人的电话号码")
     private String  mobile;
+
+    @ApiModelProperty(notes = "资源信息内容")
+    private String resourceContent;
+
+    @ApiModelProperty(notes = "0可以拨打 1不可以拨打")
+    private String phoneSwitch;
 }

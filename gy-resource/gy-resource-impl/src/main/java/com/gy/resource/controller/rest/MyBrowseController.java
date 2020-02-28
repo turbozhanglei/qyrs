@@ -9,6 +9,7 @@ import com.gy.resource.response.rest.*;
 import com.gy.resource.service.MyBrowesService;
 import com.gy.resource.service.MyFollowService;
 import com.gy.resource.service.TokenService;
+import com.gy.resource.service.UserSerivice;
 import com.gy.resource.utils.DESWrapper;
 import com.jic.common.base.vo.RestResult;
 import com.jic.common.redis.RedisClientTemplate;
@@ -37,6 +38,8 @@ public class MyBrowseController {
     MyBrowesService myBrowesService;
     @Autowired
     TokenService tokenService;
+    @Autowired
+    UserSerivice userSerivice;
     /*
      *
      *查询我的浏览记录
@@ -55,23 +58,48 @@ public class MyBrowseController {
         };
         try {
             List<MyBrowseResponse> reseult=myBrowesService.queryMyBrowesByUserId(Long.valueOf(userId));
-            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new HashMap<String,List<MyBrowseResponse>>();
+            Map<String,List<MyBrowseResponse>> myBrowseResponseList=new LinkedHashMap<String,List<MyBrowseResponse>>();
             MyBrowseGroupByDateResponse myBrowseGroupByDateResponse=new MyBrowseGroupByDateResponse();
             //数据组装
           if(reseult.size()!=0){
-              Set<String> keys=new HashSet<String>();
-              int index=0;
+              List<String> list=new ArrayList<>();
               for(MyBrowseResponse myBrowseResponse:reseult){
-                  keys.add(myBrowseResponse.getCreateTime().substring(0,10));
+                  list.add(myBrowseResponse.getCreateTime().substring(0,10));
+              }
+              //list去重
+              List<String> keys=new ArrayList<>();
+              int  index=0;
+//              keys.add(list.get(0));
+              for(String str:list){
+                  if(keys.toString().indexOf(list.get(index))==-1){
+                      keys.add(list.get(index));
+                  }
+                  index++;
               }
               for (String key:keys){
                   List<MyBrowseResponse> myBrowseResponses=new ArrayList<>();
                   for(MyBrowseResponse myBrowseResponse:reseult){
                       if(key.equals(myBrowseResponse.getCreateTime().substring(0,10))){
-                          myBrowseResponse.setMobile(desWrapper.decrypt(myBrowseResponse.getMobile(),password));//解密手机号);
+                          if(StringUtils.isNotEmpty(myBrowseResponse.getMobile())){
+                              try {
+                                  String mobile="";
+                                  mobile=desWrapper.decrypt(myBrowseResponse.getMobile(),password);
+                                  myBrowseResponse.setMobile(mobile);//解密手机号);
+                              } catch (Exception e) {
+                                  log.error("queryMyBrowse========》",e);
+                              }
+                          }
+                          if(StringUtils.isNotEmpty(myBrowseResponse.getAuditTime())){
+                              myBrowseResponse.setAuditTime(myBrowseResponse.getAuditTime().substring(0,10));
+                          }
+                          myBrowseResponse.setNickname(getNickName(myBrowseResponse.getNickname()));
+                          String phoneSwitch=userSerivice.queryPhoneSwitchByUserId(Long.parseLong(userId));
+                          myBrowseResponse.setPhoneSwitch(phoneSwitch);
+                          myBrowseResponse.setResourceContent(setResourceContentByLength(myBrowseResponse.getResourceContent()));
                           myBrowseResponses.add(myBrowseResponse);
                           myBrowseResponseList.put(key,myBrowseResponses);
                       }
+
                   }
               }
               myBrowseGroupByDateResponse.setMyBrowseResponseList(myBrowseResponseList);
@@ -81,11 +109,22 @@ public class MyBrowseController {
           }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("queryMyBrowse========》",e);
             restResult = RestResult.error("9999", e.getLocalizedMessage());
         }
         return restResult;
 
+    }
+
+    public String setResourceContentByLength(String content){
+        if(org.apache.commons.lang.StringUtils.isBlank(content)){
+            return "";
+        }
+        //TODO 先写死50，具体也不知道截取多少
+        if(content.length()<=50){
+            return content;
+        }
+        return content.substring(0,50);
     }
 
     /*
@@ -113,6 +152,27 @@ public class MyBrowseController {
 
     }
 
-
+    public String getNickName(String nickName) {
+        //2020-02-24 客户提需求去掉脱敏，后期将复用服务提取出来共用
+//        if (org.springframework.util.StringUtils.isEmpty(nickName)) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 1) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 2) {
+//            return nickName.substring(0, 1)+"*";
+//        }
+//        if (nickName.length() > 2) {
+//            StringBuffer sb=new StringBuffer();
+//            sb.append(nickName.charAt(0));
+//            for(int i=0;i<nickName.length()-2;i++){
+//                sb.append("*");
+//            }
+//            sb.append(nickName.charAt(nickName.length()-1));
+//            return sb.toString();
+//        }
+        return nickName;
+    }
 
 }

@@ -43,9 +43,9 @@ public class QueryResourceManagerResponse implements Serializable {
     @ExcelProperty("资源Id")
     private String resourceId;
 
-    @ApiModelProperty(notes = "资源标题")
-    @ExcelProperty("资源标题")
-    private String resourceTitle;
+//    @ApiModelProperty(notes = "资源标题")
+//    @ExcelProperty("资源标题")
+//    private String resourceTitle;
 
     @ApiModelProperty(notes = "资源发布类型  0求购 1出售")
     @ExcelProperty("资源发布类型")

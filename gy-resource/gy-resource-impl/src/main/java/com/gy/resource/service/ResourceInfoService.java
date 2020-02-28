@@ -51,5 +51,11 @@ public interface ResourceInfoService {
     public PageResult<ResourceInfo> queryPageByCondition(ResourceInfo resourceInfo, Page pageQuery,List<Integer> releaseTypeList,
                                                          List<Integer> resourceLabelList,
                                                          List<Integer> resourceAreaList,
-                                                         List<Integer> tradeTypeList);
+                                                         List<Integer> tradeTypeList,
+                                                         Integer refType,
+                                                         Integer sortType);
+    public PageResult<ResourceInfo> queryResourceInfoListManager(ResourceInfo resourceInfo, Page pageQuery);
+
+    public PageResult<ResourceInfo> queryReportListManager(ResourceInfo resourceInfo, Page pageQuery,Integer refType);
+
 }

@@ -15,6 +15,7 @@ import com.gy.resource.response.rest.RecommendResourceResponse;
 import com.gy.resource.service.PGlobalCorrelationService;
 import com.gy.resource.service.ResourceInfoService;
 import com.gy.resource.service.TokenService;
+import com.gy.resource.service.UserSerivice;
 import com.jic.common.base.vo.Page;
 import com.jic.common.base.vo.PageResult;
 import com.jic.common.base.vo.RestResult;
@@ -55,6 +56,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     @Resource
     PGlobalCorrelationService pGlobalCorrelationService;
+    @Autowired
+    UserSerivice userSerivice;
 
     @Override
     public RestResult<String> issureResourceApi(IssureResourceRequest resourceRequest) {
@@ -88,6 +91,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         response.setTopStatus(resourceInfo.getSticky().toString());
         response.setCheckAccount(resourceInfo.getAuditor());
         response.setCheckDate(resourceInfo.getAuditTime());
+        response.setPhoneSwitch(queryPhoneSwitch(resourceInfo.getUserId()));
         return RestResult.success(response);
     }
 
@@ -117,6 +121,7 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
             response.setShareNum(getShareNum(param));
+            response.setResourceContent(setResourceContentByLength(param.getContent()));
             responseList.add(response);
         }
         pageResult.setRows(responseList);
@@ -154,7 +159,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             if (CollectionUtils.isEmpty(resourceInfos)) {
                 return RestResult.success(new ArrayList<>());
             }
-            List<RecommendResourceResponse> responseList = getRecommendResourceResponse(resourceInfos);
+            topList.addAll(resourceInfos);
+            List<RecommendResourceResponse> responseList = getRecommendResourceResponse(topList);
             return RestResult.success(responseList);
         }
 
@@ -183,15 +189,15 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
         Integer browseSortFlag=getValueByParam(resourceByConditionRequest.getBrowseUpNum());
         Integer shareSortFlag=getValueByParam(resourceByConditionRequest.getShareUpNum());
         if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum)).collect(Collectors.toList());
         }else if(browseSortFlag!=null&&browseSortFlag==ResourceConstant.brownSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getBrowseNum).reversed()).collect(Collectors.toList());
         }
 
         if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.up){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum)).collect(Collectors.toList());
         }else if(shareSortFlag!=null&&shareSortFlag==ResourceConstant.shareSort.down){
-            responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
+            responseList=responseList.stream().sorted(Comparator.comparing(QueryResourceByConditionResponse::getShareNum).reversed()).collect(Collectors.toList());
         }
 
 
@@ -202,12 +208,28 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public PageResult<ResourceInfo> queryResourceInfoList(ResourceInfo param,QueryResourceByConditionRequest request){
         Page page=setPage(request.getStart(),request.getLimit());
+        Integer refType=null;
+        Integer sortType=null;
+        if(org.apache.commons.lang.StringUtils.isNotBlank(request.getBrowseUpNum())){
+            refType=ResourceConstant.refType.resource_brown_num;
+            if(ResourceConstant.brownSort.up==Integer.parseInt(request.getBrowseUpNum())){
+                sortType=ResourceConstant.brownSort.up;
+            }
+        }else if(org.apache.commons.lang.StringUtils.isNotBlank(request.getShareUpNum())){
+            refType=ResourceConstant.refType.resource_share_num;
+            if(ResourceConstant.shareSort.up==Integer.parseInt(request.getShareUpNum())){
+                sortType=ResourceConstant.shareSort.up;
+            }
+        }
+
         PageResult<ResourceInfo> resourceInfoPageResult=queryPageByCondition(param,
                 page,
                 getFieldList(request.getResourceType()),
                 getFieldList(request.getResourceLabel()),
                 getFieldList(request.getResourceArea()),
-                getFieldList(request.getTradeType()));
+                getFieldList(request.getTradeType()),
+                refType,
+                sortType);
         return resourceInfoPageResult;
     }
 
@@ -241,6 +263,8 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssureUserId(Long.toString(resourceInfo.getUserId()));
             response.setResourceId(Long.toString(resourceInfo.getId()));
             response.setResourceTitle(resourceInfo.getTitle());
+            response.setResourceContent(setResourceContentByLength(resourceInfo.getContent()));
+            response.setPhoneSwitch(queryPhoneSwitch(resourceInfo.getUserId()));
             responseList.add(response);
         }
         return responseList;
@@ -252,7 +276,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 //        param.setResourceLabel(getValueByParam(request.getResourceLabel()));
 //        param.setResourceArea(getValueByParam(request.getResourceArea()));
 //        param.setResourceTrade(getValueByParam(request.getTradeType()));
-        param.setTitle(getValue(request.getResourceTitle()));
+//        param.setTitle(getValue(request.getResourceTitle()));
+        param.setTitle(null);
+        param.setContent(getValue(request.getResourceContent()));
         param.setUserId(getLongValue(request.getIssureUserId()));
         return param;
     }
@@ -294,9 +320,30 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             response.setIssurePhone(param.getMobile());
             response.setResourceId(Long.toString(param.getId()));
             response.setResourceTitle(param.getTitle());
+            response.setResourceContent(setResourceContentByLength(param.getContent()));
+            String phoneSwitch=queryPhoneSwitch(param.getUserId());
+            response.setPhoneSwitch(phoneSwitch);
             responseList.add(response);
         }
         return responseList;
+    }
+
+    public String setResourceContentByLength(String content){
+        if(org.apache.commons.lang.StringUtils.isBlank(content)){
+            return "";
+        }
+        //TODO 先写死50，具体也不知道截取多少
+        if(content.length()<=50){
+            return content;
+        }
+        return content.substring(0,50);
+    }
+
+    public String queryPhoneSwitch(long userId){
+        UserRequest userRequest=new UserRequest();
+        userRequest.setLoginUserId(Long.toString(userId));
+        RestResult<String> result=userSerivice.queryPhoneSwitch(userRequest);
+        return result.getData();
     }
 
     public List<ResourceInfo> getTopResource() {
@@ -336,24 +383,25 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
 
     public String getNickName(ResourceInfo resourceInfo) {
         String nickName = resourceInfoMapper.getNickName(resourceInfo.getUserId());
-        if (StringUtils.isEmpty(nickName)) {
-            return nickName;
-        }
-        if (nickName.length() == 1) {
-            return nickName;
-        }
-        if (nickName.length() == 2) {
-            return nickName.substring(0, 1)+"*";
-        }
-        if (nickName.length() > 2) {
-            StringBuffer sb=new StringBuffer();
-            sb.append(nickName.charAt(0));
-            for(int i=0;i<nickName.length()-2;i++){
-                sb.append("*");
-            }
-            sb.append(nickName.charAt(nickName.length()-1));
-            return sb.toString();
-        }
+        //2020-02-24客户提需求去掉昵称脱敏
+//        if (StringUtils.isEmpty(nickName)) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 1) {
+//            return nickName;
+//        }
+//        if (nickName.length() == 2) {
+//            return nickName.substring(0, 1)+"*";
+//        }
+//        if (nickName.length() > 2) {
+//            StringBuffer sb=new StringBuffer();
+//            sb.append(nickName.charAt(0));
+//            for(int i=0;i<nickName.length()-2;i++){
+//                sb.append("*");
+//            }
+//            sb.append(nickName.charAt(nickName.length()-1));
+//            return sb.toString();
+//        }
         return nickName;
     }
 
@@ -449,12 +497,44 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
     }
 
     @Override
+    public PageResult<ResourceInfo> queryResourceInfoListManager(ResourceInfo resourceInfo, Page pageQuery) {
+        //计算下标
+        int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
+        List<ResourceInfo> list = resourceInfoMapper.queryResourceInfoListManager(startIndex,
+                pageQuery.getLimit(),
+                resourceInfo);
+        long count = resourceInfoMapper.queryResourceInfoListManagerCount(resourceInfo);
+        PageResult pageResult = new PageResult();
+        pageResult.setRows(list);
+        pageResult.setTotal(count);
+        return pageResult;
+    }
+
+    @Override
+    public PageResult<ResourceInfo> queryReportListManager(ResourceInfo resourceInfo, Page pageQuery,Integer refType) {
+        //计算下标
+        int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
+        List<ResourceInfo> list = resourceInfoMapper.queryReportListByPage(
+                resourceInfo,
+                refType,
+                startIndex,
+                pageQuery.getLimit());
+        long count = resourceInfoMapper.queryReportListCountByPage(resourceInfo);
+        PageResult pageResult = new PageResult();
+        pageResult.setRows(list);
+        pageResult.setTotal(count);
+        return pageResult;
+    }
+
+    @Override
     public PageResult<ResourceInfo> queryPageByCondition(ResourceInfo resourceInfo,
                                                          Page pageQuery,
                                                          List<Integer> releaseTypeList,
                                                          List<Integer> resourceLabelList,
                                                          List<Integer> resourceAreaList,
-                                                         List<Integer> tradeTypeList) {
+                                                         List<Integer> tradeTypeList,
+                                                         Integer refType,
+                                                         Integer sortType) {
         PageResult pageResult = new PageResult();
         //计算下标
         int startIndex = (pageQuery.getStart() - 1) * pageQuery.getLimit();
@@ -465,7 +545,9 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
                 resourceAreaList,
                 tradeTypeList,
                 startIndex,
-                pageQuery.getLimit());
+                pageQuery.getLimit(),
+                refType,
+                sortType);
         long count=resourceInfoMapper.queryByConditionCount(resourceInfo,
                 releaseTypeList,
                 resourceLabelList,

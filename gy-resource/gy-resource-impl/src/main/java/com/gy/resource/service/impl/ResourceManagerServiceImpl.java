@@ -51,7 +51,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     public RestResult<PageResult<QueryResourceManagerResponse>> queryResourceManager(QueryResourceManagerRequest resourceManagerRequest) {
         ResourceInfo resourceInfo = setResourceInfo(resourceManagerRequest);
         Page page = setPage(resourceManagerRequest.getStart(), resourceManagerRequest.getLimit());
-        PageResult<ResourceInfo> pageResult = resourceInfoService.queryPageOrderByAuditTime(resourceInfo, page);
+        PageResult<ResourceInfo> pageResult = resourceInfoService.queryResourceInfoListManager(resourceInfo, page);
         PageResult<QueryResourceManagerResponse> result = setQueryResourceManagerResponse(pageResult, resourceManagerRequest);
         return RestResult.success(result);
     }
@@ -85,7 +85,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         List<QueryResourceManagerResponse> responseList = new ArrayList<>(resourceInfoList.size());
         resourceInfoList.stream().forEach(item -> {
             QueryResourceManagerResponse response = new QueryResourceManagerResponse();
-            response.setBrowseNum(getBrowseNum(item));
+            response.setBrowseNum(Integer.toString(item.getBrowNum()));
             response.setCreateTime(item.getCreateTime());
             response.setIssureId(Long.toString(item.getUserId()));
             response.setIssurePhone(item.getMobile());
@@ -93,9 +93,9 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             response.setResourceArea(Integer.toString(item.getResourceArea()));
             response.setResourceId(Long.toString(item.getId()));
             response.setResourceLabel(Integer.toString(item.getResourceLabel()));
-            response.setResourceTitle(item.getTitle());
+//            response.setResourceTitle(item.getTitle());
             response.setResourceType(Integer.toString(item.getReleaseType()));
-            response.setShareNum(getShareNum(item));
+            response.setShareNum(Integer.toString(item.getShareNum()));
             response.setTopStatus(Integer.toString(item.getSticky()));
             response.setTradeType(Integer.toString(item.getResourceTrade()));
             responseList.add(response);
@@ -128,7 +128,9 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         if(id!=null){
             resourceInfo.setId(getLongValue(request.getResourceId()));
         }
-        resourceInfo.setTitle(request.getResourceTitle());
+        if(!StringUtils.isEmpty(request.getResourceTitle())){
+            resourceInfo.setTitle(request.getResourceTitle());
+        }
         resourceInfo.setReleaseType(getValueByParam(request.getResourceType()));
         resourceInfo.setStatus(getValueByParam(request.getIssureStatus()));
         resourceInfo.setSticky(getValueByParam(request.getTopStatus()));
@@ -144,6 +146,10 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         resourceInfo.setResourceLabel(getValueByParam(request.getResourceLabel()));
         resourceInfo.setResourceArea(getValueByParam(request.getResourceArea()));
         resourceInfo.setResourceTrade(getValueByParam(request.getTradeType()));
+        resourceInfo.setBrowNumStart(getValueByParam(request.getBrowseStartNum()));
+        resourceInfo.setBrowNumEnd(getValueByParam(request.getBrowseEndNum()));
+        resourceInfo.setShareNumStart(getValueByParam(request.getShareStartNum()));
+        resourceInfo.setShareNumEnd(getValueByParam(request.getShareEndNum()));
         return resourceInfo;
     }
 
@@ -222,7 +228,11 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
     public RestResult<PageResult<ReportResponse>> resourceReport(ReportRequest reportRequest) {
         ResourceInfo resourceInfo = setResourceInfo(reportRequest);
         Page page = setPage(reportRequest.getStart(), reportRequest.getLimit());
-        PageResult<ResourceInfo> pageResult = resourceInfoService.queryPageOrderByAuditTime(resourceInfo, page);
+        Integer refType=null;
+        if(org.apache.commons.lang.StringUtils.isNotBlank(reportRequest.getResourceSort())){
+            refType=Integer.parseInt(reportRequest.getResourceSort());
+        }
+        PageResult<ResourceInfo> pageResult = resourceInfoService.queryReportListManager(resourceInfo, page,refType);
         PageResult<ReportResponse> result=setReportResponsePageResult(pageResult,reportRequest);
         return RestResult.success(result);
     }
@@ -304,7 +314,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
                     return item;
                 }).collect(Collectors.toList());
             }
-            EasyExcel.write(response.getOutputStream(), QueryResourceManagerResponse.class).sheet("资源信息报表").doWrite(responseList);
+            EasyExcel.write(response.getOutputStream(), ReportResponse.class).sheet("资源信息报表").doWrite(responseList);
         }catch (Exception e){
             log.error("reportDownLoad==>error",e);
         }
@@ -314,13 +324,13 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         PageResult<ReportResponse> responsePageResult = new PageResult<>();
         if (CollectionUtils.isEmpty(pageResult.getRows())) {
             responsePageResult.setRows(new ArrayList<>());
-            responsePageResult.setTotal(0);
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         List<ReportResponse> responseList = setResponseList(pageResult);
         if (StringUtils.isEmpty(reportRequest.getResourceSort())) {
             responsePageResult.setRows(responseList);
-            responsePageResult.setTotal(responseList.size());
+            responsePageResult.setTotal(pageResult.getTotal());
             return responsePageResult;
         }
         if (org.apache.commons.lang.StringUtils.equals(reportRequest.getResourceSort(), ResourceConstant.sortType.brownUp)) {
@@ -331,7 +341,7 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
             responseList.stream().sorted(Comparator.comparing(ReportResponse::getPhoneNum).reversed()).collect(Collectors.toList());
         }
         responsePageResult.setRows(responseList);
-        responsePageResult.setTotal(responseList.size());
+        responsePageResult.setTotal(pageResult.getTotal());
         return responsePageResult;
     }
 
@@ -339,18 +349,18 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         List<ReportResponse> responseList = new ArrayList<>();
         for (ResourceInfo resourceInfo : pageResult.getRows()) {
             ReportResponse report = new ReportResponse();
-            report.setBrowseNum(getBrowseNum(resourceInfo));
+            report.setBrowseNum(Integer.toString(resourceInfo.getBrowNum()));
             report.setCreateTime(resourceInfo.getCreateTime());
             report.setIssurePhone(resourceInfo.getMobile());
             report.setIssureStatus(Integer.toString(resourceInfo.getStatus()));
             report.setIssureUserId(Long.toString(resourceInfo.getUserId()));
-            report.setPhoneNum(getPhoneNum(resourceInfo));
+            report.setPhoneNum(Integer.toString(resourceInfo.getPhoneNum()));
             report.setResourceArea(Integer.toString(resourceInfo.getResourceArea()));
             report.setResourceId(Long.toString(resourceInfo.getId()));
             report.setResourceLabel(Integer.toString(resourceInfo.getResourceLabel()));
-            report.setResourceTitle(resourceInfo.getTitle());
+//            report.setResourceTitle(resourceInfo.getTitle());
             report.setResourceType(Integer.toString(resourceInfo.getReleaseType()));
-            report.setShareNum(getShareNum(resourceInfo));
+            report.setShareNum(Integer.toString(resourceInfo.getShareNum()));
             report.setTopStatus(Integer.toString(resourceInfo.getSticky()));
             report.setTradeType(Integer.toString(resourceInfo.getResourceTrade()));
             responseList.add(report);
@@ -362,7 +372,9 @@ public class ResourceManagerServiceImpl implements ResourceManagerService {
         ResourceInfo resourceInfo = new ResourceInfo();
         resourceInfo.setCreateStartTime(reportRequest.getCreateStartTime());
         resourceInfo.setCreateEndTime(reportRequest.getCreateEndTime());
-        resourceInfo.setMobile(reportRequest.getIssurePhone());
+        if(!StringUtils.isEmpty(reportRequest.getIssurePhone())){
+            resourceInfo.setMobile(reportRequest.getIssurePhone());
+        }
         return resourceInfo;
     }
 }

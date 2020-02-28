@@ -5,10 +5,11 @@
     <!--查询我的浏览记录-->
     <select id="queryMyBrowesByUserId" resultType="com.gy.resource.response.rest.MyBrowseResponse" parameterType="java.lang.Long">
                            SELECT
-                                    a.user_id AS userId,
-                                    a.update_time AS createTime,
+                                    gri.user_id AS userId,
+                                    gri.audit_time AS auditTime,
+                                    a.update_time as createTime,
                                     gri.title,
-
+                                    gri.content as resourceContent,
                                     gri.id AS resourceId,
                                     gu.head_pic AS headPic,
                                      gu.nickname,
@@ -35,6 +36,7 @@
                                 AND a.user_id = #{userId}
                                 GROUP BY
                                     a.ref_id
+                                order  by a.update_time DESC
     </select>
     <!--搜索历史 删除-->
     <update id="myBrowesDelete" parameterType="java.lang.Long">

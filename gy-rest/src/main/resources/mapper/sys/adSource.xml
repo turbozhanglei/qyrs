@@ -135,6 +135,7 @@
         SELECT a.*
         FROM g_ad_source a
         WHERE 1=1
+        and delete_flag = 0
         <include refid="sql_where"/>
         ORDER BY a.sort ASC
         limit 0,#{limit}

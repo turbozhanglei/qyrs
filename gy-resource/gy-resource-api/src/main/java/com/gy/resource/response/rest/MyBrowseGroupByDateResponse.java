@@ -25,5 +25,4 @@ import java.util.Map;
 public class MyBrowseGroupByDateResponse implements Serializable{
     @ApiModelProperty(notes = "浏览记录-按天")
     private Map<String,List<MyBrowseResponse>> myBrowseResponseList;
-
 }

@@ -81,7 +81,7 @@ public class AssociationalWordServiceImpl implements PAssociationalWordService{
 
     @Override
     public List<AssociationalWordModel> associationalWordFuzzyWordQuery(String fuzzyWord) {
-        int startIndex =1;
+        int startIndex =0;
         int limit =10;
         return modelMapper.associationalWordFuzzyQuery(startIndex, limit, fuzzyWord);
     }

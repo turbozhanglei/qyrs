@@ -36,8 +36,10 @@ public interface  ResourceInfoMapper {
                                         @Param("resourceLabelList")List<Integer> resourceLabelList,
                                         @Param("resourceAreaList")List<Integer> resourceAreaList,
                                         @Param("resourceTradeList")List<Integer> resourceTradeList,
-                                        @Param("startIndex") int startIndex,
-                                        @Param("limit") int limit);
+                                        @Param("startIndex") Integer startIndex,
+                                        @Param("limit") Integer limit,
+                                        @Param("refType")Integer refType,
+                                        @Param("sortType")Integer sortType);
     long queryByConditionCount(@Param("resourceInfo")ResourceInfo resourceInfo,
                                @Param("releaseTypeList")List<Integer> releaseTypeList,
                                @Param("resourceLabelList")List<Integer> resourceLabelList,
@@ -67,7 +69,7 @@ public interface  ResourceInfoMapper {
     @Select("select company_name from g_user where id=#{id} and delete_flag='0'")
     String getCompanyName(@Param("id")long id);
 
-    @Select("select * from g_resource_info where status='3' and sticky='1' and delete_flag='0' limit 10")
+    @Select("select * from g_resource_info where status in('1','3') and sticky='1' and delete_flag='0' order by audit_time desc limit 10")
     List<ResourceInfo> queryTopResourceTen();
 
     @Select("select * from g_resource_info where (status ='3' or status='1') and sticky !='1' and delete_flag='0' order by audit_time desc  limit #{limit}")
@@ -102,4 +104,127 @@ public interface  ResourceInfoMapper {
 
     @Update("update g_resource_info set status='2',sensitive_flag='1',content=#{content},audit_time=now(),auditor=#{auditor} where id=#{id} and delete_flag='0'")
     long systemCheckFail(@Param("content")String content,@Param("auditor")String auditor,@Param("id")long id);
+
+    @Select({
+            "<script> ",
+            "select * from ",
+            "(select a.*,ifnull(b.brow_num,0) as brow_num,ifnull(c.share_num,0) as share_num from ",
+            "(select * from g_resource_info ",
+            "where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.id !=null\">id = #{resourceInfo.id} and </if>  ",
+            "<if test=\"resourceInfo.userId !=null\">user_id = #{resourceInfo.userId} and</if> ",
+            "<if test=\"resourceInfo.mobile\">mobile = #{resourceInfo.mobile} and</if>  ",
+            "<if test=\"resourceInfo.title\"> title like concat(#{resourceInfo.title},'%') and </if> ",
+            "<if test=\"resourceInfo.platform !=null\">latform = #{resourceInfo.platform} and </if>   ",
+            "<if test=\"resourceInfo.releaseType !=null\">release_type = #{resourceInfo.releaseType} and  </if> ",
+            "<if test=\"resourceInfo.resourceLabel !=null\">resource_label = #{resourceInfo.resourceLabel} and </if>  ",
+            "<if test=\"resourceInfo.resourceArea !=null\"> resource_area = #{resourceInfo.resourceArea} and </if> ",
+            "<if test=\"resourceInfo.resourceTrade !=null\">resource_trade = #{resourceInfo.resourceTrade} and </if>  ",
+            "<if test=\"resourceInfo.status !=null\">status = #{resourceInfo.status} and </if> ",
+            "<if test=\"resourceInfo.sticky !=null\">sticky = #{resourceInfo.sticky} and </if> ",
+            "<if test=\"resourceInfo.sensitiveFlag !=null\">sensitive_flag = #{resourceInfo.sensitiveFlag} and </if> ",
+            "<if test=\"resourceInfo.imageFlag !=null\">image_flag = #{resourceInfo.imageFlag} and </if> ",
+            "<if test=\"resourceInfo.auditor\"> auditor = #{resourceInfo.auditor} and </if> ",
+            "<if test=\"resourceInfo.auditTime\"> audit_time = #{resourceInfo.auditTime} and  </if> ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "<if test=\"resourceInfo.creator !=null\">creator = #{resourceInfo.creator} and </if> ",
+            "<if test=\"resourceInfo.updator !=null\"> updator = #{resourceInfo.updator} and </if>",
+            "</trim>",
+            "and delete_flag != '1' order by create_time desc) a left join ",
+            "(select ref_id,count(id) as brow_num from g_global_correlation where ref_type='1' group by ref_id) b ",
+            "on a.id=b.ref_id  left join ",
+            "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
+            "on a.id=c.ref_id )d where 1=1 ",
+            "<if test=\"resourceInfo.browNumStart!=null and resourceInfo.browNumEnd!=null\">and brow_num between #{resourceInfo.browNumStart} and #{resourceInfo.browNumEnd} </if>",
+            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.shareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.shareNumEnd} </if>",
+            "limit #{startIndex},#{limit} ",
+            "</script>"
+    })
+    List<ResourceInfo> queryResourceInfoListManager(@Param("startIndex") int startIndex,
+                                                    @Param("limit") int limit,
+                                                    @Param("resourceInfo") ResourceInfo resourceInfo);
+    @Select({
+            "<script> ",
+            "select count(1) from ",
+            "(select a.*,ifnull(b.brow_num,0) as brow_num,ifnull(c.share_num,0) as share_num from ",
+            "(select * from g_resource_info ",
+            "where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.id !=null\">id = #{resourceInfo.id} and </if>  ",
+            "<if test=\"resourceInfo.userId !=null\">user_id = #{resourceInfo.userId} and</if> ",
+            "<if test=\"resourceInfo.mobile\">mobile = #{resourceInfo.mobile} and</if>  ",
+            "<if test=\"resourceInfo.title\"> title like concat(#{resourceInfo.title},'%') and </if> ",
+            "<if test=\"resourceInfo.platform !=null\">latform = #{resourceInfo.platform} and </if>   ",
+            "<if test=\"resourceInfo.releaseType !=null\">release_type = #{resourceInfo.releaseType} and  </if> ",
+            "<if test=\"resourceInfo.resourceLabel !=null\">resource_label = #{resourceInfo.resourceLabel} and </if>  ",
+            "<if test=\"resourceInfo.resourceArea !=null\"> resource_area = #{resourceInfo.resourceArea} and </if> ",
+            "<if test=\"resourceInfo.resourceTrade !=null\">resource_trade = #{resourceInfo.resourceTrade} and </if>  ",
+            "<if test=\"resourceInfo.status !=null\">status = #{resourceInfo.status} and </if> ",
+            "<if test=\"resourceInfo.sticky !=null\">sticky = #{resourceInfo.sticky} and </if> ",
+            "<if test=\"resourceInfo.sensitiveFlag !=null\">sensitive_flag = #{resourceInfo.sensitiveFlag} and </if> ",
+            "<if test=\"resourceInfo.imageFlag !=null\">image_flag = #{resourceInfo.imageFlag} and </if> ",
+            "<if test=\"resourceInfo.auditor\"> auditor = #{resourceInfo.auditor} and </if> ",
+            "<if test=\"resourceInfo.auditTime\"> audit_time = #{resourceInfo.auditTime} and  </if> ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "<if test=\"resourceInfo.creator !=null\">creator = #{resourceInfo.creator} and </if> ",
+            "<if test=\"resourceInfo.updator !=null\"> updator = #{resourceInfo.updator} and </if>",
+            "</trim>",
+            "and delete_flag != '1' order by create_time desc) a left join ",
+            "(select ref_id,count(id) as brow_num from g_global_correlation where ref_type='1' group by ref_id) b ",
+            "on a.id=b.ref_id  left join ",
+            "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
+            "on a.id=c.ref_id )d where 1=1 ",
+            "<if test=\"resourceInfo.browNumStart!=null and resourceInfo.browNumEnd!=null\">and brow_num between #{resourceInfo.browNumStart} and #{resourceInfo.browNumEnd} </if> ",
+            "<if test=\"resourceInfo.shareNumStart!=null and resourceInfo.shareNumEnd!=null\">and share_num between #{resourceInfo.shareNumStart} and #{resourceInfo.shareNumEnd} </if> ",
+            "</script>"
+    })
+    int queryResourceInfoListManagerCount(@Param("resourceInfo") ResourceInfo resourceInfo);
+
+    @Select({
+            "<script>",
+            "select a.*,ifnull(b.brow_num,0) as brow_num,ifnull(c.share_num,0) as share_num,ifnull(d.phone_num,0) as phone_num from ",
+            "(select * from g_resource_info where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "</trim>",
+            "order by audit_time desc",
+            ") ",
+            "a left join ",
+            "(select ref_id,count(id) as brow_num from g_global_correlation where ref_type='1' group by ref_id) b ",
+            "on a.id=b.ref_id  left join ",
+            "(select ref_id,count(id) as share_num from g_global_correlation where ref_type='2' group by ref_id) c ",
+            "on a.id=c.ref_id left join ",
+            "(select ref_id,count(id) as phone_num from g_global_correlation where ref_type='3' group by ref_id) d ",
+            "on a.id=d.ref_id ",
+            "<if test=\"refType == '2'.toString()\">order by d.phone_num desc</if> ",
+            "<if test=\"refType == '0'.toString()\">order by b.brow_num desc</if> ",
+            "<if test=\"refType == '1'.toString()\">order by c.share_num desc</if> ",
+            "limit #{startIndex},#{limit} ",
+            "</script>"
+    })
+    List<ResourceInfo> queryReportListByPage(@Param("resourceInfo") ResourceInfo resourceInfo,
+                                             @Param("refType")Integer refType,
+                                             @Param("startIndex") int startIndex,
+                                             @Param("limit") int limit);
+
+    @Select({
+            "<script>",
+            "select count(id) from g_resource_info where ",
+            "<trim suffixOverrides=\"and\"> ",
+            "1=1 and ",
+            "<if test=\"resourceInfo.mobile !=null\">mobile = #{resourceInfo.mobile} and </if>  ",
+            "<if test=\"resourceInfo.createStartTime !=null\">create_time &gt;= #{resourceInfo.createStartTime} and </if> ",
+            "<if test=\"resourceInfo.createEndTime !=null\">create_time &lt;= #{resourceInfo.createEndTime} and </if> ",
+            "</trim>",
+            "</script>"
+    })
+    int queryReportListCountByPage(@Param("resourceInfo") ResourceInfo resourceInfo);
 }

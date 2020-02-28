@@ -36,6 +36,9 @@ public class QueryResourceByConditionRequest implements Serializable {
     @ApiModelProperty(notes = "资源标题模糊搜索")
     private String resourceTitle;
 
+    @ApiModelProperty(notes = "资源内容模糊搜索")
+    private String resourceContent;
+
     @ApiModelProperty(notes = "浏览量排序 0升序 1降序 不需要排序不传")
     private String browseUpNum;
 

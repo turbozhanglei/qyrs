@@ -15,8 +15,11 @@ ribbon:
 img_url: https://gymp25.chinayie.com/image/
 img_path: /home/gymp25/gy-mp/imgs
 
-app_id: wx8638e80c7186b393
-secret_id: 09ba7c8d17933848e5788a6c64de9c57
+#app_id: wx8638e80c7186b393
+#secret_id: 09ba7c8d17933848e5788a6c64de9c57
+
+app_id: wx5978f6b095e47815
+secret_id: d1cd28a3437003f4e9e37096ef9d9dba
 
 eureka:
   client:

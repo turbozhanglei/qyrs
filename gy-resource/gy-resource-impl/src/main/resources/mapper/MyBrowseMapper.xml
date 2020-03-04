@@ -31,6 +31,7 @@
                                 LEFT JOIN g_user gu ON gu.id = gri.user_id
                                 WHERE
                                     1 = 1
+                                and (gri.`status`=1 or gri.`status`=3)
                                 AND a.delete_flag = 0
                                 AND a.ref_type = 1
                                 AND a.user_id = #{userId}

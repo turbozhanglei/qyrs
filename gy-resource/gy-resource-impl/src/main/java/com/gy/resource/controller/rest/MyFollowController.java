@@ -99,10 +99,10 @@ public class MyFollowController {
             return "";
         }
         //TODO 先写死50，具体也不知道截取多少
-        if(content.length()<=50){
+        if(content.length()<=30){
             return content;
         }
-        return content.substring(0,50);
+        return content.substring(0,30);
     }
     public String getNickName(String nickName) {
         //2020-02-24 客户提需求去掉脱敏

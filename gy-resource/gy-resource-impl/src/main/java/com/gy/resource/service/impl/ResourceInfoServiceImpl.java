@@ -333,10 +333,10 @@ public class ResourceInfoServiceImpl implements ResourceInfoService {
             return "";
         }
         //TODO 先写死50，具体也不知道截取多少
-        if(content.length()<=50){
+        if(content.length()<=30){
             return content;
         }
-        return content.substring(0,50);
+        return content.substring(0,30);
     }
 
     public String queryPhoneSwitch(long userId){

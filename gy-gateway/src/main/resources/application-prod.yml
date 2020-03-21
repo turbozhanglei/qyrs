@@ -1,56 +1,43 @@
 server:
-  port: 8085
+  port: 19902
 
 logging:
   level:
     root: INFO
 
-white_list: /wms-rest/suser/getVtoken,/wms-rest/suser/getLoginCode,,/wms-rest/suser/login
+white_list: /gy-rest/suser/getVtoken,/gy-rest/suser/getLoginCode,/gy-rest/suser/login,/gy-rest/wuser/isLogin,/gy-rest/wuser/login,/gy-rest/weixin/getPaySuccess,/gy-rest/order/orderPaySuccess,/gy-rest/cmn/sendMsgInfo,/gy-rest/orderPay/getMyPaySuccess,/gy-rest/orderPay/orderPaySuccess,/gy-rest/orderPay/getMyPaySuccess
 
 spring:
   application:
     name: gy-gateway #服务名称--调用的时候根据名称来调用该服务的方法
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8081/eureka
-
+      defaultZone: http://localhost:19901/eureka
 zuul:
-  SendErrorFilter:
-    post:
-      disable: true
   retryable: true #是否开启重试功能
-  max:
-    host:
-      connections: 500
   host:
     socket-timeout-millis: 30000
-    connect-timeout-millis: 30000
+    connect-timeout-millis: 60000
   routes:
-    zgt-order:
+    gy-rest:
       path: /**
       serviceId: gy-rest
 
 hystrix:
-  threadpool:
-    default:
-      coreSize: 100
-      maximumSize: 10000
-      allowMaximumSizeToDivergeFromCoreSize: true
-      maxQueueSize: -1
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 60000
   command:
     default:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 60000
+            timeoutInMilliseconds: 70000
 
 ribbon:
-  MaxAutoRetries: 2 #对当前服务的重试次数
-  ReadTimeout: 60000
-  ConnectTimeout: 60000
+  MaxAutoRetries: 1 #对当前服务的重试次数
+  MaxAutoRetriesNextServer: 1
+  ReadTimeout: 8000
+  ConnectTimeout: 8000

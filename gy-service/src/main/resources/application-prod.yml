@@ -1,0 +1,16 @@
+server:
+  port: 19901
+logging:
+  level:
+    root: INFO
+eureka:
+  instance:
+    hostname: localhost #服务注册中心IP地址
+  client:
+    registerWithEureka: false #是否向服务注册中心注册自己
+    fetchRegistry: false #表示是否从Eureka Server上获取注册信息，默认为true
+    healthcheck:
+      enabled: true
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
+

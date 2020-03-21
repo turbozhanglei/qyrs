@@ -1,0 +1,62 @@
+server:
+  port: 19904
+
+phone_key: 9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456
+
+logging:
+  level:
+    root: INFO
+  config: classpath:logback.xml
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19901/eureka
+
+
+spring:
+  application:
+    name: gy-resource
+  datasource:
+    url: jdbc:mysql://rm-uf69402bdl4u36066o.mysql.rds.aliyuncs.com:3306/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: gymp
+    password: P@$$w0rd2020
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 8
+    minIdle: 1
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    useGlobalDataSourceStat: true
+
+  redis:
+    database: 0
+    host: 47.100.214.25
+    port: 6379
+    password: asdf@123
+    jedis:
+      pool:
+        max-active: 20
+        max-wait: 10
+        max-idle: 0
+        min-idle: 0
+    timeout: 10000
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  config-location: classpath:conf/mybatis-config.xml
+
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000

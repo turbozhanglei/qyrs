@@ -1,5 +1,5 @@
 server:
-  port: 9904
+  port: 19904
 
 phone_key: 9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456
 
@@ -11,15 +11,15 @@ logging:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9901/eureka
+      defaultZone: http://localhost:19901/eureka
 
 
 spring:
   application:
     name: gy-resource
   datasource:
-    url: jdbc:mysql://rm-uf6p1936n154wl8gmo.mysql.rds.aliyuncs.com:3306/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: gymp7
+    url: jdbc:mysql://rm-uf69402bdl4u36066o.mysql.rds.aliyuncs.com:3306/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: gymp
     password: P@$$w0rd2020
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource

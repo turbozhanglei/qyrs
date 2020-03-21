@@ -1,5 +1,5 @@
 server:
-  port: 8089
+  port: 19903
  # servlet:
  #   context-path: /wms-rest
   #logging:
@@ -12,12 +12,19 @@ ribbon:
   ConnectTimeout: 60000
   ReadTimeout: 60000
 ---
-img_url: http://40.73.65.243:8096/
-img_path: /home/jiantou/data/imgs
+img_url: https://gymp.chinayie.com/image/
+img_path: /home/gymp25/pro/gy-mp/imgs
+
+#app_id: wx8638e80c7186b393
+#secret_id: 09ba7c8d17933848e5788a6c64de9c57
+
+app_id: wx5978f6b095e47815
+secret_id: d1cd28a3437003f4e9e37096ef9d9dba
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8091/eureka
+      defaultZone: http://localhost:19901/eureka
 spring:
   application:
     name: gy-rest #服务名称--调用的时候根据名称来调用该服务的方法
@@ -27,9 +34,9 @@ spring:
     readSize: 1
     type: com.alibaba.druid.pool.DruidDataSource
     master:
-      url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      username: root
-      password: 2wsgsda%lptP!3sd5rti
+      url: jdbc:mysql://rm-uf69402bdl4u36066o.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp
+      password: P@$$w0rd2020
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -47,9 +54,9 @@ spring:
       useGlobalDataSourceStat: true
       validationQuery: SELECT 1 FROM DUAL
     slave:
-      url: jdbc:mysql://40.73.65.243:3306/gy?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-      username: root
-      password: 2wsgsda%lptP!3sd5rti
+      url: jdbc:mysql://rm-uf69402bdl4u36066o.mysql.rds.aliyuncs.com/gy_mp?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+      username: gymp
+      password: P@$$w0rd2020
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat,wall
@@ -87,9 +94,9 @@ mapper:
 ---
 spring:
   redis:
-    host: 40.73.65.243
+    host: 47.100.214.25
     port: 6379
-    password: 123456
+    password: asdf@123
     jedis:
       pool:
         max-active: 200

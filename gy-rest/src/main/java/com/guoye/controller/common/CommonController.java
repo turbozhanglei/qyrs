@@ -585,7 +585,10 @@ public class CommonController extends BizAction {
                 info = (BaseDto) bizService.queryForDto(dto.getAsString("t") + "." + sql, dto);
             } else {
                 info = (BaseDto) bizService.queryForDto(dto.getAsString("t") + ".getInfo", dto);
-                info.put("mobile",des.decrypt(info.getAsString("mobile"),password))  ;
+                if(info !=null){
+                    info.put("mobile",des.decrypt(info.getAsString("mobile"),password));
+                }
+
             }
             result.setData(info);
         } catch (Exception e) {

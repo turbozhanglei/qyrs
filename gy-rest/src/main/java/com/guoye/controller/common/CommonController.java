@@ -563,4 +563,36 @@ public class CommonController extends BizAction {
         return retDto;
     }
 
+
+    /**
+     * 查询会员信息
+     *
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/queryMemberInfo")
+    public BaseResult queryMemberInfo(HttpServletRequest request, HttpServletResponse response) {
+        Dto dto = WebUtils.getParamAsDto(request);
+        BaseResult result = new BaseResult();
+        try {
+            DESWrapper des = new DESWrapper();
+            String password = "9588028820109132570743325311898426347857298773549468758875018579537757772163084478873699447306034466200616411960574122434059469100235892702736860872901247123456";
+            Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
+            Dto info;
+            String sql = dto.getAsString("sql");
+            if (StringUtils.isNotBlank(sql)) {
+                info = (BaseDto) bizService.queryForDto(dto.getAsString("t") + "." + sql, dto);
+            } else {
+                info = (BaseDto) bizService.queryForDto(dto.getAsString("t") + ".getInfo", dto);
+                info.put("mobile",des.decrypt(info.getAsString("mobile"),password))  ;
+            }
+            result.setData(info);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = reduceErr(e.getLocalizedMessage());
+        }
+        return result;
+    }
+
 }

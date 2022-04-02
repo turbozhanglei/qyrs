@@ -75,19 +75,13 @@ public class SysUserController extends BizAction {
 //                    throw new Exception("用户未分配有效权限");
 //                }
 
-
                 String token = "pc_login_token:"+UUID.randomUUID().toString();
-                String loginChannel = dto.getAsString("loginChannel");
-                Dto sysConfig = CommonUtil.getSysConfig();
                 redisService.setValue(token, JSONArray.toJSONString(member),
-                        sysConfig.getAsLong(loginChannel));
+                        30*600L);
                 System.out.println(redisService.getValue(token));
                 Dto chatMap = new BaseDto();
                 chatMap.put("userId", member.get("id"));
                 chatMap.put("username", member.get("username"));
-                chatMap.put("portraitUri", member.get("pic"));
-                chatMap.put("chat_token", member.get("token"));
-                chatMap.put("rytoken", member.get("rytoken"));
                 member.put("token", token);
                 member.put("chatUser", chatMap);
                 if (customer != null) {
@@ -97,11 +91,11 @@ public class SysUserController extends BizAction {
                 member.put("result", "图形验证码正确");
 
                 //保存token
-                Dto utoken =new BaseDto();
-                utoken.put("userid",member.get("id"));
-                utoken.put("tokenid",token);
-                utoken.put("tableName","userToken");
-                bizService.saveInfo(utoken);
+//                Dto utoken =new BaseDto();
+//                utoken.put("userid",member.get("id"));
+//                utoken.put("tokenid",token);
+//                utoken.put("tableName","userToken");
+//                bizService.saveInfo(utoken);
 
                 result.setData(member);
             } else {

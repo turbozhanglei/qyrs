@@ -1,7 +1,8 @@
-package com.guoye.controller.news;
+package com.guoye.controller.personnel;
 
 import com.guoye.base.BizAction;
 import com.guoye.util.BaseResult;
+import com.guoye.util.PageResult;
 import com.guoye.util.StatusConstant;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,23 +23,19 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/news")
-public class NewsCategoryController extends BizAction {
-      /*
-      * 咨询分类初始化*/
-      @ResponseBody
-    @RequestMapping(value = "/getTypeList")
-    public BaseResult getTypeList(HttpServletRequest request){
-          Dto paramsAsDto = WebUtils.getParamAsDto(request);
-          BaseResult result =new BaseResult();
-          List<Dto> nodes = (List<Dto>) bizService.queryList("gNewsCategory.queryTypeList", paramsAsDto);
-         if(nodes==null){
-             result.setCode(9999+"查询失败");
-         }else {
-             result.setCode("0000");
-             result.setData(nodes);
-         }
-          return  result;
+@RequestMapping("/personnel")
+public class PersonnelController extends BizAction {
+
+
+    @ResponseBody
+    @RequestMapping(value = "/getPersonnelList")
+    public PageResult getTypeList(HttpServletRequest request){
+        Dto paramsAsDto = WebUtils.getParamAsDto(request);
+        PageResult result =new PageResult();
+        List<Dto> nodes = (List<Dto>) bizService.queryList("personnel.queryList", paramsAsDto);
+        result.setRows(nodes);
+        result.setTotal(nodes.size());
+        return  result;
       }
 
 
@@ -52,7 +48,6 @@ public class NewsCategoryController extends BizAction {
           Dto dto =WebUtils.getParamAsDto(request);
           try {
               Dto member = redisService.getObject(dto.getAsString("token"), BaseDto.class);
-
               if (null == member) {
                   result.setCode(StatusConstant.CODE_4000);
                   result.setMsg("请登录");
@@ -142,7 +137,7 @@ public class NewsCategoryController extends BizAction {
 
      /*删除按钮*/
     @ResponseBody
-        @RequestMapping(value = "/delCategory")
+    @RequestMapping(value = "/delCategory")
   public BaseResult delCategory(HttpServletRequest request){
         BaseResult result =new BaseResult();
         Dto paramsAsDto = WebUtils.getParamAsDto(request);

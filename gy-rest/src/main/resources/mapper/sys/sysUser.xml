@@ -164,23 +164,9 @@
     <!-- 查询 -->
     <select id="queryList" parameterType="map" resultType="dto">
         SELECT
-        a.*,
-        r.role_name AS rolename,
-        CONCAT(a.mobile, '-', a.username) AS numbername,
-        r.role_id_list
+        a.*
         FROM
         g_user a
-        LEFT JOIN
-        (
-        SELECT
-        a.userid,
-        GROUP_CONCAT(b.role_name) role_name,
-        GROUP_CONCAT(b.id) role_id_list
-        FROM sys_role_user a
-        LEFT JOIN
-        sys_role b on a.roleid = b.id
-        GROUP BY a.userid
-        ) r on a.id = r.userid
         WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
         ORDER BY a.id asc
@@ -223,17 +209,6 @@
         SELECT
          count(a.id) as total
         FROM g_user a
-        LEFT JOIN
-        (
-        SELECT
-        a.userid,
-        GROUP_CONCAT(b.role_name) role_name,
-        GROUP_CONCAT(b.id) role_id_list
-        FROM sys_role_user a
-        LEFT JOIN
-        sys_role b on a.roleid = b.id
-        GROUP BY a.userid
-        ) r on a.id = r.userid
         WHERE 1=1 and a.delete_flag = 0
         <include refid="sql_where"/>
     </select>
@@ -353,7 +328,7 @@
         <if test="null!=moile  and ''!= moile">
             and a.moile = #{moile}
         </if>
-        and password = password(#{password})
+        and password = #{password}
     </select>
 
     <!-- 查询 -->

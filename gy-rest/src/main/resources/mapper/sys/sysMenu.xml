@@ -3,8 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd"><!-- 参数管理手工映射SQL语句 -->
 <!-- 参数管理手工映射SQL语句 -->
 <mapper namespace="sysMenu">
-
-
     <sql id="sql_where">
         <if test="null!=name  and ''!= name">
             and a.name = #{name}
@@ -22,41 +20,32 @@
 
     <!-- 查询 -->
     <select id="queryList" parameterType="map" resultType="dto">
-        SELECT a.*,m.status as checked
+        SELECT a.*
         FROM sys_menu a
-        left join sys_role_menu m on m.menuid = a.id
-        <if test="null!=roleid  and ''!= roleid">
-            and m.roleid= #{roleid}
-        </if>
-        WHERE a.is_delete = 'N'
+        WHERE a.delete_flag = '0'
         <include refid="sql_where"/>
-        ORDER BY a.order_num
+        ORDER BY a.id
     </select>
 
     <!-- 查询 -->
     <select id="queryRoleMenuList" parameterType="map" resultType="dto">
         SELECT a.*,m.status as checked
         FROM sys_menu a
-        inner join sys_role_menu m on m.menuid = a.id
-        <if test="null!=roleid  and ''!= roleid">
-            and m.roleid= #{roleid}
-        </if>
-        WHERE a.is_delete = 'N'
+        WHERE a.delete_flag = '0'
         <include refid="sql_where"/>
-        ORDER BY a.order_num
+        ORDER BY a.id
     </select>
 
     <!-- 查询 -->
     <select id="queryMenuList" parameterType="map" resultType="dto">
         SELECT a.*,m.status as checked
         FROM sys_menu a
-        left join sys_role_menu m on m.menuid = a.id
-        WHERE a.is_delete = 'N'
+        WHERE a.delete_flag = '0'
         <include refid="sql_where"/>
         <if test="null!=roleid  and ''!= roleid">
             and m.roleid= #{roleid}
         </if>
-        ORDER BY a.order_num
+        ORDER BY a.id
     </select>
     <!-- 查询 -->
     <select id="queryBranchList" parameterType="map" resultType="dto">
@@ -128,23 +117,10 @@
         SELECT
         m.*
         FROM
-        sys_menu m,
-        g_user u,
-        sys_role_user ur,
-        sys_role_menu rm
+        sys_menu m
         WHERE
-        u.id = ur.userid
-        AND ur.roleid = rm.roleid
-        AND rm.menuid = m.id
-        AND m.is_delete = 'N'
-
-        <if test="null!=roleid  and ''!= roleid">
-            and ur.roleid = #{roleid}
-        </if>
-
-        <if test="null!=userid  and ''!= userid">
-            and u.id = #{userid}
-        </if>
+          1=1
+        AND m.delete_flag = '0'
     </select>
 
 

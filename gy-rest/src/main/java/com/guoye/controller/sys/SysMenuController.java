@@ -42,7 +42,7 @@ public class SysMenuController extends BizAction {
 
             List<Dto> resultList = findByUser(userid);
 
-            resultList.sort((o1, o2) -> o1.getAsInteger("order_num").compareTo(o2.getAsInteger("order_num")));
+            resultList.sort((o1, o2) -> o1.getAsInteger("id").compareTo(o2.getAsInteger("id")));
 
             result.setData(resultList);
         } catch (Exception e) {
@@ -249,9 +249,7 @@ public class SysMenuController extends BizAction {
                 return result;
             }
 
-
             Set<String> perms = new HashSet<>();
-
             for (Dto sysMenu : roleList) {
                 if (StringUtils.isNotEmpty(sysMenu.getAsString("perms"))) {
                     String[] permsList = sysMenu.getAsString("perms").split(",");
@@ -275,26 +273,15 @@ public class SysMenuController extends BizAction {
      * @return
      */
     public List<Dto> findByUser(Long userId) {
-
-        BaseDto baseDto = new BaseDto("userid", userId);
-        baseDto.put("roleid", 1);
-        List<Dto> roleList = bizService.queryForList("sysRoleUser.queryList", baseDto);
-
         List<Dto> menus = new ArrayList<>();
-        if (roleList.isEmpty()) {
-            menus = bizService.queryForList("sysMenu.queryMenuListByUserid", new BaseDto("id", userId));
-        } else {
-            menus = bizService.queryForList("sysMenu.queryList", new BaseDto());
-        }
-
-
+        menus = bizService.queryForList("sysMenu.queryList", new BaseDto());
         List<Dto> sysMenus = new ArrayList<>();
 
         for (Dto menu : menus) {
             //遍历集合
             if (menu.getAsInteger("pid") == null || menu.getAsInteger("pid") == 0) {
                 menu.put("level", 0);
-                if (!exists(sysMenus, menu) && menu.getAsString("is_delete").equals("N")) {
+                if (!exists(sysMenus, menu) && menu.getAsString("delete_flag").equals("0")) {
                     sysMenus.add(menu);
                 }
             }
@@ -309,10 +296,6 @@ public class SysMenuController extends BizAction {
         for (Dto SysMenu : SysMenus) {
             List<Dto> children = new ArrayList<>();
             for (Dto menu : menus) {
-                if (menuType == 1 && menu.getAsInteger("type") == 2) {
-                    // 如果是获取类型不需要按钮，且菜单类型是按钮的，直接过滤掉
-                    continue;
-                }
                 if (SysMenu.getAsInteger("id") != null && SysMenu.getAsInteger("id").equals(menu.getAsInteger("pid"))) {
                     menu.put("parentName", SysMenu.getAsString("name"));
                     menu.put("level", SysMenu.getAsInteger("level") + 1);
@@ -322,7 +305,7 @@ public class SysMenuController extends BizAction {
                 }
             }
             SysMenu.put("children", children);
-            children.sort((o1, o2) -> o1.getAsInteger("order_num").compareTo(o2.getAsInteger("order_num")));
+            children.sort((o1, o2) -> o1.getAsInteger("id").compareTo(o2.getAsInteger("id")));
             findChildren(children, menus, menuType);
         }
     }
